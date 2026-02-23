@@ -54,6 +54,7 @@ tasks:
       - task: phpstan
       - task: audit
       - npm run check
+      - task: build
 
   type-check:
     desc: "Run checker in typescript"

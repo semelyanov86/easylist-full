@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { AuthLayout } from '@features/auth';
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
 import { Spinner } from '@shared/ui/spinner';
+import { AuthLayout } from '@widgets/auth';
 import { ref } from 'vue';
 
 import { update } from '@/routes/password';
@@ -20,10 +20,10 @@ const inputEmail = ref(props.email);
 
 <template>
     <AuthLayout
-        title="Reset password"
-        description="Please enter your new password below"
+        title="Новый пароль"
+        description="Введите новый пароль для вашего аккаунта"
     >
-        <Head title="Reset password" />
+        <Head title="Сброс пароля" />
 
         <Form
             v-bind="update.form()"
@@ -31,7 +31,7 @@ const inputEmail = ref(props.email);
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
         >
-            <div class="grid gap-6">
+            <div class="grid gap-5">
                 <div class="grid gap-2">
                     <Label for="email">Email</Label>
                     <Input
@@ -40,49 +40,47 @@ const inputEmail = ref(props.email);
                         name="email"
                         autocomplete="email"
                         v-model="inputEmail"
-                        class="mt-1 block w-full"
                         readonly
+                        class="opacity-60"
                     />
-                    <InputError :message="errors.email" class="mt-2" />
+                    <InputError :message="errors.email" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
+                    <Label for="password">Новый пароль</Label>
                     <Input
                         id="password"
                         type="password"
                         name="password"
                         autocomplete="new-password"
-                        class="mt-1 block w-full"
                         autofocus
-                        placeholder="Password"
+                        placeholder="Минимум 8 символов"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="password_confirmation">
-                        Confirm Password
+                        Подтверждение пароля
                     </Label>
                     <Input
                         id="password_confirmation"
                         type="password"
                         name="password_confirmation"
                         autocomplete="new-password"
-                        class="mt-1 block w-full"
-                        placeholder="Confirm password"
+                        placeholder="Повторите пароль"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
 
                 <Button
                     type="submit"
-                    class="mt-4 w-full"
+                    class="mt-2 w-full"
                     :disabled="processing"
                     data-test="reset-password-button"
                 >
                     <Spinner v-if="processing" />
-                    Reset password
+                    Сохранить пароль
                 </Button>
             </div>
         </Form>

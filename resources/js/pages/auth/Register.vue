@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { AuthLayout as AuthBase } from '@features/auth';
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import TextLink from '@shared/components/TextLink.vue';
@@ -7,6 +6,7 @@ import { Button } from '@shared/ui/button';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
 import { Spinner } from '@shared/ui/spinner';
+import { AuthLayout as AuthBase } from '@widgets/auth';
 
 import { login } from '@/routes';
 import { store } from '@/routes/register';
@@ -14,10 +14,10 @@ import { store } from '@/routes/register';
 
 <template>
     <AuthBase
-        title="Create an account"
-        description="Enter your details below to create your account"
+        title="Создать аккаунт"
+        description="Заполните данные для регистрации"
     >
-        <Head title="Register" />
+        <Head title="Регистрация" />
 
         <Form
             v-bind="store.form()"
@@ -25,9 +25,9 @@ import { store } from '@/routes/register';
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
         >
-            <div class="grid gap-6">
+            <div class="grid gap-5">
                 <div class="grid gap-2">
-                    <Label for="name">Name</Label>
+                    <Label for="name">Имя</Label>
                     <Input
                         id="name"
                         type="text"
@@ -36,13 +36,13 @@ import { store } from '@/routes/register';
                         :tabindex="1"
                         autocomplete="name"
                         name="name"
-                        placeholder="Full name"
+                        placeholder="Ваше имя"
                     />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">Email</Label>
                     <Input
                         id="email"
                         type="email"
@@ -50,13 +50,13 @@ import { store } from '@/routes/register';
                         :tabindex="2"
                         autocomplete="email"
                         name="email"
-                        placeholder="email@example.com"
+                        placeholder="name@example.com"
                     />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
+                    <Label for="password">Пароль</Label>
                     <Input
                         id="password"
                         type="password"
@@ -64,13 +64,15 @@ import { store } from '@/routes/register';
                         :tabindex="3"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Password"
+                        placeholder="Минимум 8 символов"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
+                    <Label for="password_confirmation">
+                        Подтверждение пароля
+                    </Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -78,7 +80,7 @@ import { store } from '@/routes/register';
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="Confirm password"
+                        placeholder="Повторите пароль"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
@@ -91,18 +93,13 @@ import { store } from '@/routes/register';
                     data-test="register-user-button"
                 >
                     <Spinner v-if="processing" />
-                    Create account
+                    Зарегистрироваться
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                Already have an account?
-                <TextLink
-                    :href="login()"
-                    class="underline underline-offset-4"
-                    :tabindex="6"
-                    >Log in</TextLink
-                >
+                Уже есть аккаунт?
+                <TextLink :href="login()" :tabindex="6">Войти</TextLink>
             </div>
         </Form>
     </AuthBase>

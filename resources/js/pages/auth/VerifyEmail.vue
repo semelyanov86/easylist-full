@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { AuthLayout } from '@features/auth';
 import { Form, Head } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import { Button } from '@shared/ui/button';
 import { Spinner } from '@shared/ui/spinner';
+import { AuthLayout } from '@widgets/auth';
 
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
@@ -15,17 +15,17 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="Verify email"
-        description="Please verify your email address by clicking on the link we just emailed to you."
+        title="Подтверждение email"
+        description="Мы отправили ссылку для подтверждения на ваш email. Проверьте почту и перейдите по ссылке."
     >
-        <Head title="Email verification" />
+        <Head title="Подтверждение email" />
 
         <div
             v-if="status === 'verification-link-sent'"
-            class="mb-4 text-center text-sm font-medium text-green-600"
+            class="mb-4 rounded-lg bg-accent p-3 text-center text-sm font-medium text-chart-2"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            Новая ссылка для подтверждения отправлена на указанный при
+            регистрации email.
         </div>
 
         <Form
@@ -33,9 +33,9 @@ defineProps<{
             class="space-y-6 text-center"
             v-slot="{ processing }"
         >
-            <Button :disabled="processing" variant="secondary">
+            <Button :disabled="processing" variant="secondary" class="w-full">
                 <Spinner v-if="processing" />
-                Resend verification email
+                Отправить ссылку повторно
             </Button>
 
             <TextLink
@@ -43,7 +43,7 @@ defineProps<{
                 as="button"
                 class="mx-auto block text-sm"
             >
-                Log out
+                Выйти
             </TextLink>
         </Form>
     </AuthLayout>

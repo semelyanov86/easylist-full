@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { AuthLayout } from '@features/auth';
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import type { TwoFactorConfigContent } from '@shared/types';
 import { Button } from '@shared/ui/button';
 import { Input } from '@shared/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@shared/ui/input-otp';
+import { AuthLayout } from '@widgets/auth';
 import { computed, ref } from 'vue';
 
 import { store } from '@/routes/two-factor/login';
@@ -13,18 +13,17 @@ import { store } from '@/routes/two-factor/login';
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Recovery Code',
+            title: 'Код восстановления',
             description:
-                'Please confirm access to your account by entering one of your emergency recovery codes.',
-            buttonText: 'login using an authentication code',
+                'Введите один из ваших резервных кодов восстановления для подтверждения доступа.',
+            buttonText: 'использовать код аутентификации',
         };
     }
 
     return {
-        title: 'Authentication Code',
-        description:
-            'Enter the authentication code provided by your authenticator application.',
-        buttonText: 'login using a recovery code',
+        title: 'Двухфакторная аутентификация',
+        description: 'Введите код из вашего приложения-аутентификатора.',
+        buttonText: 'использовать код восстановления',
     };
 });
 
@@ -44,13 +43,13 @@ const code = ref<string>('');
         :title="authConfigContent.title"
         :description="authConfigContent.description"
     >
-        <Head title="Two-Factor Authentication" />
+        <Head title="Двухфакторная аутентификация" />
 
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
                 <Form
                     v-bind="store.form()"
-                    class="space-y-4"
+                    class="space-y-5"
                     reset-on-error
                     @error="code = ''"
                     #default="{ errors, processing, clearErrors }"
@@ -78,14 +77,14 @@ const code = ref<string>('');
                         </div>
                         <InputError :message="errors.code" />
                     </div>
-                    <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
-                    >
+                    <Button type="submit" class="w-full" :disabled="processing">
+                        Продолжить
+                    </Button>
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
+                        <span>или </span>
                         <button
                             type="button"
-                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                            class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-foreground"
                             @click="() => toggleRecoveryMode(clearErrors)"
                         >
                             {{ authConfigContent.buttonText }}
@@ -97,27 +96,27 @@ const code = ref<string>('');
             <template v-else>
                 <Form
                     v-bind="store.form()"
-                    class="space-y-4"
+                    class="space-y-5"
                     reset-on-error
                     #default="{ errors, processing, clearErrors }"
                 >
                     <Input
                         name="recovery_code"
                         type="text"
-                        placeholder="Enter recovery code"
+                        placeholder="Введите код восстановления"
                         :autofocus="showRecoveryInput"
                         required
                     />
                     <InputError :message="errors.recovery_code" />
-                    <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
-                    >
+                    <Button type="submit" class="w-full" :disabled="processing">
+                        Продолжить
+                    </Button>
 
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
+                        <span>или </span>
                         <button
                             type="button"
-                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                            class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-foreground"
                             @click="() => toggleRecoveryMode(clearErrors)"
                         >
                             {{ authConfigContent.buttonText }}
