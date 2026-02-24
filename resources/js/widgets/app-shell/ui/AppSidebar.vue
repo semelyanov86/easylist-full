@@ -10,33 +10,37 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@shared/ui/sidebar';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { Briefcase, LayoutGrid, List } from 'lucide-vue-next';
 
 import { dashboard } from '@/routes';
 
 import AppLogo from './AppLogo.vue';
-import NavFooter from './NavFooter.vue';
 import NavMain from './NavMain.vue';
 import NavUser from './NavUser.vue';
 
+type Props = {
+    auxiliaryNavItems?: NavItem[];
+};
+
+withDefaults(defineProps<Props>(), {
+    auxiliaryNavItems: () => [],
+});
+
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Панель управления',
         href: dashboard(),
         icon: LayoutGrid,
     },
-];
-
-const footerNavItems: NavItem[] = [
     {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
+        title: 'Job Tracker',
+        href: '#',
+        icon: Briefcase,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Список',
+        href: '#',
+        icon: List,
     },
 ];
 </script>
@@ -56,11 +60,15 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="mainNavItems" label="Основное" />
+            <NavMain
+                v-if="auxiliaryNavItems.length > 0"
+                :items="auxiliaryNavItems"
+                label="Вспомогательное"
+            />
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

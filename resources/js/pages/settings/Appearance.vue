@@ -9,7 +9,7 @@ import { edit } from '@/routes/appearance';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        title: 'Appearance settings',
+        title: 'Настройки оформления',
         href: edit().url,
     },
 ];
@@ -17,16 +17,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Appearance settings" />
+        <Head title="Настройки оформления" />
 
-        <h1 class="sr-only">Appearance Settings</h1>
+        <h1 class="sr-only">Настройки оформления</h1>
 
         <SettingsLayout>
             <div class="space-y-6">
                 <Heading
                     variant="small"
-                    title="Appearance settings"
-                    description="Update your account's appearance settings"
+                    title="Оформление"
+                    description="Настройте внешний вид приложения"
                 />
                 <AppearanceTabs />
             </div>

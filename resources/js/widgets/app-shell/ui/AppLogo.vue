@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import AppLogoIcon from '@shared/components/AppLogoIcon.vue';
+import { useSidebar } from '@shared/ui/sidebar';
+import { Briefcase } from 'lucide-vue-next';
+
+const { open } = useSidebar();
 </script>
 
 <template>
-    <div
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
-    >
-        <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate leading-tight font-semibold"
-            >Laravel Starter Kit</span
+    <template v-if="open">
+        <img
+            src="/images/easylist-logo.svg"
+            alt="Easylist"
+            class="h-8 w-auto"
+        />
+    </template>
+    <template v-else>
+        <div
+            class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
         >
-    </div>
+            <Briefcase class="size-5" />
+        </div>
+    </template>
 </template>
