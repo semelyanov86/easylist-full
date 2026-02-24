@@ -8,13 +8,15 @@
     "mcp": true,
     "nightwatch_mcp": false,
     "packages": [
-        "laravel/fortify"
+        "laravel/fortify",
+        "spatie/laravel-ray"
     ],
     "sail": false,
     "skills": [
         "wayfinder-development",
         "inertia-vue-development",
         "tailwindcss-development",
-        "developing-with-fortify"
+        "developing-with-fortify",
+        "debugging-output-and-previewing-html-using-ray"
     ]
 }

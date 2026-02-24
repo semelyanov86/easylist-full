@@ -67,6 +67,14 @@ resources/js/
 *   **Inertia:** Use typed `usePage` and typed props (`defineProps<UserDto>()`).
 *   **UI:** Use `shared/ui` components (wrappers around DaisyUI). Do not use raw Tailwind classes if a component exists.
 
+### System / High priority
+
+* Используй только существующие утилити‑классы Tailwind CSS v4. Не придумывай классы (типа btn-primary, card, text-body) и не используй style="".
+* Запрещены arbitrary values и произвольные значения: никаких text-[#...], bg-[...], rounded-[...], shadow-[...], w-[...], h-[...], color-[#rrrrr].
+* Цвета — только семантические токены из палитры проекта: text-primary, bg-primary, border-primary, text-muted, bg-surface, text-foreground и т.п. (если токена нет — предложи добавить его в тему, но не используй hex).
+* Всегда делай поддержку light/dark: для каждого ключевого цвета фона/текста/бордера/иконок добавляй dark: вариант либо используй токены, которые сами меняются от темы. Tailwind поддерживает dark: variant, а стратегию его включения можно завязать на .dark или [data-theme=dark].
+* Если нужно “primary/secondary/accent”, используй только классы вида text-primary, bg-primary, ring-primary, а не text-blue-600 (если в проекте принято всё через токены).
+
 ---
 
 ## 6. Code Quality & Pre-Commit Checks
@@ -119,6 +127,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `inertia-vue-development` — Develops Inertia.js v2 Vue client-side applications. Activates when creating Vue pages, forms, or navigation; using &lt;Link&gt;, &lt;Form&gt;, useForm, or router; working with deferred props, prefetching, or polling; or when user mentions Vue with Inertia, Vue pages, Vue forms, or Vue navigation.
 - `tailwindcss-development` — Styles applications using Tailwind CSS v4 utilities. Activates when adding styles, restyling components, working with gradients, spacing, layout, flex, grid, responsive design, dark mode, colors, typography, or borders; or when the user mentions CSS, styling, classes, Tailwind, restyle, hero section, cards, buttons, or any visual/UI changes.
 - `developing-with-fortify` — Laravel Fortify headless authentication backend development. Activate when implementing authentication features including login, registration, password reset, email verification, two-factor authentication (2FA/TOTP), profile updates, headless auth, authentication scaffolding, or auth guards in Laravel applications.
+- `debugging-output-and-previewing-html-using-ray` — Use when user says &quot;send to Ray,&quot; &quot;show in Ray,&quot; &quot;debug in Ray,&quot; &quot;log to Ray,&quot; &quot;display in Ray,&quot; or wants to visualize data, debug output, or show diagrams in the Ray desktop application.
 
 ## Conventions
 

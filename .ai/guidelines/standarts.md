@@ -52,6 +52,12 @@ resources/js/
 *   **Inertia:** Use typed `usePage` and typed props (`defineProps<UserDto>()`).
 *   **UI:** Use `shared/ui` components (wrappers around DaisyUI). Do not use raw Tailwind classes if a component exists.
 
+### System / High priority
+* Используй только существующие утилити‑классы Tailwind CSS v4. Не придумывай классы (типа btn-primary, card, text-body) и не используй style="".
+* Запрещены arbitrary values и произвольные значения: никаких text-[#...], bg-[...], rounded-[...], shadow-[...], w-[...], h-[...], color-[#rrrrr].
+* Цвета — только семантические токены из палитры проекта: text-primary, bg-primary, border-primary, text-muted, bg-surface, text-foreground и т.п. (если токена нет — предложи добавить его в тему, но не используй hex).
+* Всегда делай поддержку light/dark: для каждого ключевого цвета фона/текста/бордера/иконок добавляй dark: вариант либо используй токены, которые сами меняются от темы. Tailwind поддерживает dark: variant, а стратегию его включения можно завязать на .dark или [data-theme=dark].
+* Если нужно “primary/secondary/accent”, используй только классы вида text-primary, bg-primary, ring-primary, а не text-blue-600 (если в проекте принято всё через токены).
 
 ---
 

@@ -7,6 +7,7 @@ import { type NavItem } from '@shared/types';
 import { Button } from '@shared/ui/button';
 import { Separator } from '@shared/ui/separator';
 
+import { index as indexApiTokens } from '@/routes/api-tokens';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
@@ -24,6 +25,10 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Двухфакторная аутентификация',
         href: show(),
+    },
+    {
+        title: 'API-токены',
+        href: indexApiTokens(),
     },
     {
         title: 'Оформление',
