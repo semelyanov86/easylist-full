@@ -54,6 +54,8 @@ class TwoFactorChallengeTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('auth/TwoFactorChallenge')
+                    ->has('availableMethods')
+                    ->has('intendedUrl')
             );
     }
 }

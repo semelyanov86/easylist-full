@@ -37,6 +37,16 @@ class TwoFactorAuthenticationController extends Controller implements HasMiddlew
         return Inertia::render('settings/TwoFactor', [
             'twoFactorEnabled' => $user->hasEnabledTwoFactorAuthentication(),
             'requiresConfirmation' => Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm'),
+            'webauthnCredentials' => $user->webAuthnCredentials()
+                ->whereNull('disabled_at')
+                ->get(['id', 'alias', 'created_at'])
+                ->map(fn ($credential): array => [
+                    'id' => $credential->getKey(),
+                    'alias' => $credential->alias,
+                    'created_at' => $credential->created_at->toIso8601String(),
+                ])
+                ->values()
+                ->all(),
         ]);
     }
 }

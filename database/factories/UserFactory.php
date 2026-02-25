@@ -7,6 +7,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -57,5 +58,26 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
         ]);
+    }
+
+    /**
+     * Indicate that the model has a WebAuthn credential registered.
+     */
+    public function withWebAuthn(string $alias = 'Test Key'): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user) use ($alias): void {
+            WebAuthnCredential::forceCreate([
+                'id' => Str::random(64),
+                'authenticatable_type' => $user->getMorphClass(),
+                'authenticatable_id' => $user->getKey(),
+                'user_id' => Str::uuid()->toString(),
+                'alias' => $alias,
+                'counter' => 0,
+                'rp_id' => 'localhost',
+                'origin' => 'http://localhost',
+                'public_key' => encrypt('test-public-key'),
+                'attestation_format' => 'none',
+            ]);
+        });
     }
 }

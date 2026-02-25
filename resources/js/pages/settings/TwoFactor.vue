@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { SettingsLayout } from '@features/settings';
 import { TwoFactorManager } from '@features/two-factor';
+import { WebAuthnManager } from '@features/webauthn';
 import { Head } from '@inertiajs/vue3';
-import type { BreadcrumbItem } from '@shared/types';
+import type { BreadcrumbItem, WebAuthnCredential } from '@shared/types';
+import { Separator } from '@shared/ui/separator';
 import { AppLayout } from '@widgets/app-shell';
 
 import { show } from '@/routes/two-factor';
@@ -10,9 +12,12 @@ import { show } from '@/routes/two-factor';
 type Props = {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    webauthnCredentials?: WebAuthnCredential[];
 };
 
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+    webauthnCredentials: () => [],
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,6 +38,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                 :requires-confirmation="requiresConfirmation"
                 :two-factor-enabled="twoFactorEnabled"
             />
+
+            <Separator />
+
+            <WebAuthnManager :credentials="webauthnCredentials" />
         </SettingsLayout>
     </AppLayout>
 </template>
