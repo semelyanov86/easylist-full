@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Settings\ApiTokenController;
+use App\Http\Controllers\Settings\JobStatusController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -33,4 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('settings/api-tokens', [ApiTokenController::class, 'index'])->name('api-tokens.index');
     Route::post('settings/api-tokens', [ApiTokenController::class, 'store'])->name('api-tokens.store');
     Route::delete('settings/api-tokens/{token}', [ApiTokenController::class, 'destroy'])->name('api-tokens.destroy');
+
+    Route::get('settings/job-statuses', [JobStatusController::class, 'index'])->name('job-statuses.index');
+    Route::post('settings/job-statuses', [JobStatusController::class, 'store'])->name('job-statuses.store');
+    Route::post('settings/job-statuses/reorder', [JobStatusController::class, 'reorder'])->name('job-statuses.reorder');
+    Route::patch('settings/job-statuses/{jobStatus}', [JobStatusController::class, 'update'])->name('job-statuses.update');
+    Route::delete('settings/job-statuses/{jobStatus}', [JobStatusController::class, 'destroy'])->name('job-statuses.destroy');
 });

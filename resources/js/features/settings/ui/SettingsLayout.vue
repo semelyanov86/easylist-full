@@ -9,6 +9,7 @@ import { Separator } from '@shared/ui/separator';
 
 import { index as indexApiTokens } from '@/routes/api-tokens';
 import { edit as editAppearance } from '@/routes/appearance';
+import { index as indexJobStatuses } from '@/routes/job-statuses';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
@@ -23,12 +24,16 @@ const sidebarNavItems: NavItem[] = [
         href: editPassword(),
     },
     {
-        title: 'Двухфакторная аутентификация',
+        title: '2FA',
         href: show(),
     },
     {
         title: 'API-токены',
         href: indexApiTokens(),
+    },
+    {
+        title: 'Статусы откликов',
+        href: indexJobStatuses(),
     },
     {
         title: 'Оформление',

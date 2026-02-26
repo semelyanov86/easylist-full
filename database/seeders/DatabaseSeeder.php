@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Sergey Emelyanov',
             'email' => 'se@sergeyem.ru',
         ]);
+
+        $this->call(JobStatusSeeder::class);
     }
 }
