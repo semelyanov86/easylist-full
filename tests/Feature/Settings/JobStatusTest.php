@@ -79,6 +79,7 @@ class JobStatusTest extends TestCase
         $response = $this->actingAs($user)->post(route('job-statuses.store'), [
             'title' => 'Новый статус',
             'description' => 'Описание',
+            'color' => 'blue',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -87,6 +88,7 @@ class JobStatusTest extends TestCase
             'user_id' => $user->id,
             'title' => 'Новый статус',
             'description' => 'Описание',
+            'color' => 'blue',
         ]);
     }
 
@@ -108,6 +110,7 @@ class JobStatusTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('job-statuses.store'), [
             'title' => 'Дубликат',
+            'color' => 'gray',
         ]);
 
         $response->assertSessionHasErrors('title');
@@ -121,6 +124,7 @@ class JobStatusTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('job-statuses.store'), [
             'title' => 'Общий',
+            'color' => 'blue',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -135,6 +139,7 @@ class JobStatusTest extends TestCase
         $response = $this->actingAs($user)->patch(route('job-statuses.update', $status), [
             'title' => 'Новое',
             'description' => 'Обновлённое описание',
+            'color' => 'green',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -142,6 +147,7 @@ class JobStatusTest extends TestCase
             'id' => $status->id,
             'title' => 'Новое',
             'description' => 'Обновлённое описание',
+            'color' => 'green',
         ]);
     }
 
@@ -153,6 +159,7 @@ class JobStatusTest extends TestCase
 
         $response = $this->actingAs($user)->patch(route('job-statuses.update', $status), [
             'title' => 'Взлом',
+            'color' => 'red',
         ]);
 
         $response->assertForbidden();
@@ -222,5 +229,81 @@ class JobStatusTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('ids');
+    }
+
+    public function test_user_can_create_job_status_with_color(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('job-statuses.store'), [
+            'title' => 'Цветной статус',
+            'color' => 'purple',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('job-statuses.index'));
+        $this->assertDatabaseHas('job_statuses', [
+            'user_id' => $user->id,
+            'title' => 'Цветной статус',
+            'color' => 'purple',
+        ]);
+    }
+
+    public function test_user_can_update_status_color(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create([
+            'title' => 'Тест',
+            'color' => 'gray',
+        ]);
+
+        $response = $this->actingAs($user)->patch(route('job-statuses.update', $status), [
+            'title' => 'Тест',
+            'color' => 'red',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('job_statuses', [
+            'id' => $status->id,
+            'color' => 'red',
+        ]);
+    }
+
+    public function test_invalid_color_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('job-statuses.store'), [
+            'title' => 'Плохой цвет',
+            'color' => 'rainbow',
+        ]);
+
+        $response->assertSessionHasErrors('color');
+    }
+
+    public function test_color_defaults_to_gray_in_database(): void
+    {
+        $user = User::factory()->create();
+        $status = $user->jobStatuses()->create([
+            'title' => 'Без цвета',
+        ]);
+
+        $this->assertSame('gray', $status->fresh()?->getRawOriginal('color'));
+    }
+
+    public function test_color_is_returned_in_statuses_list(): void
+    {
+        $user = User::factory()->create();
+        JobStatus::factory()->for($user)->create([
+            'title' => 'Цветной',
+            'color' => 'cyan',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('job-statuses.index'));
+
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->where('statuses.0.color', 'cyan')
+        );
     }
 }

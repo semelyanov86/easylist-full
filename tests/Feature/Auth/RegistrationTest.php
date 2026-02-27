@@ -46,7 +46,9 @@ class RegistrationTest extends TestCase
         $this->assertNotNull($user);
         $this->assertCount(8, $user->jobStatuses);
 
-        $titles = $user->jobStatuses()->ordered()->pluck('title')->toArray();
+        $statuses = $user->jobStatuses()->ordered()->get();
+
+        $titles = $statuses->pluck('title')->toArray();
         $this->assertSame([
             'Отложено',
             'Подана заявка',
@@ -57,5 +59,24 @@ class RegistrationTest extends TestCase
             'Отклонено',
             'Отклонено после собеседования',
         ], $titles);
+
+        $expectedColors = [
+            'Отложено' => 'gray',
+            'Подана заявка' => 'blue',
+            'Первичное собеседование' => 'purple',
+            'Техническое интервью' => 'cyan',
+            'Финальный процесс' => 'amber',
+            'Оффер' => 'green',
+            'Отклонено' => 'red',
+            'Отклонено после собеседования' => 'pink',
+        ];
+
+        foreach ($statuses as $status) {
+            $this->assertSame(
+                $expectedColors[$status->title],
+                $status->getRawOriginal('color'),
+                "Цвет статуса «{$status->title}» не совпадает"
+            );
+        }
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Settings;
 
+use App\Enums\StatusColor;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,6 +29,7 @@ class UpdateJobStatusRequest extends FormRequest
                     ->ignore($this->route('jobStatus')),
             ],
             'description' => ['nullable', 'string', 'max:1000'],
+            'color' => ['required', 'string', Rule::in(StatusColor::values())],
         ];
     }
 }

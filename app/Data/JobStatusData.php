@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Enums\StatusColor;
 use Spatie\LaravelData\Data;
 
 final class JobStatusData extends Data
@@ -12,6 +13,7 @@ final class JobStatusData extends Data
         public readonly int $id,
         public readonly string $title,
         public readonly ?string $description,
+        public readonly StatusColor $color,
         public readonly int $order_column,
     ) {}
 }

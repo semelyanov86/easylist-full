@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace App\Actions\JobStatus;
 
+use App\Enums\StatusColor;
 use App\Models\User;
 
 final readonly class CreateDefaultJobStatusesAction
 {
-    /** @var list<string> */
-    private const array DEFAULT_TITLES = [
-        'Отложено',
-        'Подана заявка',
-        'Первичное собеседование',
-        'Техническое интервью',
-        'Финальный процесс',
-        'Оффер',
-        'Отклонено',
-        'Отклонено после собеседования',
+    /** @var array<string, StatusColor> */
+    private const array DEFAULT_STATUSES = [
+        'Отложено' => StatusColor::Gray,
+        'Подана заявка' => StatusColor::Blue,
+        'Первичное собеседование' => StatusColor::Purple,
+        'Техническое интервью' => StatusColor::Cyan,
+        'Финальный процесс' => StatusColor::Amber,
+        'Оффер' => StatusColor::Green,
+        'Отклонено' => StatusColor::Red,
+        'Отклонено после собеседования' => StatusColor::Pink,
     ];
 
     /**
@@ -25,11 +26,15 @@ final readonly class CreateDefaultJobStatusesAction
      */
     public function execute(User $user): void
     {
-        foreach (self::DEFAULT_TITLES as $order => $title) {
+        $order = 1;
+
+        foreach (self::DEFAULT_STATUSES as $title => $color) {
             $user->jobStatuses()->firstOrCreate(
                 ['title' => $title],
-                ['order_column' => $order + 1],
+                ['order_column' => $order, 'color' => $color],
             );
+
+            $order++;
         }
     }
 }

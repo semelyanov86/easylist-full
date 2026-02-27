@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\StatusColor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class JobStatus extends Model implements Sortable
         'user_id',
         'title',
         'description',
+        'color',
         'order_column',
     ];
 
@@ -47,5 +49,16 @@ class JobStatus extends Model implements Sortable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return array<string, class-string>
+     */
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'color' => StatusColor::class,
+        ];
     }
 }

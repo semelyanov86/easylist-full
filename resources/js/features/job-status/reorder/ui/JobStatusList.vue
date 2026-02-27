@@ -73,6 +73,12 @@ onMounted(() => {
             >
                 <GripVertical class="size-4" />
             </button>
+            <span
+                class="block size-3 shrink-0 rounded-full"
+                :style="{
+                    backgroundColor: `var(--status-${status.color})`,
+                }"
+            />
             <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-medium text-foreground">
                     {{ status.title }}

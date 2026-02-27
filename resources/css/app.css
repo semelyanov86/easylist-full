@@ -59,6 +59,37 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    --color-status-gray: var(--status-gray);
+    --color-status-gray-foreground: var(--status-gray-foreground);
+    --color-status-blue: var(--status-blue);
+    --color-status-blue-foreground: var(--status-blue-foreground);
+    --color-status-green: var(--status-green);
+    --color-status-green-foreground: var(--status-green-foreground);
+    --color-status-red: var(--status-red);
+    --color-status-red-foreground: var(--status-red-foreground);
+    --color-status-amber: var(--status-amber);
+    --color-status-amber-foreground: var(--status-amber-foreground);
+    --color-status-purple: var(--status-purple);
+    --color-status-purple-foreground: var(--status-purple-foreground);
+    --color-status-pink: var(--status-pink);
+    --color-status-pink-foreground: var(--status-pink-foreground);
+    --color-status-cyan: var(--status-cyan);
+    --color-status-cyan-foreground: var(--status-cyan-foreground);
+    --color-status-indigo: var(--status-indigo);
+    --color-status-indigo-foreground: var(--status-indigo-foreground);
+    --color-status-teal: var(--status-teal);
+    --color-status-teal-foreground: var(--status-teal-foreground);
+    --color-status-orange: var(--status-orange);
+    --color-status-orange-foreground: var(--status-orange-foreground);
+    --color-status-lime: var(--status-lime);
+    --color-status-lime-foreground: var(--status-lime-foreground);
+    --color-status-rose: var(--status-rose);
+    --color-status-rose-foreground: var(--status-rose-foreground);
+    --color-status-sky: var(--status-sky);
+    --color-status-sky-foreground: var(--status-sky-foreground);
+    --color-status-violet: var(--status-violet);
+    --color-status-violet-foreground: var(--status-violet-foreground);
 }
 
 /*
@@ -124,6 +155,37 @@
     --sidebar-border: hsl(0 0% 91%);
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
     --sidebar: hsl(0 0% 98%);
+
+    --status-gray: hsl(220 9% 46%);
+    --status-gray-foreground: hsl(220 9% 98%);
+    --status-blue: hsl(217 91% 60%);
+    --status-blue-foreground: hsl(217 91% 98%);
+    --status-green: hsl(142 71% 45%);
+    --status-green-foreground: hsl(142 71% 98%);
+    --status-red: hsl(0 84% 60%);
+    --status-red-foreground: hsl(0 84% 98%);
+    --status-amber: hsl(38 92% 50%);
+    --status-amber-foreground: hsl(38 92% 10%);
+    --status-purple: hsl(263 70% 50%);
+    --status-purple-foreground: hsl(263 70% 98%);
+    --status-pink: hsl(330 81% 60%);
+    --status-pink-foreground: hsl(330 81% 98%);
+    --status-cyan: hsl(186 72% 43%);
+    --status-cyan-foreground: hsl(186 72% 98%);
+    --status-indigo: hsl(239 84% 67%);
+    --status-indigo-foreground: hsl(239 84% 98%);
+    --status-teal: hsl(168 76% 42%);
+    --status-teal-foreground: hsl(168 76% 98%);
+    --status-orange: hsl(25 95% 53%);
+    --status-orange-foreground: hsl(25 95% 98%);
+    --status-lime: hsl(84 81% 44%);
+    --status-lime-foreground: hsl(84 81% 10%);
+    --status-rose: hsl(350 89% 60%);
+    --status-rose-foreground: hsl(350 89% 98%);
+    --status-sky: hsl(199 89% 48%);
+    --status-sky-foreground: hsl(199 89% 98%);
+    --status-violet: hsl(258 90% 66%);
+    --status-violet-foreground: hsl(258 90% 98%);
 }
 
 .dark {
@@ -160,6 +222,37 @@
     --sidebar-border: hsl(0 0% 15.9%);
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
     --sidebar: hsl(240 5.9% 10%);
+
+    --status-gray: hsl(218 11% 65%);
+    --status-gray-foreground: hsl(218 11% 10%);
+    --status-blue: hsl(217 91% 65%);
+    --status-blue-foreground: hsl(217 91% 10%);
+    --status-green: hsl(142 71% 50%);
+    --status-green-foreground: hsl(142 71% 10%);
+    --status-red: hsl(0 84% 65%);
+    --status-red-foreground: hsl(0 84% 10%);
+    --status-amber: hsl(38 92% 55%);
+    --status-amber-foreground: hsl(38 92% 10%);
+    --status-purple: hsl(263 70% 60%);
+    --status-purple-foreground: hsl(263 70% 10%);
+    --status-pink: hsl(330 81% 65%);
+    --status-pink-foreground: hsl(330 81% 10%);
+    --status-cyan: hsl(186 72% 50%);
+    --status-cyan-foreground: hsl(186 72% 10%);
+    --status-indigo: hsl(239 84% 72%);
+    --status-indigo-foreground: hsl(239 84% 10%);
+    --status-teal: hsl(168 76% 48%);
+    --status-teal-foreground: hsl(168 76% 10%);
+    --status-orange: hsl(25 95% 58%);
+    --status-orange-foreground: hsl(25 95% 10%);
+    --status-lime: hsl(84 81% 50%);
+    --status-lime-foreground: hsl(84 81% 10%);
+    --status-rose: hsl(350 89% 65%);
+    --status-rose-foreground: hsl(350 89% 10%);
+    --status-sky: hsl(199 89% 55%);
+    --status-sky-foreground: hsl(199 89% 10%);
+    --status-violet: hsl(258 90% 72%);
+    --status-violet-foreground: hsl(258 90% 10%);
 }
 
 @layer base {

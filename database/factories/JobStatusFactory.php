@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\StatusColor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,6 +22,7 @@ class JobStatusFactory extends Factory
             'user_id' => User::factory(),
             'title' => fake()->words(2, true),
             'description' => fake()->optional()->sentence(),
+            'color' => fake()->randomElement(StatusColor::values()),
         ];
     }
 }

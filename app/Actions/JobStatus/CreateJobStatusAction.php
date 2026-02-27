@@ -10,13 +10,14 @@ use App\Models\User;
 final readonly class CreateJobStatusAction
 {
     /**
-     * @param  array{title: string, description?: string|null}  $data
+     * @param  array{title: string, description?: string|null, color: string}  $data
      */
     public function execute(User $user, array $data): JobStatus
     {
         return $user->jobStatuses()->create([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
+            'color' => $data['color'],
         ]);
     }
 }

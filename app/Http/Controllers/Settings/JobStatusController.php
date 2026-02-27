@@ -42,7 +42,7 @@ final class JobStatusController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        /** @var array{title: string, description?: string|null} $data */
+        /** @var array{title: string, description?: string|null, color: string} $data */
         $data = $request->validated();
 
         $action->execute($user, $data);
@@ -60,7 +60,7 @@ final class JobStatusController extends Controller
 
         abort_if($jobStatus->user_id !== $user->id, 403);
 
-        /** @var array{title: string, description?: string|null} $data */
+        /** @var array{title: string, description?: string|null, color: string} $data */
         $data = $request->validated();
 
         $action->execute($jobStatus, $data);
