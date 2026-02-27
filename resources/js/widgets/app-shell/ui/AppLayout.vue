@@ -6,11 +6,13 @@ import AppLayout from './AppSidebarLayout.vue';
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
     auxiliaryNavItems?: NavItem[];
+    showJobCategories?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
     auxiliaryNavItems: () => [],
+    showJobCategories: false,
 });
 </script>
 
@@ -18,6 +20,7 @@ withDefaults(defineProps<Props>(), {
     <AppLayout
         :breadcrumbs="breadcrumbs"
         :auxiliary-nav-items="auxiliaryNavItems"
+        :show-job-categories="showJobCategories"
     >
         <template #header-actions>
             <slot name="header-actions" />

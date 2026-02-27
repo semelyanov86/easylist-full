@@ -79,4 +79,20 @@ class RegistrationTest extends TestCase
             );
         }
     }
+
+    public function test_registration_creates_default_job_category(): void
+    {
+        $this->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'category@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $user = User::where('email', 'category@example.com')->first();
+
+        $this->assertNotNull($user);
+        $this->assertCount(1, $user->jobCategories);
+        $this->assertSame('Общее', $user->jobCategories->first()?->title);
+    }
 }

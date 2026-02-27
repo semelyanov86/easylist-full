@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Fortify;
 
+use App\Actions\JobCategory\CreateDefaultJobCategoryAction;
 use App\Actions\JobStatus\CreateDefaultJobStatusesAction;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
@@ -35,6 +36,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         new CreateDefaultJobStatusesAction()->execute($user);
+        new CreateDefaultJobCategoryAction()->execute($user);
 
         return $user;
     }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Settings\ApiTokenController;
+use App\Http\Controllers\Settings\JobCategoryController;
 use App\Http\Controllers\Settings\JobStatusController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -40,4 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('settings/job-statuses/reorder', [JobStatusController::class, 'reorder'])->name('job-statuses.reorder');
     Route::patch('settings/job-statuses/{jobStatus}', [JobStatusController::class, 'update'])->name('job-statuses.update');
     Route::delete('settings/job-statuses/{jobStatus}', [JobStatusController::class, 'destroy'])->name('job-statuses.destroy');
+
+    Route::post('settings/job-categories', [JobCategoryController::class, 'store'])->name('job-categories.store');
+    Route::post('settings/job-categories/reorder', [JobCategoryController::class, 'reorder'])->name('job-categories.reorder');
+    Route::patch('settings/job-categories/{jobCategory}', [JobCategoryController::class, 'update'])->name('job-categories.update');
+    Route::delete('settings/job-categories/{jobCategory}', [JobCategoryController::class, 'destroy'])->name('job-categories.destroy');
 });

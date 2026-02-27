@@ -1,3 +1,5 @@
+import type { JobCategory } from '@entities/job-category';
+
 import type { Auth } from '@/types/auth';
 
 // Extend ImportMeta interface for Vite...
@@ -19,6 +21,7 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            jobCategories: JobCategory[];
             [key: string]: unknown;
         };
     }

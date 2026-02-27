@@ -10,7 +10,7 @@ const { open } = useSidebar();
         <img
             src="/images/easylist-logo.svg"
             alt="Easylist"
-            class="h-8 w-auto"
+            class="h-12 w-auto"
         />
     </template>
     <template v-else>

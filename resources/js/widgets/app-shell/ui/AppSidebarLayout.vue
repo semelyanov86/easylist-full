@@ -9,17 +9,22 @@ import AppSidebarHeader from './AppSidebarHeader.vue';
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
     auxiliaryNavItems?: NavItem[];
+    showJobCategories?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
     auxiliaryNavItems: () => [],
+    showJobCategories: false,
 });
 </script>
 
 <template>
     <AppShell variant="sidebar">
-        <AppSidebar :auxiliary-nav-items="auxiliaryNavItems" />
+        <AppSidebar
+            :auxiliary-nav-items="auxiliaryNavItems"
+            :show-job-categories="showJobCategories"
+        />
         <AppContent variant="sidebar" class="overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs">
                 <template #header-actions>
