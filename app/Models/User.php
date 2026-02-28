@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\JobsViewMode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -26,6 +27,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
     use WebAuthnAuthentication;
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'jobs_view_mode' => 'table',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -34,6 +42,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         'name',
         'email',
         'password',
+        'jobs_view_mode',
     ];
 
     /**
@@ -84,6 +93,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'jobs_view_mode' => JobsViewMode::class,
         ];
     }
 }

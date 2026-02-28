@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { JobFilters } from '@entities/job';
+import type { JobFilters, JobsViewMode } from '@entities/job';
 
 import JobDateFilter from './JobDateFilter.vue';
 import JobSearchInput from './JobSearchInput.vue';
@@ -7,9 +7,15 @@ import JobViewToggle from './JobViewToggle.vue';
 
 type Props = {
     filters: JobFilters;
+    viewMode: JobsViewMode;
+};
+
+type Emits = {
+    'update:viewMode': [value: JobsViewMode];
 };
 
 defineProps<Props>();
+defineEmits<Emits>();
 </script>
 
 <template>
@@ -25,7 +31,10 @@ defineProps<Props>();
                 :date-to="filters.date_to"
             />
             <div class="hidden h-5 w-px bg-border md:block" role="separator" />
-            <JobViewToggle />
+            <JobViewToggle
+                :model-value="viewMode"
+                @update:model-value="$emit('update:viewMode', $event)"
+            />
         </div>
     </div>
 </template>

@@ -43,3 +43,12 @@ export type PaginatedJobs = {
     per_page: number;
     total: number;
 };
+
+export type JobsViewMode = 'table' | 'kanban';
+
+export type KanbanColumn = {
+    statusId: number;
+    title: string;
+    color: string;
+    jobs: Job[];
+};

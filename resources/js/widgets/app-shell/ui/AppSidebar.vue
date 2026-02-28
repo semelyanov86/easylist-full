@@ -52,6 +52,13 @@ const jobCategories = computed<JobCategory[]>(
     () => (page.props.jobCategories as JobCategory[]) ?? [],
 );
 
+const activeCategoryId = computed<number | null>(() => {
+    const url = new URL(page.url, window.location.origin);
+    const param = url.searchParams.get('job_category_id');
+
+    return param !== null ? Number(param) : null;
+});
+
 const localCategories = ref<JobCategory[]>([]);
 const categoryListRef = ref<HTMLElement | null>(null);
 let sortableInstance: Sortable | null = null;
@@ -156,7 +163,11 @@ const mainNavItems: NavItem[] = [
                         :key="category.id"
                         class="group/category"
                     >
-                        <SidebarMenuButton as-child :tooltip="category.title">
+                        <SidebarMenuButton
+                            as-child
+                            :is-active="activeCategoryId === category.id"
+                            :tooltip="category.title"
+                        >
                             <Link
                                 :href="
                                     jobsIndex({

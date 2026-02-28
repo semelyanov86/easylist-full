@@ -263,3 +263,41 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Kanban drag-and-drop */
+.kanban-ghost {
+    @apply rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 opacity-60;
+}
+.kanban-ghost > * {
+    @apply invisible;
+}
+.kanban-drag {
+    @apply rotate-2 shadow-xl;
+}
+.kanban-chosen {
+    @apply shadow-lg ring-2 ring-primary/20;
+}
+
+/* Kanban скроллбар */
+.kanban-board::-webkit-scrollbar {
+    height: 6px;
+}
+.kanban-board::-webkit-scrollbar-track {
+    @apply rounded-full bg-transparent;
+}
+.kanban-board::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+}
+.kanban-board::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+}
+
+.kanban-list::-webkit-scrollbar {
+    width: 4px;
+}
+.kanban-list::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+.kanban-list::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+}

@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import type { JobFilters, PaginatedJobs, StatusTab } from '@entities/job';
+import type {
+    JobFilters,
+    JobsViewMode,
+    KanbanColumn,
+    PaginatedJobs,
+    StatusTab,
+} from '@entities/job';
 import { JobFiltersBar, JobStatusTabs } from '@features/job-filters';
 import { Head } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@shared/types';
@@ -11,8 +17,10 @@ import {
     TooltipTrigger,
 } from '@shared/ui/tooltip';
 import { AppLayout } from '@widgets/app-shell';
+import { KanbanBoard } from '@widgets/jobs-kanban';
 import { JobsList, JobsPagination } from '@widgets/jobs-list';
 import { Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 import { index as jobsIndex } from '@/routes/jobs';
 
@@ -20,9 +28,13 @@ type Props = {
     jobs: PaginatedJobs;
     filters: JobFilters;
     statusTabs: StatusTab[];
+    viewMode: JobsViewMode;
+    kanbanColumns: KanbanColumn[];
 };
 
 const props = defineProps<Props>();
+
+const currentViewMode = ref<JobsViewMode>(props.viewMode);
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -65,7 +77,7 @@ const totalJobsLabel = (): string => {
                         {{ totalJobsLabel() }} в отслеживании
                     </p>
                 </div>
-                <TooltipProvider>
+                <TooltipProvider v-if="currentViewMode === 'table'">
                     <Tooltip>
                         <TooltipTrigger as-child>
                             <Button disabled>
@@ -83,11 +95,21 @@ const totalJobsLabel = (): string => {
                 :active-status-id="filters.status_id"
             />
 
-            <JobFiltersBar :filters="filters" />
+            <JobFiltersBar
+                :filters="filters"
+                :view-mode="currentViewMode"
+                @update:view-mode="currentViewMode = $event"
+            />
 
-            <JobsList :jobs="jobs.data" />
+            <template v-if="currentViewMode === 'table'">
+                <JobsList :jobs="jobs.data" />
+                <JobsPagination
+                    :links="jobs.links"
+                    :last-page="jobs.last_page"
+                />
+            </template>
 
-            <JobsPagination :links="jobs.links" :last-page="jobs.last_page" />
+            <KanbanBoard v-else :columns="kanbanColumns" />
         </div>
     </AppLayout>
 </template>

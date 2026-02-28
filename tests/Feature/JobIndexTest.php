@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\JobsViewMode;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobStatus;
@@ -213,6 +214,97 @@ class JobIndexTest extends TestCase
         $response->assertOk();
         $response->assertInertia(
             fn (AssertableInertia $page) => $page->has('jobs.data', 1)
+        );
+    }
+
+    public function test_view_mode_returned_from_user_profile(): void
+    {
+        $user = User::factory()->create();
+        $user->update(['jobs_view_mode' => JobsViewMode::Kanban]);
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Index')
+                ->where('viewMode', 'kanban')
+        );
+    }
+
+    public function test_default_view_mode_is_table(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Index')
+                ->where('viewMode', 'table')
+        );
+    }
+
+    public function test_kanban_columns_contain_correct_data(): void
+    {
+        $user = User::factory()->create();
+        $statusA = JobStatus::factory()->for($user)->create(['title' => 'Отклик']);
+        $statusB = JobStatus::factory()->for($user)->create(['title' => 'Интервью']);
+        $category = JobCategory::factory()->for($user)->create();
+
+        Job::factory()->for($user)->create([
+            'title' => 'PHP Developer',
+            'job_status_id' => $statusA->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        Job::factory()->for($user)->create([
+            'title' => 'Go Developer',
+            'job_status_id' => $statusB->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Index')
+                ->has('kanbanColumns', 2)
+                ->where('kanbanColumns.0.title', 'Отклик')
+                ->has('kanbanColumns.0.jobs', 1)
+                ->where('kanbanColumns.1.title', 'Интервью')
+                ->has('kanbanColumns.1.jobs', 1)
+        );
+    }
+
+    public function test_kanban_columns_respect_search_filter(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create(['title' => 'Отклик']);
+        $category = JobCategory::factory()->for($user)->create();
+
+        Job::factory()->for($user)->create([
+            'title' => 'PHP Developer',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        Job::factory()->for($user)->create([
+            'title' => 'Java Developer',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.index', ['search' => 'PHP']));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->has('kanbanColumns', 1)
+                ->has('kanbanColumns.0.jobs', 1)
+                ->where('kanbanColumns.0.jobs.0.title', 'PHP Developer')
         );
     }
 }

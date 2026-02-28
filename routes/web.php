@@ -15,6 +15,7 @@ Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['aut
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::patch('jobs/{job}/move', [JobController::class, 'move'])->name('jobs.move');
 });
 
 require __DIR__ . '/settings.php';

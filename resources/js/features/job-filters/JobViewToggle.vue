@@ -1,17 +1,37 @@
 <script setup lang="ts">
+import type { JobsViewMode } from '@entities/job';
+import { router } from '@inertiajs/vue3';
 import { Button } from '@shared/ui/button';
 import { LayoutGrid, List } from 'lucide-vue-next';
-import { ref } from 'vue';
 
-type ViewMode = 'list' | 'kanban';
+import { update } from '@/routes/preferences/jobs-view-mode';
 
-const currentView = ref<ViewMode>(
-    (localStorage.getItem('job-view-mode') as ViewMode) ?? 'list',
-);
+type Props = {
+    modelValue: JobsViewMode;
+};
 
-const setView = (mode: ViewMode): void => {
-    currentView.value = mode;
-    localStorage.setItem('job-view-mode', mode);
+type Emits = {
+    'update:modelValue': [value: JobsViewMode];
+};
+
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
+
+const setView = (mode: JobsViewMode): void => {
+    if (mode === props.modelValue) {
+        return;
+    }
+
+    emit('update:modelValue', mode);
+
+    router.put(
+        update().url,
+        { view_mode: mode },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 };
 </script>
 
@@ -21,11 +41,11 @@ const setView = (mode: ViewMode): void => {
             variant="ghost"
             size="icon-sm"
             :class="
-                currentView === 'list'
+                modelValue === 'table'
                     ? 'bg-accent text-accent-foreground'
                     : 'text-muted-foreground'
             "
-            @click="setView('list')"
+            @click="setView('table')"
         >
             <List class="size-4" />
         </Button>
@@ -33,11 +53,10 @@ const setView = (mode: ViewMode): void => {
             variant="ghost"
             size="icon-sm"
             :class="
-                currentView === 'kanban'
+                modelValue === 'kanban'
                     ? 'bg-accent text-accent-foreground'
                     : 'text-muted-foreground'
             "
-            disabled
             @click="setView('kanban')"
         >
             <LayoutGrid class="size-4" />
