@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
 import { Button } from '@shared/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@shared/ui/tooltip';
 import { Briefcase, Plus } from 'lucide-vue-next';
 
 import JobCard from './JobCard.vue';
@@ -16,6 +10,10 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const emit = defineEmits<{
+    create: [];
+}>();
 </script>
 
 <template>
@@ -37,16 +35,9 @@ defineProps<Props>();
                 Добавьте первую вакансию, чтобы начать отслеживание
             </p>
         </div>
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger as-child>
-                    <Button variant="outline" size="sm" disabled>
-                        <Plus class="size-4" />
-                        <span>Создать вакансию</span>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>Скоро</TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <Button variant="outline" size="sm" @click="emit('create')">
+            <Plus class="size-4" />
+            <span>Создать вакансию</span>
+        </Button>
     </div>
 </template>

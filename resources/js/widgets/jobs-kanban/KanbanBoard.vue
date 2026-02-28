@@ -14,6 +14,10 @@ type Props = {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+    create: [statusId: number];
+}>();
+
 const localColumns = ref<KanbanColumn[]>(
     props.columns.map((col) => ({ ...col, jobs: [...col.jobs] })),
 );
@@ -168,6 +172,7 @@ const totalJobs = (): number => {
                 :key="column.statusId"
                 :column="column"
                 class="snap-start"
+                @create="emit('create', $event)"
             />
         </div>
     </div>

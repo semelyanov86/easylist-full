@@ -6,16 +6,12 @@ import type {
     PaginatedJobs,
     StatusTab,
 } from '@entities/job';
+import type { JobCategory } from '@entities/job-category';
+import { CreateJobDialog } from '@features/job/create';
 import { JobFiltersBar, JobStatusTabs } from '@features/job-filters';
 import { Head } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@shared/types';
 import { Button } from '@shared/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@shared/ui/tooltip';
 import { AppLayout } from '@widgets/app-shell';
 import { KanbanBoard } from '@widgets/jobs-kanban';
 import { JobsList, JobsPagination } from '@widgets/jobs-list';
@@ -28,6 +24,7 @@ type Props = {
     jobs: PaginatedJobs;
     filters: JobFilters;
     statusTabs: StatusTab[];
+    categories: JobCategory[];
     viewMode: JobsViewMode;
     kanbanColumns: KanbanColumn[];
 };
@@ -35,6 +32,20 @@ type Props = {
 const props = defineProps<Props>();
 
 const currentViewMode = ref<JobsViewMode>(props.viewMode);
+
+const showCreateDialog = ref(false);
+const defaultStatusId = ref<number | null>(null);
+const defaultCategoryId = ref<number | null>(null);
+
+const openCreateDialog = (
+    statusId?: number | null,
+    categoryId?: number | null,
+): void => {
+    defaultStatusId.value = statusId ?? null;
+    defaultCategoryId.value =
+        categoryId ?? props.filters.job_category_id ?? null;
+    showCreateDialog.value = true;
+};
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -77,17 +88,10 @@ const totalJobsLabel = (): string => {
                         {{ totalJobsLabel() }} в отслеживании
                     </p>
                 </div>
-                <TooltipProvider v-if="currentViewMode === 'table'">
-                    <Tooltip>
-                        <TooltipTrigger as-child>
-                            <Button disabled>
-                                <Plus class="size-4" />
-                                <span>Создать</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Скоро</TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                <Button @click="openCreateDialog()">
+                    <Plus class="size-4" />
+                    <span>Создать</span>
+                </Button>
             </div>
 
             <JobStatusTabs
@@ -102,14 +106,27 @@ const totalJobsLabel = (): string => {
             />
 
             <template v-if="currentViewMode === 'table'">
-                <JobsList :jobs="jobs.data" />
+                <JobsList :jobs="jobs.data" @create="openCreateDialog()" />
                 <JobsPagination
                     :links="jobs.links"
                     :last-page="jobs.last_page"
                 />
             </template>
 
-            <KanbanBoard v-else :columns="kanbanColumns" />
+            <KanbanBoard
+                v-else
+                :columns="kanbanColumns"
+                @create="openCreateDialog($event)"
+            />
         </div>
+
+        <CreateJobDialog
+            :open="showCreateDialog"
+            :statuses="statusTabs"
+            :categories="categories"
+            :default-status-id="defaultStatusId"
+            :default-category-id="defaultCategoryId"
+            @close="showCreateDialog = false"
+        />
     </AppLayout>
 </template>

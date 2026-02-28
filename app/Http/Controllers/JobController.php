@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Job\CreateJobAction;
 use App\Actions\Job\GetJobStatusTabsAction;
 use App\Actions\Job\GetKanbanColumnsAction;
 use App\Actions\Job\GetUserJobsQuery;
@@ -11,6 +12,7 @@ use App\Actions\Job\MoveJobToStatusAction;
 use App\Actions\JobCategory\GetUserJobCategoriesAction;
 use App\Data\JobIndexFiltersData;
 use App\Http\Requests\MoveJobRequest;
+use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,6 +54,22 @@ final class JobController extends Controller
             'viewMode' => $viewMode->value,
             'kanbanColumns' => fn () => $getKanbanColumns->execute($user, $filters),
         ]);
+    }
+
+    /**
+     * Создать новую вакансию.
+     */
+    public function store(StoreJobRequest $request, CreateJobAction $action): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null} $data */
+        $data = $request->validated();
+
+        $action->execute($user, $data);
+
+        return back();
     }
 
     /**

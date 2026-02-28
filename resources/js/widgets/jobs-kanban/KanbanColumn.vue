@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { KanbanColumn } from '@entities/job';
-import { Briefcase } from 'lucide-vue-next';
+import { Briefcase, Plus } from 'lucide-vue-next';
 
 import KanbanCard from './KanbanCard.vue';
 
@@ -9,6 +9,10 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const emit = defineEmits<{
+    create: [statusId: number];
+}>();
 </script>
 
 <template>
@@ -39,6 +43,13 @@ defineProps<Props>();
             >
                 {{ column.jobs.length }}
             </span>
+            <button
+                type="button"
+                class="inline-flex size-5 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                @click="emit('create', column.statusId)"
+            >
+                <Plus class="size-3.5" />
+            </button>
         </div>
 
         <!-- Разделитель -->
