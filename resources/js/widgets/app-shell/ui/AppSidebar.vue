@@ -21,7 +21,6 @@ import {
     Briefcase,
     GripVertical,
     LayoutGrid,
-    List,
     Pencil,
     Plus,
     Trash2,
@@ -31,6 +30,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 import { reorder } from '@/actions/App/Http/Controllers/Settings/JobCategoryController';
 import { dashboard } from '@/routes';
+import { index as jobsIndex } from '@/routes/jobs';
 
 import AppLogo from './AppLogo.vue';
 import NavMain from './NavMain.vue';
@@ -121,13 +121,8 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Job Tracker',
-        href: '#',
+        href: jobsIndex(),
         icon: Briefcase,
-    },
-    {
-        title: 'Список',
-        href: '#',
-        icon: List,
     },
 ];
 </script>
@@ -162,13 +157,22 @@ const mainNavItems: NavItem[] = [
                         class="group/category"
                     >
                         <SidebarMenuButton as-child :tooltip="category.title">
-                            <a href="#" class="flex items-center gap-2">
+                            <Link
+                                :href="
+                                    jobsIndex({
+                                        query: {
+                                            job_category_id: category.id,
+                                        },
+                                    })
+                                "
+                                class="flex items-center gap-2"
+                            >
                                 <GripVertical
                                     data-category-handle
                                     class="size-4 shrink-0 cursor-grab text-muted-foreground opacity-0 transition-opacity group-hover/category:opacity-100"
                                 />
                                 <span>{{ category.title }}</span>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                         <div
                             class="absolute top-1 right-1 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/category:opacity-100 group-data-[collapsible=icon]:hidden"
