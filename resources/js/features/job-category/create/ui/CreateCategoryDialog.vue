@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CURRENCIES } from '@entities/job-category';
 import { Form } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
@@ -62,6 +63,24 @@ const emit = defineEmits<{
                             required
                         />
                         <InputError :message="errors.title" />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="create-category-currency">Валюта</Label>
+                        <select
+                            id="create-category-currency"
+                            name="currency"
+                            class="w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
+                        >
+                            <option
+                                v-for="c in CURRENCIES"
+                                :key="c.value"
+                                :value="c.value"
+                                :selected="c.value === 'rub'"
+                            >
+                                {{ c.label }}
+                            </option>
+                        </select>
+                        <InputError :message="errors.currency" />
                     </div>
                     <div class="grid gap-2">
                         <Label for="create-category-description"

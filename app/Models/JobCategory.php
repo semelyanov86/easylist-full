@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Currency;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,7 @@ class JobCategory extends Model implements Sortable
         'user_id',
         'title',
         'description',
+        'currency',
         'order_column',
     ];
 
@@ -56,5 +58,31 @@ class JobCategory extends Model implements Sortable
     public function jobs(): HasMany
     {
         return $this->hasMany(Job::class);
+    }
+
+    /**
+     * Символ валюты для передачи на фронтенд.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, never>
+     */
+    protected function currencySymbol(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function (): string {
+            /** @var Currency $currency */
+            $currency = $this->currency ?? Currency::Rub;
+
+            return $currency->symbol();
+        });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'currency' => Currency::class,
+        ];
     }
 }

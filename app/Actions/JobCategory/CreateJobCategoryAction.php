@@ -10,13 +10,14 @@ use App\Models\User;
 final readonly class CreateJobCategoryAction
 {
     /**
-     * @param  array{title: string, description?: string|null}  $data
+     * @param  array{title: string, description?: string|null, currency?: string}  $data
      */
     public function execute(User $user, array $data): JobCategory
     {
         return $user->jobCategories()->create([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
+            'currency' => $data['currency'] ?? 'rub',
         ]);
     }
 }

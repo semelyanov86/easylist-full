@@ -23,6 +23,7 @@ class JobCategoryTest extends TestCase
             ->post(route('job-categories.store'), [
                 'title' => 'Новая категория',
                 'description' => 'Описание',
+                'currency' => 'rub',
             ]);
 
         $response->assertSessionHasNoErrors();
@@ -49,6 +50,7 @@ class JobCategoryTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('job-categories.store'), [
             'title' => '',
+            'currency' => 'rub',
         ]);
 
         $response->assertSessionHasErrors('title');
@@ -61,6 +63,7 @@ class JobCategoryTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('job-categories.store'), [
             'title' => 'Дубликат',
+            'currency' => 'rub',
         ]);
 
         $response->assertSessionHasErrors('title');
@@ -76,6 +79,7 @@ class JobCategoryTest extends TestCase
             ->from(route('dashboard'))
             ->post(route('job-categories.store'), [
                 'title' => 'Общая',
+                'currency' => 'rub',
             ]);
 
         $response->assertSessionHasNoErrors();
@@ -88,6 +92,7 @@ class JobCategoryTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('job-categories.store'), [
             'title' => str_repeat('а', 256),
+            'currency' => 'rub',
         ]);
 
         $response->assertSessionHasErrors('title');
@@ -101,6 +106,7 @@ class JobCategoryTest extends TestCase
         $response = $this->actingAs($user)->patch(route('job-categories.update', $category), [
             'title' => 'Новое',
             'description' => 'Обновлённое описание',
+            'currency' => 'rub',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -119,6 +125,7 @@ class JobCategoryTest extends TestCase
 
         $response = $this->actingAs($user)->patch(route('job-categories.update', $category), [
             'title' => 'Взлом',
+            'currency' => 'rub',
         ]);
 
         $response->assertForbidden();
@@ -229,5 +236,77 @@ class JobCategoryTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
+    }
+
+    public function test_user_can_create_category_with_currency(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->from(route('dashboard'))
+            ->post(route('job-categories.store'), [
+                'title' => 'Зарубежные вакансии',
+                'description' => null,
+                'currency' => 'usd',
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('dashboard'));
+        $this->assertDatabaseHas('job_categories', [
+            'user_id' => $user->id,
+            'title' => 'Зарубежные вакансии',
+            'currency' => 'usd',
+        ]);
+    }
+
+    public function test_invalid_currency_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('job-categories.store'), [
+            'title' => 'Тест',
+            'currency' => 'btc',
+        ]);
+
+        $response->assertSessionHasErrors('currency');
+    }
+
+    public function test_user_can_update_category_currency(): void
+    {
+        $user = User::factory()->create();
+        $category = JobCategory::factory()->for($user)->create([
+            'title' => 'Категория',
+            'currency' => 'rub',
+        ]);
+
+        $response = $this->actingAs($user)->patch(route('job-categories.update', $category), [
+            'title' => 'Категория',
+            'currency' => 'eur',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('job_categories', [
+            'id' => $category->id,
+            'currency' => 'eur',
+        ]);
+    }
+
+    public function test_currency_shared_via_inertia(): void
+    {
+        $user = User::factory()->create();
+        JobCategory::factory()->for($user)->create([
+            'title' => 'USD категория',
+            'currency' => 'usd',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->has('jobCategories', 1)
+                ->where('jobCategories.0.currency', 'usd')
+                ->where('jobCategories.0.currency_symbol', '$')
+        );
     }
 }

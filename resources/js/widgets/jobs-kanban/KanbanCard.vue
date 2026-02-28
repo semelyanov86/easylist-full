@@ -1,7 +1,21 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
 import { Badge } from '@shared/ui/badge';
-import { Building2, Calendar, MapPin } from 'lucide-vue-next';
+import { Button } from '@shared/ui/button';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@shared/ui/tooltip';
+import {
+    Building2,
+    Calendar,
+    Heart,
+    MapPin,
+    Share2,
+    Trash2,
+} from 'lucide-vue-next';
 
 type Props = {
     job: Job;
@@ -9,8 +23,8 @@ type Props = {
 
 defineProps<Props>();
 
-const formatSalary = (salary: number): string => {
-    return new Intl.NumberFormat('ru-RU').format(salary) + ' \u20BD';
+const formatSalary = (salary: number, currencySymbol: string): string => {
+    return new Intl.NumberFormat('ru-RU').format(salary) + ' ' + currencySymbol;
 };
 
 const formatDate = (dateString: string): string => {
@@ -30,6 +44,53 @@ const formatDate = (dateString: string): string => {
             <h4 class="text-sm leading-snug font-medium text-foreground">
                 {{ job.title }}
             </h4>
+
+            <div
+                class="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover/card:opacity-100"
+            >
+                <TooltipProvider :delay-duration="300">
+                    <Tooltip>
+                        <TooltipTrigger as-child>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                class="size-6 text-muted-foreground hover:text-foreground"
+                            >
+                                <Heart class="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                            Добавить в избранное
+                        </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger as-child>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                class="size-6 text-muted-foreground hover:text-foreground"
+                            >
+                                <Share2 class="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top"> Поделиться </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger as-child>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                class="size-6 text-muted-foreground hover:text-destructive"
+                            >
+                                <Trash2 class="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top"> Удалить </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            </div>
         </div>
 
         <div class="flex flex-col gap-1.5 text-xs text-muted-foreground">
@@ -58,7 +119,12 @@ const formatDate = (dateString: string): string => {
                     v-if="job.salary"
                     class="shrink-0 text-xs font-semibold text-foreground"
                 >
-                    {{ formatSalary(job.salary) }}
+                    {{
+                        formatSalary(
+                            job.salary,
+                            job.category?.currency_symbol ?? '₽',
+                        )
+                    }}
                 </span>
             </div>
         </div>

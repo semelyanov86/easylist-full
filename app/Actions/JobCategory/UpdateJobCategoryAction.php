@@ -9,13 +9,14 @@ use App\Models\JobCategory;
 final readonly class UpdateJobCategoryAction
 {
     /**
-     * @param  array{title: string, description?: string|null}  $data
+     * @param  array{title: string, description?: string|null, currency?: string}  $data
      */
     public function execute(JobCategory $jobCategory, array $data): void
     {
         $jobCategory->update([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
+            'currency' => $data['currency'] ?? 'rub',
         ]);
     }
 }

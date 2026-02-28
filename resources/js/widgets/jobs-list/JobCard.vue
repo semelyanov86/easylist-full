@@ -25,8 +25,8 @@ type Props = {
 
 defineProps<Props>();
 
-const formatSalary = (salary: number): string => {
-    return new Intl.NumberFormat('ru-RU').format(salary) + ' ₽';
+const formatSalary = (salary: number, currencySymbol: string): string => {
+    return new Intl.NumberFormat('ru-RU').format(salary) + ' ' + currencySymbol;
 };
 
 const formatDate = (dateString: string): string => {
@@ -77,7 +77,12 @@ const formatDate = (dateString: string): string => {
                         {{ job.location_city }}
                     </span>
                     <span v-if="job.salary" class="font-medium text-foreground">
-                        {{ formatSalary(job.salary) }}
+                        {{
+                            formatSalary(
+                                job.salary,
+                                job.category?.currency_symbol ?? '₽',
+                            )
+                        }}
                     </span>
                     <span class="inline-flex items-center gap-1">
                         <Calendar class="size-3 shrink-0" />
