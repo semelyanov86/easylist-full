@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,6 +21,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::patch('jobs/{job}/move', [JobController::class, 'move'])->name('jobs.move');
     Route::patch('jobs/{job}/favorite', [JobController::class, 'toggleFavorite'])->name('jobs.toggle-favorite');
     Route::delete('jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+
+    Route::post('jobs/{job}/comments', [JobCommentController::class, 'store'])->name('job-comments.store');
+    Route::patch('job-comments/{comment}', [JobCommentController::class, 'update'])->name('job-comments.update');
+    Route::delete('job-comments/{comment}', [JobCommentController::class, 'destroy'])->name('job-comments.destroy');
 });
 
 require __DIR__ . '/settings.php';
