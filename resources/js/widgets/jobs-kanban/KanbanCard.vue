@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import {
@@ -18,7 +18,7 @@ import {
     Trash2,
 } from 'lucide-vue-next';
 
-import { toggleFavorite } from '@/routes/jobs';
+import { show, toggleFavorite } from '@/routes/jobs';
 
 type Props = {
     job: Job;
@@ -59,9 +59,13 @@ const formatDate = (dateString: string): string => {
         :data-job-id="job.id"
     >
         <div class="mb-2 flex items-start justify-between gap-2">
-            <h4 class="text-sm leading-snug font-medium text-foreground">
+            <Link
+                :href="show(job.id).url"
+                class="text-sm leading-snug font-medium text-foreground hover:underline"
+                @click.stop
+            >
                 {{ job.title }}
-            </h4>
+            </Link>
 
             <div
                 class="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover/card:opacity-100"

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Job\CreateJobAction;
 use App\Actions\Job\DeleteJobAction;
+use App\Actions\Job\GetJobShowDataAction;
 use App\Actions\Job\UpdateJobAction;
 use App\Actions\Job\GetJobStatusTabsAction;
 use App\Actions\Job\GetKanbanColumnsAction;
@@ -61,6 +62,29 @@ final class JobController extends Controller
             'skills' => SkillData::collect($user->skills()->orderBy('title')->get()),
             'viewMode' => $viewMode->value,
             'kanbanColumns' => fn () => $getKanbanColumns->execute($user, $filters),
+        ]);
+    }
+
+    /**
+     * Показать детальную страницу вакансии.
+     */
+    public function show(
+        Request $request,
+        Job $job,
+        GetJobShowDataAction $getJobData,
+        GetJobStatusTabsAction $getStatusTabs,
+        GetUserJobCategoriesAction $getCategories,
+    ): Response {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        abort_if($job->user_id !== $user->id, 403);
+
+        return Inertia::render('jobs/Show', [
+            'job' => $getJobData->execute($job),
+            'statusTabs' => $getStatusTabs->execute($user),
+            'categories' => $getCategories->execute($user),
+            'skills' => SkillData::collect($user->skills()->orderBy('title')->get()),
         ]);
     }
 

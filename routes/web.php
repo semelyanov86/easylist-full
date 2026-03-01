@@ -17,6 +17,7 @@ Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['aut
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::get('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
     Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
     Route::patch('jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::patch('jobs/{job}/move', [JobController::class, 'move'])->name('jobs.move');

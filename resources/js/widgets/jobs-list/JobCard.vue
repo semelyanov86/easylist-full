@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import {
@@ -20,7 +20,7 @@ import {
     Trash2,
 } from 'lucide-vue-next';
 
-import { toggleFavorite } from '@/routes/jobs';
+import { show, toggleFavorite } from '@/routes/jobs';
 
 type Props = {
     job: Job;
@@ -67,9 +67,12 @@ const formatDate = (dateString: string): string => {
         <div class="flex items-center gap-3 px-4 py-3">
             <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
-                    <h3 class="truncate text-sm font-medium text-foreground">
+                    <Link
+                        :href="show(job.id).url"
+                        class="truncate text-sm font-medium text-foreground hover:underline"
+                    >
                         {{ job.title }}
-                    </h3>
+                    </Link>
                     <Badge
                         class="shrink-0 border-transparent text-xs"
                         :style="{

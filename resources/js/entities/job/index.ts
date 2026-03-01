@@ -1,4 +1,5 @@
 import type { JobCategory } from '@entities/job-category';
+import type { JobComment } from '@entities/job-comment';
 import type { JobStatus } from '@entities/job-status';
 import type { Skill } from '@entities/skill';
 
@@ -49,6 +50,10 @@ export type PaginatedJobs = {
     last_page: number;
     per_page: number;
     total: number;
+};
+
+export type JobDetail = Job & {
+    comments: JobComment[];
 };
 
 export type JobsViewMode = 'table' | 'kanban';
