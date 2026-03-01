@@ -3,10 +3,10 @@ import { Lock } from 'lucide-vue-next';
 
 const tabs = [
     { title: 'Общий обзор', active: true },
-    { title: 'Резюме', active: false },
-    { title: 'Контакты', active: false },
-    { title: 'Собеседования', active: false },
     { title: 'Документы', active: false },
+    { title: 'Компания', active: false },
+    { title: 'Контакты', active: false },
+    { title: 'Задачи', active: false },
 ];
 </script>
 
