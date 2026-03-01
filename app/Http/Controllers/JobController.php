@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Job\CreateJobAction;
+use App\Actions\Job\DeleteJobAction;
 use App\Actions\Job\GetJobStatusTabsAction;
 use App\Actions\Job\GetKanbanColumnsAction;
 use App\Actions\Job\GetUserJobsQuery;
 use App\Actions\Job\MoveJobToStatusAction;
+use App\Actions\Job\ToggleFavoriteAction;
 use App\Actions\JobCategory\GetUserJobCategoriesAction;
 use App\Data\JobIndexFiltersData;
 use App\Http\Requests\MoveJobRequest;
@@ -40,6 +42,7 @@ final class JobController extends Controller
             'date_from' => $request->query('date_from'),
             'date_to' => $request->query('date_to'),
             'job_category_id' => $request->query('job_category_id') !== null ? (int) $request->query('job_category_id') : null,
+            'is_favorite' => $request->query('is_favorite') !== null ? (bool) $request->query('is_favorite') : null,
             'sort' => $request->query('sort'),
         ]);
 
@@ -86,6 +89,36 @@ final class JobController extends Controller
         $statusId = $request->validated('status_id');
 
         $action->execute($user, $job, $statusId);
+
+        return back();
+    }
+
+    /**
+     * Переключить статус избранного для вакансии.
+     */
+    public function toggleFavorite(Request $request, Job $job, ToggleFavoriteAction $action): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        abort_if($job->user_id !== $user->id, 403);
+
+        $action->execute($job);
+
+        return back();
+    }
+
+    /**
+     * Удалить вакансию (soft delete).
+     */
+    public function destroy(Request $request, Job $job, DeleteJobAction $action): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        abort_if($job->user_id !== $user->id, 403);
+
+        $action->execute($job);
 
         return back();
     }

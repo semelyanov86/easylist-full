@@ -36,6 +36,10 @@ final readonly class GetUserJobsQuery
             $query->where('job_category_id', $filters->job_category_id);
         }
 
+        if ($filters->is_favorite !== null) {
+            $query->where('is_favorite', $filters->is_favorite);
+        }
+
         if ($filters->date_from !== null && $filters->date_from !== '') {
             $query->whereDate('created_at', '>=', $filters->date_from);
         }

@@ -22,6 +22,7 @@ declare module '@inertiajs/core' {
             auth: Auth;
             sidebarOpen: boolean;
             jobCategories: JobCategory[];
+            favoritesCount: number;
             [key: string]: unknown;
         };
     }

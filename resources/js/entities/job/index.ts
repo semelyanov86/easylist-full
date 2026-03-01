@@ -19,6 +19,7 @@ export type JobFilters = {
     date_from: string | null;
     date_to: string | null;
     job_category_id: number | null;
+    is_favorite: boolean | null;
     sort: string | null;
 };
 

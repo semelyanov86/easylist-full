@@ -279,6 +279,59 @@ class JobIndexTest extends TestCase
         );
     }
 
+    public function test_favorite_filter_shows_only_favorites(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+
+        Job::factory()->for($user)->favorite()->create([
+            'title' => 'Избранная',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        Job::factory()->for($user)->create([
+            'title' => 'Обычная',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.index', ['is_favorite' => 1]));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->has('jobs.data', 1)
+                ->where('jobs.data.0.title', 'Избранная')
+        );
+    }
+
+    public function test_favorites_count_shared_correctly(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+
+        Job::factory()->for($user)->favorite()->count(3)->create([
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        Job::factory()->for($user)->count(2)->create([
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->where('favoritesCount', 3)
+        );
+    }
+
     public function test_kanban_columns_respect_search_filter(): void
     {
         $user = User::factory()->create();

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
+import { router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import {
@@ -19,11 +20,24 @@ import {
     Trash2,
 } from 'lucide-vue-next';
 
+import { toggleFavorite } from '@/routes/jobs';
+
 type Props = {
     job: Job;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const emit = defineEmits<{
+    delete: [job: Job];
+}>();
+
+const handleToggleFavorite = (): void => {
+    router.patch(toggleFavorite(props.job.id).url, {}, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
 
 const formatSalary = (salary: number, currencySymbol: string): string => {
     return new Intl.NumberFormat('ru-RU').format(salary) + ' ' + currencySymbol;
@@ -97,11 +111,21 @@ const formatDate = (dateString: string): string => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger as-child>
-                            <Button variant="ghost" size="icon-sm" disabled>
-                                <Heart class="size-3.5" />
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                :class="job.is_favorite ? 'text-red-500 hover:text-red-600' : ''"
+                                @click="handleToggleFavorite"
+                            >
+                                <Heart
+                                    class="size-3.5"
+                                    :fill="job.is_favorite ? 'currentColor' : 'none'"
+                                />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Скоро</TooltipContent>
+                        <TooltipContent>
+                            {{ job.is_favorite ? 'Убрать из избранного' : 'В избранное' }}
+                        </TooltipContent>
                     </Tooltip>
 
                     <Tooltip>
@@ -124,11 +148,15 @@ const formatDate = (dateString: string): string => {
 
                     <Tooltip>
                         <TooltipTrigger as-child>
-                            <Button variant="ghost" size="icon-sm" disabled>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                @click="emit('delete', job)"
+                            >
                                 <Trash2 class="size-3.5" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Скоро</TooltipContent>
+                        <TooltipContent>Удалить</TooltipContent>
                     </Tooltip>
 
                     <Tooltip>

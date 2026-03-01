@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {
+    Job,
     JobFilters,
     JobsViewMode,
     KanbanColumn,
@@ -8,6 +9,7 @@ import type {
 } from '@entities/job';
 import type { JobCategory } from '@entities/job-category';
 import { CreateJobDialog } from '@features/job/create';
+import { DeleteJobDialog } from '@features/job/delete';
 import { JobFiltersBar, JobStatusTabs } from '@features/job-filters';
 import { Head } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@shared/types';
@@ -36,6 +38,7 @@ const currentViewMode = ref<JobsViewMode>(props.viewMode);
 const showCreateDialog = ref(false);
 const defaultStatusId = ref<number | null>(null);
 const defaultCategoryId = ref<number | null>(null);
+const jobToDelete = ref<Job | null>(null);
 
 const openCreateDialog = (
     statusId?: number | null,
@@ -106,7 +109,7 @@ const totalJobsLabel = (): string => {
             />
 
             <template v-if="currentViewMode === 'table'">
-                <JobsList :jobs="jobs.data" @create="openCreateDialog()" />
+                <JobsList :jobs="jobs.data" @create="openCreateDialog()" @delete="jobToDelete = $event" />
                 <JobsPagination
                     :links="jobs.links"
                     :last-page="jobs.last_page"
@@ -117,6 +120,7 @@ const totalJobsLabel = (): string => {
                 v-else
                 :columns="kanbanColumns"
                 @create="openCreateDialog($event)"
+                @delete="jobToDelete = $event"
             />
         </div>
 
@@ -127,6 +131,11 @@ const totalJobsLabel = (): string => {
             :default-status-id="defaultStatusId"
             :default-category-id="defaultCategoryId"
             @close="showCreateDialog = false"
+        />
+
+        <DeleteJobDialog
+            :job="jobToDelete"
+            @close="jobToDelete = null"
         />
     </AppLayout>
 </template>

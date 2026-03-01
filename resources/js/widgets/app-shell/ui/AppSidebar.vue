@@ -17,9 +17,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@shared/ui/sidebar';
+import { Badge } from '@shared/ui/badge';
 import {
     Briefcase,
     GripVertical,
+    Heart,
     LayoutGrid,
     Pencil,
     Plus,
@@ -57,6 +59,16 @@ const activeCategoryId = computed<number | null>(() => {
     const param = url.searchParams.get('job_category_id');
 
     return param !== null ? Number(param) : null;
+});
+
+const favoritesCount = computed<number>(
+    () => (page.props.favoritesCount as number) ?? 0,
+);
+
+const isCurrentFavorites = computed<boolean>(() => {
+    const url = new URL(page.url, window.location.origin);
+
+    return url.searchParams.get('is_favorite') === '1';
 });
 
 const localCategories = ref<JobCategory[]>([]);
@@ -203,6 +215,35 @@ const mainNavItems: NavItem[] = [
                                 <Trash2 class="size-3" />
                             </button>
                         </div>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            as-child
+                            :is-active="isCurrentFavorites"
+                            tooltip="Избранное"
+                        >
+                            <Link
+                                :href="
+                                    jobsIndex({
+                                        query: { is_favorite: 1 },
+                                    })
+                                "
+                                class="flex items-center gap-2"
+                            >
+                                <Heart class="size-4 shrink-0" />
+                                <span>Избранное</span>
+                                <Badge
+                                    v-if="favoritesCount > 0"
+                                    variant="secondary"
+                                    class="ml-auto px-1.5 py-0 text-xs leading-5"
+                                >
+                                    {{ favoritesCount }}
+                                </Badge>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>

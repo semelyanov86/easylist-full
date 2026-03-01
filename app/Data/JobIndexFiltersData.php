@@ -14,6 +14,7 @@ final class JobIndexFiltersData extends Data
         public readonly ?string $date_from = null,
         public readonly ?string $date_to = null,
         public readonly ?int $job_category_id = null,
+        public readonly ?bool $is_favorite = null,
         public readonly ?string $sort = null,
     ) {}
 }

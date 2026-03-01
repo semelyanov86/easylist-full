@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
+import { router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import {
@@ -17,11 +18,24 @@ import {
     Trash2,
 } from 'lucide-vue-next';
 
+import { toggleFavorite } from '@/routes/jobs';
+
 type Props = {
     job: Job;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const emit = defineEmits<{
+    delete: [job: Job];
+}>();
+
+const handleToggleFavorite = (): void => {
+    router.patch(toggleFavorite(props.job.id).url, {}, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
 
 const formatSalary = (salary: number, currencySymbol: string): string => {
     return new Intl.NumberFormat('ru-RU').format(salary) + ' ' + currencySymbol;
@@ -54,13 +68,18 @@ const formatDate = (dateString: string): string => {
                             <Button
                                 variant="ghost"
                                 size="icon-sm"
-                                class="size-6 text-muted-foreground hover:text-foreground"
+                                class="size-6"
+                                :class="job.is_favorite ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-foreground'"
+                                @click.stop="handleToggleFavorite"
                             >
-                                <Heart class="size-3.5" />
+                                <Heart
+                                    class="size-3.5"
+                                    :fill="job.is_favorite ? 'currentColor' : 'none'"
+                                />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="top">
-                            Добавить в избранное
+                            {{ job.is_favorite ? 'Убрать из избранного' : 'В избранное' }}
                         </TooltipContent>
                     </Tooltip>
 
@@ -83,6 +102,7 @@ const formatDate = (dateString: string): string => {
                                 variant="ghost"
                                 size="icon-sm"
                                 class="size-6 text-muted-foreground hover:text-destructive"
+                                @click.stop="emit('delete', job)"
                             >
                                 <Trash2 class="size-3.5" />
                             </Button>

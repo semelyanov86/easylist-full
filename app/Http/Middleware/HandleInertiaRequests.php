@@ -50,6 +50,9 @@ class HandleInertiaRequests extends Middleware
             'jobCategories' => fn () => $request->user()
                 ? JobCategoryData::collect($request->user()->jobCategories()->ordered()->get())
                 : [],
+            'favoritesCount' => fn () => $request->user()
+                ? $request->user()->jobs()->where('is_favorite', true)->count()
+                : 0,
         ];
     }
 }

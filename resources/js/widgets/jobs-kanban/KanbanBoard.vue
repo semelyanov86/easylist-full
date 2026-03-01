@@ -16,6 +16,7 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
     create: [statusId: number];
+    delete: [job: Job];
 }>();
 
 const localColumns = ref<KanbanColumn[]>(
@@ -173,6 +174,7 @@ const totalJobs = (): number => {
                 :column="column"
                 class="snap-start"
                 @create="emit('create', $event)"
+                @delete="emit('delete', $event)"
             />
         </div>
     </div>

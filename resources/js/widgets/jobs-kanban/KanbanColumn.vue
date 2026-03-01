@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { KanbanColumn } from '@entities/job';
+import type { Job, KanbanColumn } from '@entities/job';
 import { Briefcase, Plus } from 'lucide-vue-next';
 
 import KanbanCard from './KanbanCard.vue';
@@ -12,6 +12,7 @@ defineProps<Props>();
 
 const emit = defineEmits<{
     create: [statusId: number];
+    delete: [job: Job];
 }>();
 </script>
 
@@ -60,7 +61,7 @@ const emit = defineEmits<{
             class="kanban-list flex min-h-32 flex-1 flex-col gap-2.5 overflow-y-auto p-3"
             :data-status-id="column.statusId"
         >
-            <KanbanCard v-for="job in column.jobs" :key="job.id" :job="job" />
+            <KanbanCard v-for="job in column.jobs" :key="job.id" :job="job" @delete="emit('delete', $event)" />
 
             <!-- Пустое состояние -->
             <div
