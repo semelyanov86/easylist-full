@@ -5,6 +5,7 @@ import { DeleteCategoryDialog } from '@features/job-category/delete';
 import { EditCategoryDialog } from '@features/job-category/edit';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { type NavItem } from '@shared/types';
+import { Badge } from '@shared/ui/badge';
 import {
     Sidebar,
     SidebarContent,
@@ -17,7 +18,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@shared/ui/sidebar';
-import { Badge } from '@shared/ui/badge';
 import {
     Briefcase,
     GripVertical,

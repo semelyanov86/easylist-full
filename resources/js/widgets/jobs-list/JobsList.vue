@@ -13,13 +13,20 @@ defineProps<Props>();
 
 const emit = defineEmits<{
     create: [];
+    edit: [job: Job];
     delete: [job: Job];
 }>();
 </script>
 
 <template>
     <div v-if="jobs.length > 0" class="flex flex-col gap-2">
-        <JobCard v-for="job in jobs" :key="job.id" :job="job" @delete="emit('delete', $event)" />
+        <JobCard
+            v-for="job in jobs"
+            :key="job.id"
+            :job="job"
+            @edit="emit('edit', $event)"
+            @delete="emit('delete', $event)"
+        />
     </div>
     <div
         v-else

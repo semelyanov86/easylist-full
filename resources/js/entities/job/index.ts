@@ -5,9 +5,13 @@ export type Job = {
     id: number;
     title: string;
     company_name: string;
+    description: string | null;
+    job_url: string | null;
     location_city: string | null;
     salary: number | null;
     is_favorite: boolean;
+    job_status_id: number;
+    job_category_id: number;
     created_at: string;
     status: JobStatus;
     category: JobCategory;

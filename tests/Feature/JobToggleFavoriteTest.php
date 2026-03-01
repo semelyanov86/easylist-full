@@ -30,7 +30,9 @@ class JobToggleFavoriteTest extends TestCase
         $response = $this->actingAs($user)->patch(route('jobs.toggle-favorite', $job));
 
         $response->assertRedirect();
-        $this->assertTrue($job->fresh()->is_favorite);
+        $freshJob = $job->fresh();
+        $this->assertNotNull($freshJob);
+        $this->assertTrue($freshJob->is_favorite);
     }
 
     public function test_user_can_toggle_favorite_from_true_to_false(): void
@@ -47,7 +49,9 @@ class JobToggleFavoriteTest extends TestCase
         $response = $this->actingAs($user)->patch(route('jobs.toggle-favorite', $job));
 
         $response->assertRedirect();
-        $this->assertFalse($job->fresh()->is_favorite);
+        $freshJob = $job->fresh();
+        $this->assertNotNull($freshJob);
+        $this->assertFalse($freshJob->is_favorite);
     }
 
     public function test_user_cannot_toggle_favorite_on_another_users_job(): void

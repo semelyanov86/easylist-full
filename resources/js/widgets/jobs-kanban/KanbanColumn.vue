@@ -61,7 +61,12 @@ const emit = defineEmits<{
             class="kanban-list flex min-h-32 flex-1 flex-col gap-2.5 overflow-y-auto p-3"
             :data-status-id="column.statusId"
         >
-            <KanbanCard v-for="job in column.jobs" :key="job.id" :job="job" @delete="emit('delete', $event)" />
+            <KanbanCard
+                v-for="job in column.jobs"
+                :key="job.id"
+                :job="job"
+                @delete="emit('delete', $event)"
+            />
 
             <!-- Пустое состояние -->
             <div

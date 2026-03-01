@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Job\CreateJobAction;
 use App\Actions\Job\DeleteJobAction;
+use App\Actions\Job\UpdateJobAction;
 use App\Actions\Job\GetJobStatusTabsAction;
 use App\Actions\Job\GetKanbanColumnsAction;
 use App\Actions\Job\GetUserJobsQuery;
@@ -15,6 +16,7 @@ use App\Actions\JobCategory\GetUserJobCategoriesAction;
 use App\Data\JobIndexFiltersData;
 use App\Http\Requests\MoveJobRequest;
 use App\Http\Requests\StoreJobRequest;
+use App\Http\Requests\UpdateJobRequest;
 use App\Models\Job;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,6 +73,24 @@ final class JobController extends Controller
         $data = $request->validated();
 
         $action->execute($user, $data);
+
+        return back();
+    }
+
+    /**
+     * Обновить вакансию.
+     */
+    public function update(UpdateJobRequest $request, Job $job, UpdateJobAction $action): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        abort_if($job->user_id !== $user->id, 403);
+
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null} $data */
+        $data = $request->validated();
+
+        $action->execute($user, $job, $data);
 
         return back();
     }

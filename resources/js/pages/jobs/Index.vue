@@ -10,6 +10,7 @@ import type {
 import type { JobCategory } from '@entities/job-category';
 import { CreateJobDialog } from '@features/job/create';
 import { DeleteJobDialog } from '@features/job/delete';
+import { EditJobDialog } from '@features/job/edit';
 import { JobFiltersBar, JobStatusTabs } from '@features/job-filters';
 import { Head } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@shared/types';
@@ -38,6 +39,7 @@ const currentViewMode = ref<JobsViewMode>(props.viewMode);
 const showCreateDialog = ref(false);
 const defaultStatusId = ref<number | null>(null);
 const defaultCategoryId = ref<number | null>(null);
+const jobToEdit = ref<Job | null>(null);
 const jobToDelete = ref<Job | null>(null);
 
 const openCreateDialog = (
@@ -109,7 +111,12 @@ const totalJobsLabel = (): string => {
             />
 
             <template v-if="currentViewMode === 'table'">
-                <JobsList :jobs="jobs.data" @create="openCreateDialog()" @delete="jobToDelete = $event" />
+                <JobsList
+                    :jobs="jobs.data"
+                    @create="openCreateDialog()"
+                    @edit="jobToEdit = $event"
+                    @delete="jobToDelete = $event"
+                />
                 <JobsPagination
                     :links="jobs.links"
                     :last-page="jobs.last_page"
@@ -133,9 +140,13 @@ const totalJobsLabel = (): string => {
             @close="showCreateDialog = false"
         />
 
-        <DeleteJobDialog
-            :job="jobToDelete"
-            @close="jobToDelete = null"
+        <EditJobDialog
+            :job="jobToEdit"
+            :statuses="statusTabs"
+            :categories="categories"
+            @close="jobToEdit = null"
         />
+
+        <DeleteJobDialog :job="jobToDelete" @close="jobToDelete = null" />
     </AppLayout>
 </template>

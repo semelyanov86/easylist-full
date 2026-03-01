@@ -16,6 +16,7 @@ Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['aut
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
     Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::patch('jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::patch('jobs/{job}/move', [JobController::class, 'move'])->name('jobs.move');
     Route::patch('jobs/{job}/favorite', [JobController::class, 'toggleFavorite'])->name('jobs.toggle-favorite');
     Route::delete('jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');

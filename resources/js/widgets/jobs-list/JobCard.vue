@@ -29,14 +29,19 @@ type Props = {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
+    edit: [job: Job];
     delete: [job: Job];
 }>();
 
 const handleToggleFavorite = (): void => {
-    router.patch(toggleFavorite(props.job.id).url, {}, {
-        preserveScroll: true,
-        preserveState: true,
-    });
+    router.patch(
+        toggleFavorite(props.job.id).url,
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+        },
+    );
 };
 
 const formatSalary = (salary: number, currencySymbol: string): string => {
@@ -114,17 +119,29 @@ const formatDate = (dateString: string): string => {
                             <Button
                                 variant="ghost"
                                 size="icon-sm"
-                                :class="job.is_favorite ? 'text-red-500 hover:text-red-600' : ''"
+                                :class="
+                                    job.is_favorite
+                                        ? 'text-red-500 hover:text-red-600'
+                                        : ''
+                                "
                                 @click="handleToggleFavorite"
                             >
                                 <Heart
                                     class="size-3.5"
-                                    :fill="job.is_favorite ? 'currentColor' : 'none'"
+                                    :fill="
+                                        job.is_favorite
+                                            ? 'currentColor'
+                                            : 'none'
+                                    "
                                 />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            {{ job.is_favorite ? 'Убрать из избранного' : 'В избранное' }}
+                            {{
+                                job.is_favorite
+                                    ? 'Убрать из избранного'
+                                    : 'В избранное'
+                            }}
                         </TooltipContent>
                     </Tooltip>
 
@@ -139,11 +156,15 @@ const formatDate = (dateString: string): string => {
 
                     <Tooltip>
                         <TooltipTrigger as-child>
-                            <Button variant="ghost" size="icon-sm" disabled>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                @click="emit('edit', job)"
+                            >
                                 <Pencil class="size-3.5" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Скоро</TooltipContent>
+                        <TooltipContent>Редактировать</TooltipContent>
                     </Tooltip>
 
                     <Tooltip>

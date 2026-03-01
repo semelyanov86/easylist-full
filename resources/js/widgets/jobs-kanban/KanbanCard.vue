@@ -31,10 +31,14 @@ const emit = defineEmits<{
 }>();
 
 const handleToggleFavorite = (): void => {
-    router.patch(toggleFavorite(props.job.id).url, {}, {
-        preserveScroll: true,
-        preserveState: true,
-    });
+    router.patch(
+        toggleFavorite(props.job.id).url,
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+        },
+    );
 };
 
 const formatSalary = (salary: number, currencySymbol: string): string => {
@@ -69,17 +73,29 @@ const formatDate = (dateString: string): string => {
                                 variant="ghost"
                                 size="icon-sm"
                                 class="size-6"
-                                :class="job.is_favorite ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-foreground'"
+                                :class="
+                                    job.is_favorite
+                                        ? 'text-red-500 hover:text-red-600'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                "
                                 @click.stop="handleToggleFavorite"
                             >
                                 <Heart
                                     class="size-3.5"
-                                    :fill="job.is_favorite ? 'currentColor' : 'none'"
+                                    :fill="
+                                        job.is_favorite
+                                            ? 'currentColor'
+                                            : 'none'
+                                    "
                                 />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="top">
-                            {{ job.is_favorite ? 'Убрать из избранного' : 'В избранное' }}
+                            {{
+                                job.is_favorite
+                                    ? 'Убрать из избранного'
+                                    : 'В избранное'
+                            }}
                         </TooltipContent>
                     </Tooltip>
 
