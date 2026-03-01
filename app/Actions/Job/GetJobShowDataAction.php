@@ -15,6 +15,7 @@ final readonly class GetJobShowDataAction
 {
     public function __construct(
         private GetJobCommentsAction $getComments,
+        private GetJobActivityTimelineAction $getActivityTimeline,
     ) {}
 
     /**
@@ -40,6 +41,7 @@ final readonly class GetJobShowDataAction
             category: JobCategoryData::from($job->category),
             skills: array_values(SkillData::collect($job->skills)->all()),
             comments: $this->getComments->execute($job),
+            activities: $this->getActivityTimeline->execute($job),
         );
     }
 }

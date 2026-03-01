@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { JobDetail, StatusTab } from '@entities/job';
+import type {
+    JobDetail,
+    JobShowTab,
+    JobShowTabId,
+    StatusTab,
+} from '@entities/job';
 import type { JobCategory } from '@entities/job-category';
 import type { Skill } from '@entities/skill';
 import { EditJobDialog } from '@features/job/edit';
@@ -8,6 +13,7 @@ import { Head } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@shared/types';
 import { AppLayout } from '@widgets/app-shell';
 import {
+    JobCommentsContent,
     JobOverviewContent,
     JobShowHeader,
     JobShowTabs,
@@ -26,6 +32,16 @@ type Props = {
 const props = defineProps<Props>();
 
 const showEditDialog = ref(false);
+const activeTab = ref<JobShowTabId>('overview');
+
+const tabs: JobShowTab[] = [
+    { id: 'overview', title: 'Общий обзор', enabled: true },
+    { id: 'comments', title: 'Комментарии', enabled: true },
+    { id: 'documents', title: 'Документы', enabled: false },
+    { id: 'company', title: 'Компания', enabled: false },
+    { id: 'contacts', title: 'Контакты', enabled: false },
+    { id: 'tasks', title: 'Задачи', enabled: false },
+];
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -51,9 +67,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
                 :job-id="job.id"
             />
 
-            <JobShowTabs />
+            <JobShowTabs v-model="activeTab" :tabs="tabs" />
 
-            <JobOverviewContent :job="job" />
+            <JobOverviewContent v-if="activeTab === 'overview'" :job="job" />
+            <JobCommentsContent v-if="activeTab === 'comments'" :job="job" />
         </div>
 
         <EditJobDialog

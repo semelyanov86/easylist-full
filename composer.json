@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.11.1",
         "laravel/wayfinder": "^0.1.13",
         "spatie/eloquent-sortable": "^5.0",
+        "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-data": "^4.20",
         "spatie/laravel-ray": "^1.43"
     },

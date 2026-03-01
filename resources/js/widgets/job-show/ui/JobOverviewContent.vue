@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { JobDetail } from '@entities/job';
-import { AddCommentForm } from '@features/job-comment/add';
 import { Badge } from '@shared/ui/badge';
 import DOMPurify from 'dompurify';
-import { FileText, MessageSquare, Tag } from 'lucide-vue-next';
+import { FileText, Tag } from 'lucide-vue-next';
 import { marked } from 'marked';
 import { computed } from 'vue';
+
+import ActivityTimeline from './ActivityTimeline.vue';
 
 type Props = {
     job: JobDetail;
@@ -23,45 +24,6 @@ const descriptionHtml = computed((): string => {
 
     return DOMPurify.sanitize(html);
 });
-
-const formatRelativeDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMin < 1) {
-        return 'только что';
-    }
-    if (diffMin < 60) {
-        return `${diffMin} мин. назад`;
-    }
-    if (diffHours < 24) {
-        return `${diffHours} ч. назад`;
-    }
-    if (diffDays < 7) {
-        return `${diffDays} дн. назад`;
-    }
-
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const getInitials = (name: string): string => {
-    return name
-        .split(' ')
-        .slice(0, 2)
-        .map((w) => w.charAt(0))
-        .join('')
-        .toUpperCase();
-};
 </script>
 
 <template>
@@ -114,83 +76,7 @@ const getInitials = (name: string): string => {
         </div>
 
         <div class="space-y-6">
-            <div
-                class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
-            >
-                <div
-                    class="flex items-center gap-2 border-b border-border px-5 py-3"
-                >
-                    <MessageSquare class="size-4 text-muted-foreground" />
-                    <h3 class="text-sm font-semibold text-foreground">
-                        Комментарии
-                    </h3>
-                    <span
-                        v-if="job.comments.length > 0"
-                        class="flex size-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground"
-                    >
-                        {{ job.comments.length }}
-                    </span>
-                </div>
-
-                <div class="p-5">
-                    <AddCommentForm :job-id="job.id" />
-
-                    <div v-if="job.comments.length > 0" class="mt-5 space-y-4">
-                        <div
-                            v-for="comment in job.comments"
-                            :key="comment.id"
-                            class="flex gap-3"
-                        >
-                            <div
-                                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground"
-                            >
-                                {{ getInitials(comment.author_name) }}
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-baseline gap-2">
-                                    <span
-                                        class="text-xs font-semibold text-foreground"
-                                    >
-                                        {{ comment.author_name }}
-                                    </span>
-                                    <span
-                                        class="text-xs text-muted-foreground/70"
-                                    >
-                                        {{
-                                            formatRelativeDate(
-                                                comment.created_at,
-                                            )
-                                        }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="mt-1.5 rounded-lg rounded-tl-none bg-muted/50 px-3 py-2 text-sm text-foreground/80"
-                                >
-                                    <p class="whitespace-pre-line">
-                                        {{ comment.body }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        v-else
-                        class="mt-5 flex flex-col items-center gap-2 py-6 text-center"
-                    >
-                        <div
-                            class="flex size-10 items-center justify-center rounded-full bg-muted"
-                        >
-                            <MessageSquare
-                                class="size-5 text-muted-foreground/50"
-                            />
-                        </div>
-                        <p class="text-xs text-muted-foreground">
-                            Комментариев пока нет
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <ActivityTimeline :activities="job.activities" />
         </div>
     </div>
 </template>

@@ -1,3 +1,4 @@
+import type { ActivityTimelineItem } from '@entities/activity';
 import type { JobCategory } from '@entities/job-category';
 import type { JobComment } from '@entities/job-comment';
 import type { JobStatus } from '@entities/job-status';
@@ -52,8 +53,23 @@ export type PaginatedJobs = {
     total: number;
 };
 
+export type JobShowTabId =
+    | 'overview'
+    | 'comments'
+    | 'documents'
+    | 'company'
+    | 'contacts'
+    | 'tasks';
+
+export type JobShowTab = {
+    id: JobShowTabId;
+    title: string;
+    enabled: boolean;
+};
+
 export type JobDetail = Job & {
     comments: JobComment[];
+    activities: ActivityTimelineItem[];
 };
 
 export type JobsViewMode = 'table' | 'kanban';

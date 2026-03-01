@@ -138,6 +138,21 @@ class JobShowTest extends TestCase
         );
     }
 
+    public function test_job_activities_included_in_response(): void
+    {
+        $user = User::factory()->create();
+        $job = $this->createJobForUser($user);
+
+        $response = $this->actingAs($user)->get(route('jobs.show', $job));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Show')
+                ->has('job.activities')
+        );
+    }
+
     private function createJobForUser(User $user): Job
     {
         $status = JobStatus::factory()->for($user)->create();
