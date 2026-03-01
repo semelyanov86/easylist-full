@@ -17,7 +17,7 @@ final readonly class GetUserJobsQuery
     public function execute(User $user, JobIndexFiltersData $filters): LengthAwarePaginator
     {
         $query = $user->jobs()
-            ->with(['status', 'category'])->latest('updated_at');
+            ->with(['status', 'category', 'skills'])->latest('updated_at');
 
         if ($filters->search !== null && $filters->search !== '') {
             $search = '%' . $filters->search . '%';

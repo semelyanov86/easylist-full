@@ -22,7 +22,7 @@ final readonly class GetKanbanColumnsAction
     {
         $statuses = $user->jobStatuses()->ordered()->get();
 
-        $query = $user->jobs()->with(['status', 'category'])->latest('updated_at');
+        $query = $user->jobs()->with(['status', 'category', 'skills'])->latest('updated_at');
 
         if ($filters->search !== null && $filters->search !== '') {
             $search = '%' . $filters->search . '%';

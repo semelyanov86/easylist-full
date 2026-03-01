@@ -23,6 +23,8 @@ class UpdateJobRequest extends FormRequest
             'job_url' => ['nullable', 'string', 'url', 'max:255'],
             'salary' => ['nullable', 'integer', 'min:0'],
             'location_city' => ['nullable', 'string', 'max:255'],
+            'skill_ids' => ['nullable', 'array'],
+            'skill_ids.*' => ['integer', 'exists:skills,id'],
         ];
     }
 }

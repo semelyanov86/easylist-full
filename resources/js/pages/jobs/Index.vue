@@ -8,6 +8,7 @@ import type {
     StatusTab,
 } from '@entities/job';
 import type { JobCategory } from '@entities/job-category';
+import type { Skill } from '@entities/skill';
 import { CreateJobDialog } from '@features/job/create';
 import { DeleteJobDialog } from '@features/job/delete';
 import { EditJobDialog } from '@features/job/edit';
@@ -28,6 +29,7 @@ type Props = {
     filters: JobFilters;
     statusTabs: StatusTab[];
     categories: JobCategory[];
+    skills: Skill[];
     viewMode: JobsViewMode;
     kanbanColumns: KanbanColumn[];
 };
@@ -135,6 +137,7 @@ const totalJobsLabel = (): string => {
             :open="showCreateDialog"
             :statuses="statusTabs"
             :categories="categories"
+            :skills="skills"
             :default-status-id="defaultStatusId"
             :default-category-id="defaultCategoryId"
             @close="showCreateDialog = false"
@@ -144,6 +147,7 @@ const totalJobsLabel = (): string => {
             :job="jobToEdit"
             :statuses="statusTabs"
             :categories="categories"
+            :skills="skills"
             @close="jobToEdit = null"
         />
 

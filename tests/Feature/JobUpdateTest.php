@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobStatus;
+use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -169,6 +170,84 @@ class JobUpdateTest extends TestCase
         ]);
 
         $response->assertRedirect(route('login'));
+    }
+
+    public function test_skills_updated_on_job_update(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $job = Job::factory()->for($user)->for($status, 'status')->for($category, 'category')->create();
+
+        $skill1 = Skill::factory()->for($user)->create(['title' => 'PHP']);
+        $skill2 = Skill::factory()->for($user)->create(['title' => 'Laravel']);
+        $job->skills()->attach($skill1);
+
+        $skill3 = Skill::factory()->for($user)->create(['title' => 'Vue.js']);
+
+        $response = $this->actingAs($user)->patch(route('jobs.update', $job), [
+            'title' => $job->title,
+            'company_name' => $job->company_name,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'skill_ids' => [$skill2->id, $skill3->id],
+        ]);
+
+        $response->assertRedirect();
+        $job->refresh();
+        $this->assertCount(2, $job->skills);
+        $this->assertFalse($job->skills->contains($skill1));
+        $this->assertTrue($job->skills->contains($skill2));
+        $this->assertTrue($job->skills->contains($skill3));
+    }
+
+    public function test_skills_cleared_on_empty_array(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $job = Job::factory()->for($user)->for($status, 'status')->for($category, 'category')->create();
+
+        $skill = Skill::factory()->for($user)->create(['title' => 'PHP']);
+        $job->skills()->attach($skill);
+
+        $response = $this->actingAs($user)->patch(route('jobs.update', $job), [
+            'title' => $job->title,
+            'company_name' => $job->company_name,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'skill_ids' => [],
+        ]);
+
+        $response->assertRedirect();
+        $job->refresh();
+        $this->assertCount(0, $job->skills);
+    }
+
+    public function test_other_users_skills_filtered_on_update(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $job = Job::factory()->for($user)->for($status, 'status')->for($category, 'category')->create();
+
+        $ownSkill = Skill::factory()->for($user)->create(['title' => 'PHP']);
+        $otherSkill = Skill::factory()->for($otherUser)->create(['title' => 'Python']);
+
+        $response = $this->actingAs($user)->patch(route('jobs.update', $job), [
+            'title' => $job->title,
+            'company_name' => $job->company_name,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'skill_ids' => [$ownSkill->id, $otherSkill->id],
+        ]);
+
+        $response->assertRedirect();
+        $job->refresh();
+        $this->assertCount(1, $job->skills);
+        $this->assertTrue($job->skills->contains($ownSkill));
+        $this->assertFalse($job->skills->contains($otherSkill));
     }
 
     public function test_optional_fields_can_be_cleared(): void

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StatusTab } from '@entities/job';
 import type { JobCategory } from '@entities/job-category';
+import type { Skill } from '@entities/skill';
 import { Form } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
@@ -15,13 +16,16 @@ import {
 } from '@shared/ui/dialog';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
+import { TagInput } from '@shared/ui/tag-input';
 
 import JobController from '@/actions/App/Http/Controllers/JobController';
+import SkillController from '@/actions/App/Http/Controllers/SkillController';
 
 type Props = {
     open: boolean;
     statuses: StatusTab[];
     categories: JobCategory[];
+    skills: Skill[];
     defaultStatusId?: number | null;
     defaultCategoryId?: number | null;
 };
@@ -184,6 +188,17 @@ const emit = defineEmits<{
                             class="w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
                         />
                         <InputError :message="errors.description" />
+                    </div>
+
+                    <!-- Навыки -->
+                    <div class="grid gap-2">
+                        <Label>Навыки</Label>
+                        <TagInput
+                            :options="props.skills"
+                            :search-url="SkillController.search.url()"
+                            :create-url="SkillController.store.url()"
+                        />
+                        <InputError :message="errors.skill_ids" />
                     </div>
                 </div>
 

@@ -165,10 +165,31 @@ const formatDate = (dateString: string): string => {
             </div>
         </div>
 
-        <div v-if="job.category" class="mt-2.5 flex items-center gap-1.5">
-            <Badge variant="secondary" class="px-1.5 py-0 text-xs leading-5">
+        <div
+            v-if="job.category || job.skills.length > 0"
+            class="mt-2.5 flex flex-wrap items-center gap-1.5"
+        >
+            <Badge
+                v-if="job.category"
+                variant="secondary"
+                class="px-1.5 py-0 text-xs leading-5"
+            >
                 {{ job.category.title }}
             </Badge>
+            <Badge
+                v-for="skill in job.skills.slice(0, 3)"
+                :key="skill.id"
+                variant="outline"
+                class="px-1.5 py-0 text-xs leading-5"
+            >
+                {{ skill.title }}
+            </Badge>
+            <span
+                v-if="job.skills.length > 3"
+                class="text-xs text-muted-foreground"
+            >
+                +{{ job.skills.length - 3 }}
+            </span>
         </div>
     </div>
 </template>

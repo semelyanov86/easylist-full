@@ -1,5 +1,6 @@
 import type { JobCategory } from '@entities/job-category';
 import type { JobStatus } from '@entities/job-status';
+import type { Skill } from '@entities/skill';
 
 export type Job = {
     id: number;
@@ -15,6 +16,7 @@ export type Job = {
     created_at: string;
     status: JobStatus;
     category: JobCategory;
+    skills: Skill[];
 };
 
 export type JobFilters = {

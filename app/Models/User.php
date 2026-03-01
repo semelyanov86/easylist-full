@@ -82,6 +82,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
     }
 
     /**
+     * @return HasMany<Skill, $this>
+     */
+    public function skills(): HasMany
+    {
+        return $this->hasMany(Skill::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

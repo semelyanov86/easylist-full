@@ -8,6 +8,7 @@ use App\Enums\JobsViewMode;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobStatus;
+use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
@@ -329,6 +330,48 @@ class JobIndexTest extends TestCase
         $response->assertInertia(
             fn (AssertableInertia $page) => $page
                 ->where('favoritesCount', 3)
+        );
+    }
+
+    public function test_skills_returned_in_inertia_props(): void
+    {
+        $user = User::factory()->create();
+        Skill::factory()->for($user)->create(['title' => 'PHP']);
+        Skill::factory()->for($user)->create(['title' => 'Laravel']);
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Index')
+                ->has('skills', 2)
+        );
+    }
+
+    public function test_job_skills_included_in_job_data(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $skill = Skill::factory()->for($user)->create(['title' => 'PHP']);
+
+        $job = Job::factory()->for($user)->create([
+            'title' => 'PHP Developer',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+        $job->skills()->attach($skill);
+
+        $response = $this->actingAs($user)->get(route('jobs.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Index')
+                ->has('jobs.data', 1)
+                ->has('jobs.data.0.skills', 1)
+                ->where('jobs.data.0.skills.0.title', 'PHP')
         );
     }
 

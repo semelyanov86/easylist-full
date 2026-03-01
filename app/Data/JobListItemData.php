@@ -8,6 +8,9 @@ use Spatie\LaravelData\Data;
 
 final class JobListItemData extends Data
 {
+    /**
+     * @param  list<SkillData>  $skills
+     */
     public function __construct(
         public readonly int $id,
         public readonly string $title,
@@ -22,5 +25,6 @@ final class JobListItemData extends Data
         public readonly string $created_at,
         public readonly JobStatusData $status,
         public readonly JobCategoryData $category,
+        public readonly array $skills = [],
     ) {}
 }

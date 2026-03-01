@@ -13,7 +13,9 @@ use App\Actions\Job\GetUserJobsQuery;
 use App\Actions\Job\MoveJobToStatusAction;
 use App\Actions\Job\ToggleFavoriteAction;
 use App\Actions\JobCategory\GetUserJobCategoriesAction;
+use App\Actions\Skill\SyncJobSkillsAction;
 use App\Data\JobIndexFiltersData;
+use App\Data\SkillData;
 use App\Http\Requests\MoveJobRequest;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
@@ -56,6 +58,7 @@ final class JobController extends Controller
             'filters' => $filters,
             'statusTabs' => $getStatusTabs->execute($user),
             'categories' => $getCategories->execute($user),
+            'skills' => SkillData::collect($user->skills()->orderBy('title')->get()),
             'viewMode' => $viewMode->value,
             'kanbanColumns' => fn () => $getKanbanColumns->execute($user, $filters),
         ]);
@@ -64,15 +67,21 @@ final class JobController extends Controller
     /**
      * Создать новую вакансию.
      */
-    public function store(StoreJobRequest $request, CreateJobAction $action): RedirectResponse
+    public function store(StoreJobRequest $request, CreateJobAction $action, SyncJobSkillsAction $syncSkills): RedirectResponse
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null} $data */
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
         $data = $request->validated();
 
-        $action->execute($user, $data);
+        /** @var list<int> $skillIds */
+        $skillIds = $data['skill_ids'] ?? [];
+        unset($data['skill_ids']);
+
+        $job = $action->execute($user, $data);
+
+        $syncSkills->execute($user, $job, $skillIds);
 
         return back();
     }
@@ -80,17 +89,23 @@ final class JobController extends Controller
     /**
      * Обновить вакансию.
      */
-    public function update(UpdateJobRequest $request, Job $job, UpdateJobAction $action): RedirectResponse
+    public function update(UpdateJobRequest $request, Job $job, UpdateJobAction $action, SyncJobSkillsAction $syncSkills): RedirectResponse
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
 
-        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null} $data */
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
         $data = $request->validated();
 
+        /** @var list<int> $skillIds */
+        $skillIds = $data['skill_ids'] ?? [];
+        unset($data['skill_ids']);
+
         $action->execute($user, $job, $data);
+
+        $syncSkills->execute($user, $job, $skillIds);
 
         return back();
     }

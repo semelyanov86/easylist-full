@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobStatus;
+use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -151,6 +152,74 @@ class JobStoreTest extends TestCase
         ]);
 
         $response->assertRedirect(route('login'));
+    }
+
+    public function test_job_created_with_skills(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $skill1 = Skill::factory()->for($user)->create(['title' => 'PHP']);
+        $skill2 = Skill::factory()->for($user)->create(['title' => 'Laravel']);
+
+        $response = $this->actingAs($user)->post(route('jobs.store'), [
+            'title' => 'Developer',
+            'company_name' => 'Test',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'skill_ids' => [$skill1->id, $skill2->id],
+        ]);
+
+        $response->assertRedirect();
+        $job = Job::query()->where('user_id', $user->id)->first();
+        $this->assertNotNull($job);
+        $this->assertCount(2, $job->skills);
+        $this->assertTrue($job->skills->contains($skill1));
+        $this->assertTrue($job->skills->contains($skill2));
+    }
+
+    public function test_job_created_without_skills(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->post(route('jobs.store'), [
+            'title' => 'Developer',
+            'company_name' => 'Test',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+
+        $response->assertRedirect();
+        $job = Job::query()->where('user_id', $user->id)->first();
+        $this->assertNotNull($job);
+        $this->assertCount(0, $job->skills);
+    }
+
+    public function test_other_users_skills_are_filtered_on_create(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $ownSkill = Skill::factory()->for($user)->create(['title' => 'PHP']);
+        $otherSkill = Skill::factory()->for($otherUser)->create(['title' => 'Python']);
+
+        $response = $this->actingAs($user)->post(route('jobs.store'), [
+            'title' => 'Developer',
+            'company_name' => 'Test',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'skill_ids' => [$ownSkill->id, $otherSkill->id],
+        ]);
+
+        $response->assertRedirect();
+        $job = Job::query()->where('user_id', $user->id)->first();
+        $this->assertNotNull($job);
+        $this->assertCount(1, $job->skills);
+        $this->assertTrue($job->skills->contains($ownSkill));
+        $this->assertFalse($job->skills->contains($otherSkill));
     }
 
     public function test_uuid_is_generated_automatically(): void
