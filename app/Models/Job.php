@@ -71,6 +71,14 @@ class Job extends Model
     }
 
     /**
+     * @return HasMany<JobDocument, $this>
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(JobDocument::class);
+    }
+
+    /**
      * @return BelongsToMany<Skill, $this>
      */
     public function skills(): BelongsToMany

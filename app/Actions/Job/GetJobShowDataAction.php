@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Job;
 
 use App\Actions\JobComment\GetJobCommentsAction;
+use App\Actions\JobDocument\GetJobDocumentsAction;
 use App\Data\JobCategoryData;
 use App\Data\JobShowData;
 use App\Data\JobStatusData;
@@ -15,6 +16,7 @@ final readonly class GetJobShowDataAction
 {
     public function __construct(
         private GetJobCommentsAction $getComments,
+        private GetJobDocumentsAction $getDocuments,
         private GetJobActivityTimelineAction $getActivityTimeline,
     ) {}
 
@@ -41,6 +43,7 @@ final readonly class GetJobShowDataAction
             category: JobCategoryData::from($job->category),
             skills: array_values(SkillData::collect($job->skills)->all()),
             comments: $this->getComments->execute($job),
+            documents: $this->getDocuments->execute($job),
             activities: $this->getActivityTimeline->execute($job),
         );
     }

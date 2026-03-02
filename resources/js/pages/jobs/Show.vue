@@ -14,6 +14,7 @@ import type { BreadcrumbItem } from '@shared/types';
 import { AppLayout } from '@widgets/app-shell';
 import {
     JobCommentsContent,
+    JobDocumentsContent,
     JobOverviewContent,
     JobShowHeader,
     JobShowTabs,
@@ -37,7 +38,7 @@ const activeTab = ref<JobShowTabId>('overview');
 const tabs: JobShowTab[] = [
     { id: 'overview', title: 'Общий обзор', enabled: true },
     { id: 'comments', title: 'Комментарии', enabled: true },
-    { id: 'documents', title: 'Документы', enabled: false },
+    { id: 'documents', title: 'Документы', enabled: true },
     { id: 'company', title: 'Компания', enabled: false },
     { id: 'contacts', title: 'Контакты', enabled: false },
     { id: 'tasks', title: 'Задачи', enabled: false },
@@ -71,6 +72,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
             <JobOverviewContent v-if="activeTab === 'overview'" :job="job" />
             <JobCommentsContent v-if="activeTab === 'comments'" :job="job" />
+            <JobDocumentsContent v-if="activeTab === 'documents'" :job="job" />
         </div>
 
         <EditJobDialog

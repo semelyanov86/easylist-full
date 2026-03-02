@@ -5,6 +5,7 @@ import {
     ArrowRight,
     ArrowRightLeft,
     Clock,
+    FileText,
     MessageSquare,
     Pencil,
     Plus,
@@ -49,6 +50,16 @@ const eventStyles: Record<string, EventStyle> = {
         icon: MessageSquare,
         nodeClass: 'bg-status-amber/15 ring-status-amber/25',
         iconClass: 'text-status-amber',
+    },
+    document_added: {
+        icon: FileText,
+        nodeClass: 'bg-status-cyan/15 ring-status-cyan/25',
+        iconClass: 'text-status-cyan',
+    },
+    document_removed: {
+        icon: Trash2,
+        nodeClass: 'bg-destructive/15 ring-destructive/25',
+        iconClass: 'text-destructive',
     },
 };
 

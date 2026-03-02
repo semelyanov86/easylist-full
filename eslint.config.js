@@ -14,15 +14,16 @@ export default defineConfigWithVueTs(
     vueTsConfigs.recommended,
     {
         ignores: [
-            'vendor',
-            'node_modules',
-            'public',
-            'bootstrap/ssr',
+            'vendor/**',
+            'node_modules/**',
+            'public/**',
+            'storage/**',
+            'bootstrap/ssr/**',
             'tailwind.config.js',
             'vite.config.ts',
             'resources/js/shared/ui/*',
-            'resources/js/actions',
-            'resources/js/routes',
+            'resources/js/actions/**',
+            'resources/js/routes/**',
         ],
     },
     {

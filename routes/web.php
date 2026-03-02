@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\JobDocumentController;
 use App\Http\Controllers\SkillController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('jobs/{job}/comments', [JobCommentController::class, 'store'])->name('job-comments.store');
     Route::patch('job-comments/{comment}', [JobCommentController::class, 'update'])->name('job-comments.update');
     Route::delete('job-comments/{comment}', [JobCommentController::class, 'destroy'])->name('job-comments.destroy');
+
+    Route::post('jobs/{job}/documents', [JobDocumentController::class, 'store'])->name('job-documents.store');
+    Route::get('job-documents/{document}/download', [JobDocumentController::class, 'download'])->name('job-documents.download');
+    Route::delete('job-documents/{document}', [JobDocumentController::class, 'destroy'])->name('job-documents.destroy');
 
     Route::get('skills/search', [SkillController::class, 'search'])->name('skills.search');
     Route::post('skills', [SkillController::class, 'store'])->name('skills.store');

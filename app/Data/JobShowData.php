@@ -11,6 +11,7 @@ final class JobShowData extends Data
     /**
      * @param  list<SkillData>  $skills
      * @param  list<JobCommentData>  $comments
+     * @param  list<JobDocumentData>  $documents
      * @param  list<ActivityTimelineItemData>  $activities
      */
     public function __construct(
@@ -29,6 +30,7 @@ final class JobShowData extends Data
         public readonly JobCategoryData $category,
         public readonly array $skills = [],
         public readonly array $comments = [],
+        public readonly array $documents = [],
         public readonly array $activities = [],
     ) {}
 }
