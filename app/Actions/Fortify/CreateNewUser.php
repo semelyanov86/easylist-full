@@ -34,6 +34,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'is_premium' => (bool) ($input['is_premium'] ?? false),
         ]);
 
         new CreateDefaultJobStatusesAction()->execute($user);

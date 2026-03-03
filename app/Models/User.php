@@ -42,6 +42,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         'name',
         'email',
         'password',
+        'is_premium',
         'jobs_view_mode',
     ];
 
@@ -100,6 +101,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_premium' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
             'jobs_view_mode' => JobsViewMode::class,
         ];

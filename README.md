@@ -92,6 +92,25 @@ npm run dev
 | `task fixcs` | Форматирование PHP (Pint) |
 | `task all` | Все проверки + тесты |
 
+## Управление пользователями
+
+```bash
+# Создать пользователя (пароль будет сгенерирован и показан в консоли)
+php artisan user:create "Иван Иванов" ivan@example.com
+
+# Создать пользователя с premium-статусом
+php artisan user:create "Иван Иванов" ivan@example.com --premium
+
+# Переключить premium-статус (включить/выключить)
+php artisan user:toggle-premium ivan@example.com
+
+# Удалить пользователя (с подтверждением, удаляет вакансии и документы)
+php artisan user:delete ivan@example.com
+
+# Удалить без подтверждения
+php artisan user:delete ivan@example.com --force
+```
+
 ## Тестирование
 
 ```bash
