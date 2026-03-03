@@ -37,4 +37,9 @@ return [
         ],
     ],
 
+    'ai_formatter' => [
+        'url' => env('AI_FORMATTER_URL', 'https://ask.sergeyem.ru/api/claude/json'),
+        'token' => env('AI_FORMATTER_TOKEN', ''),
+    ],
+
 ];

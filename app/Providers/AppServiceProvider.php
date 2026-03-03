@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Services\AiFormatterService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,18 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        //
+        $this->app->singleton(function (): \App\Contracts\AiFormatterContract {
+            /** @var string $url */
+            $url = config('services.ai_formatter.url');
+
+            /** @var string $token */
+            $token = config('services.ai_formatter.token');
+
+            return new AiFormatterService(
+                url: $url,
+                token: $token,
+            );
+        });
     }
 
     /**

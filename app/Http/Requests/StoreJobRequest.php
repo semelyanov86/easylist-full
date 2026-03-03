@@ -19,7 +19,7 @@ class StoreJobRequest extends FormRequest
             'company_name' => ['required', 'string', 'max:255'],
             'job_status_id' => ['required', 'integer', 'exists:job_statuses,id'],
             'job_category_id' => ['required', 'integer', 'exists:job_categories,id'],
-            'description' => ['nullable', 'string', 'max:5000'],
+            'description' => ['nullable', 'string'],
             'job_url' => ['nullable', 'string', 'url', 'max:255'],
             'salary' => ['nullable', 'integer', 'min:0'],
             'location_city' => ['nullable', 'string', 'max:255'],

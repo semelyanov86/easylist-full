@@ -2,6 +2,7 @@
 import type { StatusTab } from '@entities/job';
 import type { JobCategory } from '@entities/job-category';
 import type { Skill } from '@entities/skill';
+import { useAiFormat } from '@features/job/model/useAiFormat';
 import { Form } from '@inertiajs/vue3';
 import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
@@ -16,7 +17,10 @@ import {
 } from '@shared/ui/dialog';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
+import { Spinner } from '@shared/ui/spinner';
 import { TagInput } from '@shared/ui/tag-input';
+import { Sparkles } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 import JobController from '@/actions/App/Http/Controllers/JobController';
 import SkillController from '@/actions/App/Http/Controllers/SkillController';
@@ -35,6 +39,26 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
     close: [];
 }>();
+
+const descriptionRef = ref<HTMLTextAreaElement | null>(null);
+const { loading: aiLoading, error: aiError, formatText } = useAiFormat();
+
+async function handleAiFormat(): Promise<void> {
+    const textarea = descriptionRef.value;
+    if (!textarea) {
+        return;
+    }
+
+    const result = await formatText(textarea.value);
+    if (result !== null) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+            HTMLTextAreaElement.prototype,
+            'value',
+        )?.set;
+        nativeSetter?.call(textarea, result);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+}
 </script>
 
 <template>
@@ -179,15 +203,32 @@ const emit = defineEmits<{
 
                     <!-- Описание -->
                     <div class="grid gap-2">
-                        <Label for="create-job-description">Описание</Label>
+                        <div class="flex items-center justify-between">
+                            <Label for="create-job-description">
+                                Описание
+                            </Label>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                :disabled="aiLoading"
+                                @click="handleAiFormat"
+                                class="h-7 gap-1 px-2 text-xs"
+                            >
+                                <Spinner v-if="aiLoading" class="size-3" />
+                                <Sparkles v-else class="size-3" />
+                                Форматировать с ИИ
+                            </Button>
+                        </div>
                         <textarea
                             id="create-job-description"
+                            ref="descriptionRef"
                             name="description"
                             placeholder="Заметки о вакансии"
                             rows="3"
                             class="w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
                         />
-                        <InputError :message="errors.description" />
+                        <InputError :message="aiError ?? errors.description" />
                     </div>
 
                     <!-- Навыки -->

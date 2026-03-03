@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AiFormatController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::get('skills/search', [SkillController::class, 'search'])->name('skills.search');
     Route::post('skills', [SkillController::class, 'store'])->name('skills.store');
+
+    Route::post('ai/format-text', AiFormatController::class)->name('ai.format-text');
 });
 
 require __DIR__ . '/settings.php';
