@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\CompanyInfo;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobComment;
@@ -153,14 +154,86 @@ class JobShowTest extends TestCase
         );
     }
 
-    private function createJobForUser(User $user): Job
+    public function test_company_info_included_when_matching_name_and_city(): void
+    {
+        $user = User::factory()->create();
+        $job = $this->createJobForUser($user, [
+            'company_name' => 'ООО Рога и Копыта',
+            'location_city' => 'Москва',
+        ]);
+
+        CompanyInfo::factory()->create([
+            'name' => 'ООО Рога и Копыта',
+            'city' => 'Москва',
+            'info' => [
+                'overview' => 'Крупная компания',
+                'links' => ['website' => 'https://example.com'],
+            ],
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.show', $job));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Show')
+                ->where('job.company_info.name', 'ООО Рога и Копыта')
+                ->where('job.company_info.city', 'Москва')
+                ->where('job.company_info.info.overview', 'Крупная компания')
+                ->where('job.company_info.info.links.website', 'https://example.com')
+        );
+    }
+
+    public function test_company_info_is_null_when_no_match(): void
+    {
+        $user = User::factory()->create();
+        $job = $this->createJobForUser($user, [
+            'company_name' => 'Неизвестная компания',
+            'location_city' => 'Казань',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.show', $job));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Show')
+                ->where('job.company_info', null)
+        );
+    }
+
+    public function test_company_info_is_null_when_name_matches_but_city_differs(): void
+    {
+        $user = User::factory()->create();
+        $job = $this->createJobForUser($user, [
+            'company_name' => 'ООО Тест',
+            'location_city' => 'Москва',
+        ]);
+
+        CompanyInfo::factory()->create([
+            'name' => 'ООО Тест',
+            'city' => 'Санкт-Петербург',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.show', $job));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Show')
+                ->where('job.company_info', null)
+        );
+    }
+
+    /** @param  array<string, mixed>  $attributes */
+    private function createJobForUser(User $user, array $attributes = []): Job
     {
         $status = JobStatus::factory()->for($user)->create();
         $category = JobCategory::factory()->for($user)->create();
 
-        return Job::factory()->for($user)->create([
+        return Job::factory()->for($user)->create(array_merge([
             'job_status_id' => $status->id,
             'job_category_id' => $category->id,
-        ]);
+        ], $attributes));
     }
 }

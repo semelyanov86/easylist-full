@@ -6,10 +6,12 @@ namespace App\Actions\Job;
 
 use App\Actions\JobComment\GetJobCommentsAction;
 use App\Actions\JobDocument\GetJobDocumentsAction;
+use App\Data\CompanyInfoData;
 use App\Data\JobCategoryData;
 use App\Data\JobShowData;
 use App\Data\JobStatusData;
 use App\Data\SkillData;
+use App\Models\CompanyInfo;
 use App\Models\Job;
 
 final readonly class GetJobShowDataAction
@@ -26,6 +28,11 @@ final readonly class GetJobShowDataAction
     public function execute(Job $job): JobShowData
     {
         $job->load(['status', 'category', 'skills']);
+
+        $companyInfo = CompanyInfo::query()
+            ->where('name', $job->company_name)
+            ->where('city', $job->location_city)
+            ->first();
 
         return new JobShowData(
             id: $job->id,
@@ -45,6 +52,7 @@ final readonly class GetJobShowDataAction
             comments: $this->getComments->execute($job),
             documents: $this->getDocuments->execute($job),
             activities: $this->getActivityTimeline->execute($job),
+            company_info: $companyInfo ? CompanyInfoData::from($companyInfo) : null,
         );
     }
 }

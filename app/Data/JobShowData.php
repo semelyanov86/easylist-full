@@ -32,5 +32,6 @@ final class JobShowData extends Data
         public readonly array $comments = [],
         public readonly array $documents = [],
         public readonly array $activities = [],
+        public readonly ?CompanyInfoData $company_info = null,
     ) {}
 }
