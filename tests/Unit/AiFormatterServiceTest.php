@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Exceptions\AiFormatterException;
+use App\Services\AiClientService;
 use App\Services\AiFormatterService;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -19,10 +20,11 @@ class AiFormatterServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new AiFormatterService(
+        $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
         );
+        $service = new AiFormatterService(client: $client);
 
         $result = $service->format('Сырой текст');
 
@@ -37,10 +39,11 @@ class AiFormatterServiceTest extends TestCase
             'https://ask.sergeyem.ru/*' => Http::response('Server Error', 500),
         ]);
 
-        $service = new AiFormatterService(
+        $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
         );
+        $service = new AiFormatterService(client: $client);
 
         $this->expectException(AiFormatterException::class);
         $this->expectExceptionMessage('HTTP 500');
@@ -56,10 +59,11 @@ class AiFormatterServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new AiFormatterService(
+        $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
         );
+        $service = new AiFormatterService(client: $client);
 
         $this->expectException(AiFormatterException::class);
         $this->expectExceptionMessage('Пустой ответ от сервиса');
@@ -75,10 +79,11 @@ class AiFormatterServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new AiFormatterService(
+        $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
         );
+        $service = new AiFormatterService(client: $client);
 
         $this->expectException(AiFormatterException::class);
         $this->expectExceptionMessage('Пустой ответ от сервиса');
@@ -94,10 +99,11 @@ class AiFormatterServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new AiFormatterService(
+        $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
         );
+        $service = new AiFormatterService(client: $client);
 
         $this->expectException(AiFormatterException::class);
 

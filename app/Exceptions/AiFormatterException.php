@@ -12,4 +12,9 @@ final class AiFormatterException extends RuntimeException
     {
         return new self("Ошибка ИИ-форматирования: {$reason}");
     }
+
+    public static function tagExtractionFailed(string $reason): self
+    {
+        return new self("Ошибка извлечения тегов: {$reason}");
+    }
 }

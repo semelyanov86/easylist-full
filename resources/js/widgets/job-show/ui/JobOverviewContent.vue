@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { JobDetail } from '@entities/job';
+import { useAiTagExtractor } from '@features/job/model/useAiTagExtractor';
 import { Badge } from '@shared/ui/badge';
 import DOMPurify from 'dompurify';
-import { FileText, Tag } from 'lucide-vue-next';
+import { FileText, Loader2, Sparkles, Tag } from 'lucide-vue-next';
 import { marked } from 'marked';
 import { computed } from 'vue';
 
@@ -24,6 +25,12 @@ const descriptionHtml = computed((): string => {
 
     return DOMPurify.sanitize(html);
 });
+
+const { loading, error, extractTags } = useAiTagExtractor();
+
+function handleExtractTags(): void {
+    extractTags(props.job.id);
+}
 </script>
 
 <template>
@@ -48,7 +55,6 @@ const descriptionHtml = computed((): string => {
             </div>
 
             <div
-                v-if="job.skills.length > 0"
                 class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             >
                 <div
@@ -58,11 +64,17 @@ const descriptionHtml = computed((): string => {
                     <h3 class="text-sm font-semibold text-foreground">
                         Навыки
                     </h3>
-                    <span class="text-xs text-muted-foreground">
+                    <span
+                        v-if="job.skills.length > 0"
+                        class="text-xs text-muted-foreground"
+                    >
                         {{ job.skills.length }}
                     </span>
                 </div>
-                <div class="flex flex-wrap gap-2 p-5">
+                <div
+                    v-if="job.skills.length > 0"
+                    class="flex flex-wrap gap-2 p-5"
+                >
                     <Badge
                         v-for="skill in job.skills"
                         :key="skill.id"
@@ -71,6 +83,31 @@ const descriptionHtml = computed((): string => {
                     >
                         {{ skill.title }}
                     </Badge>
+                </div>
+                <div v-else class="p-5">
+                    <div
+                        class="flex flex-col items-center gap-3 py-4 text-center"
+                    >
+                        <p class="text-sm text-muted-foreground">
+                            Навыки не указаны
+                        </p>
+                        <button
+                            type="button"
+                            :disabled="loading"
+                            class="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+                            @click="handleExtractTags"
+                        >
+                            <Loader2
+                                v-if="loading"
+                                class="size-4 animate-spin"
+                            />
+                            <Sparkles v-else class="size-4 text-primary" />
+                            {{ loading ? 'Распознаём...' : 'Распознать с ИИ' }}
+                        </button>
+                        <p v-if="error" class="text-xs text-destructive">
+                            {{ error }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
