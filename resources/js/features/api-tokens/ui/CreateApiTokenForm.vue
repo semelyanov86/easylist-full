@@ -10,7 +10,8 @@ import ApiTokenController from '@/actions/App/Http/Controllers/Settings/ApiToken
 
 <template>
     <Form
-        v-bind="ApiTokenController.store.form()"
+        :action="ApiTokenController.store.url()"
+        method="post"
         reset-on-success
         class="space-y-4"
         v-slot="{ errors, processing, recentlySuccessful }"

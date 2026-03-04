@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Contracts\AiCompanyAnalyzerContract;
 use App\Contracts\AiFormatterContract;
 use App\Contracts\AiTagExtractorContract;
 use App\Services\AiClientService;
+use App\Services\AiCompanyAnalyzerService;
 use App\Services\AiFormatterService;
 use App\Services\AiTagExtractorService;
 use Carbon\CarbonImmutable;
@@ -41,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         $this->app->singleton(AiTagExtractorContract::class, fn (): AiTagExtractorContract => new AiTagExtractorService(
+            client: $this->app->make(AiClientService::class),
+        ));
+
+        $this->app->singleton(AiCompanyAnalyzerContract::class, fn (): AiCompanyAnalyzerContract => new AiCompanyAnalyzerService(
             client: $this->app->make(AiClientService::class),
         ));
     }

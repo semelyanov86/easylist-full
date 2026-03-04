@@ -40,7 +40,8 @@ const emit = defineEmits<{
         <DialogContent>
             <Form
                 v-if="category"
-                v-bind="JobCategoryController.update.form(category.id)"
+                :action="JobCategoryController.update.url(category.id)"
+                method="patch"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"

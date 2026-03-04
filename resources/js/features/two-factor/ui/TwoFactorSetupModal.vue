@@ -236,7 +236,8 @@ watch(
 
                 <template v-else>
                     <Form
-                        v-bind="confirm.form()"
+                        :action="confirm.url()"
+                        method="post"
                         reset-on-error
                         @finish="code = ''"
                         @success="isOpen = false"

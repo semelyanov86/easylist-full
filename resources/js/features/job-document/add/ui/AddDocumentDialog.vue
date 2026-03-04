@@ -66,7 +66,8 @@ const onFormSuccess = (): void => {
     >
         <DialogContent class="max-h-[90dvh] overflow-y-auto sm:max-w-md">
             <Form
-                v-bind="JobDocumentController.store.form(jobId)"
+                :action="JobDocumentController.store.url(jobId)"
+                method="post"
                 reset-on-success
                 :options="{ preserveScroll: true }"
                 @success="onFormSuccess"

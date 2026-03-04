@@ -143,7 +143,8 @@ const handleWebAuthnAuth = async (): Promise<void> => {
             <!-- TOTP -->
             <template v-else-if="activeMethod === 'totp'">
                 <Form
-                    v-bind="store.form()"
+                    :action="store.url()"
+                    method="post"
                     class="space-y-5"
                     reset-on-error
                     @error="code = ''"
@@ -206,7 +207,8 @@ const handleWebAuthnAuth = async (): Promise<void> => {
             <!-- Recovery -->
             <template v-else>
                 <Form
-                    v-bind="store.form()"
+                    :action="store.url()"
+                    method="post"
                     class="space-y-5"
                     reset-on-error
                     #default="{ errors, processing, clearErrors }"

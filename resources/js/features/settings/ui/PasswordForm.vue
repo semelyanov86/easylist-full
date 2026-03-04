@@ -18,7 +18,8 @@ import PasswordController from '@/actions/App/Http/Controllers/Settings/Password
         />
 
         <Form
-            v-bind="PasswordController.update.form()"
+            :action="PasswordController.update.url()"
+            method="put"
             :options="{
                 preserveScroll: true,
             }"

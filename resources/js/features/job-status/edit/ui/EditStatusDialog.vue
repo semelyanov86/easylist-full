@@ -52,7 +52,8 @@ watch(
         <DialogContent>
             <Form
                 v-if="status"
-                v-bind="JobStatusController.update.form(status.id)"
+                :action="JobStatusController.update.url(status.id)"
+                method="patch"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"

@@ -37,7 +37,8 @@ const emit = defineEmits<{
         <DialogContent>
             <Form
                 v-if="token"
-                v-bind="ApiTokenController.destroy.form(token.id)"
+                :action="ApiTokenController.destroy.url(token.id)"
+                method="delete"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"

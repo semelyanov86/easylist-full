@@ -37,7 +37,8 @@ const emit = defineEmits<{
         <DialogContent>
             <Form
                 v-if="job"
-                v-bind="JobController.destroy.form(job.id)"
+                :action="JobController.destroy.url(job.id)"
+                method="delete"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"

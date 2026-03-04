@@ -14,7 +14,8 @@ const selectedColor = ref('gray');
 
 <template>
     <Form
-        v-bind="JobStatusController.store.form()"
+        :action="JobStatusController.store.url()"
+        method="post"
         reset-on-success
         class="space-y-4"
         v-slot="{ errors, processing, recentlySuccessful }"

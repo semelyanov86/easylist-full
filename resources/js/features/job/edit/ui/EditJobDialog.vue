@@ -71,7 +71,8 @@ async function handleAiFormat(): Promise<void> {
         <DialogContent class="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
             <Form
                 v-if="job"
-                v-bind="JobController.update.form(job.id)"
+                :action="JobController.update.url(job.id)"
+                method="patch"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AiCompanyAnalyzerController;
 use App\Http\Controllers\AiExtractJobTagsController;
 use App\Http\Controllers\AiFormatController;
 use App\Http\Controllers\JobCommentController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::post('ai/format-text', AiFormatController::class)->name('ai.format-text');
     Route::post('ai/extract-job-tags/{job}', AiExtractJobTagsController::class)->name('ai.extract-job-tags');
+    Route::post('ai/company-analysis/{job}', AiCompanyAnalyzerController::class)->name('ai.company-analysis');
 });
 
 require __DIR__ . '/settings.php';

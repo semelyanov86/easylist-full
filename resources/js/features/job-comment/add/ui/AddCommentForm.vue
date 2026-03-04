@@ -15,7 +15,8 @@ defineProps<Props>();
 
 <template>
     <Form
-        v-bind="JobCommentController.store.form(jobId)"
+        :action="JobCommentController.store.url(jobId)"
+        method="post"
         reset-on-success
         :options="{ preserveScroll: true }"
         class="flex flex-col gap-2"

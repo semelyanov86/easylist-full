@@ -18,7 +18,8 @@ import { store } from '@/routes/password/confirm';
         <Head title="Подтверждение пароля" />
 
         <Form
-            v-bind="store.form()"
+            :action="store.url()"
+            method="post"
             reset-on-success
             v-slot="{ errors, processing }"
         >

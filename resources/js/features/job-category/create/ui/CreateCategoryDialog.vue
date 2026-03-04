@@ -39,7 +39,8 @@ const emit = defineEmits<{
     >
         <DialogContent>
             <Form
-                v-bind="JobCategoryController.store.form()"
+                :action="JobCategoryController.store.url()"
+                method="post"
                 reset-on-success
                 @success="emit('close')"
                 :options="{ preserveScroll: true }"
