@@ -7,6 +7,7 @@ namespace App\Actions\Job;
 use App\Actions\Contact\GetContactsAction;
 use App\Actions\JobComment\GetJobCommentsAction;
 use App\Actions\JobDocument\GetJobDocumentsAction;
+use App\Actions\JobTask\GetJobTasksAction;
 use App\Data\CompanyInfoData;
 use App\Data\JobCategoryData;
 use App\Data\JobShowData;
@@ -22,6 +23,7 @@ final readonly class GetJobShowDataAction
         private GetJobDocumentsAction $getDocuments,
         private GetJobActivityTimelineAction $getActivityTimeline,
         private GetContactsAction $getContacts,
+        private GetJobTasksAction $getTasks,
     ) {}
 
     /**
@@ -55,6 +57,7 @@ final readonly class GetJobShowDataAction
             documents: $this->getDocuments->execute($job),
             activities: $this->getActivityTimeline->execute($job),
             contacts: $this->getContacts->execute($job),
+            tasks: $this->getTasks->execute($job),
             company_info: $companyInfo ? CompanyInfoData::from($companyInfo) : null,
         );
     }

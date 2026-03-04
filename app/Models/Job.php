@@ -87,6 +87,14 @@ class Job extends Model
     }
 
     /**
+     * @return HasMany<JobTask, $this>
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(JobTask::class);
+    }
+
+    /**
      * @return BelongsToMany<Skill, $this>
      */
     public function skills(): BelongsToMany

@@ -3,6 +3,7 @@ export { default as JobCommentsContent } from './ui/JobCommentsContent.vue';
 export { default as JobCompanyContent } from './ui/JobCompanyContent.vue';
 export { default as JobContactsContent } from './ui/JobContactsContent.vue';
 export { default as JobDocumentsContent } from './ui/JobDocumentsContent.vue';
+export { default as JobTasksContent } from './ui/JobTasksContent.vue';
 export { default as JobOverviewContent } from './ui/JobOverviewContent.vue';
 export { default as JobShowHeader } from './ui/JobShowHeader.vue';
 export { default as JobShowTabs } from './ui/JobShowTabs.vue';

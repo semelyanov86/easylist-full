@@ -9,6 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
+use App\Http\Controllers\JobTaskController;
 use App\Http\Controllers\SkillController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('jobs/{job}/contacts', [ContactController::class, 'store'])->name('contacts.store');
     Route::patch('contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
     Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+
+    Route::post('jobs/{job}/tasks', [JobTaskController::class, 'store'])->name('job-tasks.store');
+    Route::patch('job-tasks/{jobTask}', [JobTaskController::class, 'update'])->name('job-tasks.update');
+    Route::patch('job-tasks/{jobTask}/toggle', [JobTaskController::class, 'toggle'])->name('job-tasks.toggle');
+    Route::delete('job-tasks/{jobTask}', [JobTaskController::class, 'destroy'])->name('job-tasks.destroy');
 
     Route::get('skills/search', [SkillController::class, 'search'])->name('skills.search');
     Route::post('skills', [SkillController::class, 'store'])->name('skills.store');

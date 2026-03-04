@@ -20,6 +20,7 @@ import {
     JobOverviewContent,
     JobShowHeader,
     JobShowTabs,
+    JobTasksContent,
 } from '@widgets/job-show';
 import { ref } from 'vue';
 
@@ -43,7 +44,7 @@ const tabs: JobShowTab[] = [
     { id: 'documents', title: 'Документы', enabled: true },
     { id: 'company', title: 'Компания', enabled: true },
     { id: 'contacts', title: 'Контакты', enabled: true },
-    { id: 'tasks', title: 'Задачи', enabled: false },
+    { id: 'tasks', title: 'Задачи', enabled: true },
 ];
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -77,6 +78,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <JobDocumentsContent v-if="activeTab === 'documents'" :job="job" />
             <JobCompanyContent v-if="activeTab === 'company'" :job="job" />
             <JobContactsContent v-if="activeTab === 'contacts'" :job="job" />
+            <JobTasksContent v-if="activeTab === 'tasks'" :job="job" />
         </div>
 
         <EditJobDialog

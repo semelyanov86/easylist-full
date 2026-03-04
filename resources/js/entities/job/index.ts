@@ -5,6 +5,7 @@ import type { JobCategory } from '@entities/job-category';
 import type { JobComment } from '@entities/job-comment';
 import type { JobDocument } from '@entities/job-document';
 import type { JobStatus } from '@entities/job-status';
+import type { JobTask } from '@entities/job-task';
 import type { Skill } from '@entities/skill';
 
 export type Job = {
@@ -75,6 +76,7 @@ export type JobDetail = Job & {
     documents: JobDocument[];
     activities: ActivityTimelineItem[];
     contacts: Contact[];
+    tasks: JobTask[];
     company_info: CompanyInfo | null;
 };
 
