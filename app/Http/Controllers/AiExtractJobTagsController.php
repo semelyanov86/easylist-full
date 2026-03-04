@@ -24,6 +24,10 @@ final class AiExtractJobTagsController extends Controller
             abort(403);
         }
 
+        if (! $user->is_premium) {
+            abort(403, 'Данная функция доступна только для Premium аккаунтов');
+        }
+
         try {
             $skills = $action->execute($user, $job);
 

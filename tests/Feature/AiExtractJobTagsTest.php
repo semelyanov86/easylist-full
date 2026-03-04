@@ -39,7 +39,7 @@ class AiExtractJobTagsTest extends TestCase
 
     public function test_another_users_job_returns_403(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $otherUser = User::factory()->create();
         $job = Job::factory()->for($otherUser)->create();
 
@@ -48,9 +48,19 @@ class AiExtractJobTagsTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_successful_extraction_creates_and_attaches_skills(): void
+    public function test_non_premium_user_gets_403(): void
     {
         $user = User::factory()->create();
+        $job = Job::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->postJson(route('ai.extract-job-tags', $job));
+
+        $response->assertForbidden();
+    }
+
+    public function test_successful_extraction_creates_and_attaches_skills(): void
+    {
+        $user = User::factory()->premium()->create();
         $job = Job::factory()->for($user)->create();
 
         $this->fakeExtractor->withResponse(['PHP', 'Laravel', 'Vue.js']);
@@ -69,7 +79,7 @@ class AiExtractJobTagsTest extends TestCase
 
     public function test_existing_skills_are_not_duplicated(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $job = Job::factory()->for($user)->create();
 
         Skill::factory()->for($user)->create(['title' => 'PHP']);
@@ -87,7 +97,7 @@ class AiExtractJobTagsTest extends TestCase
 
     public function test_previously_attached_skills_are_preserved(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $job = Job::factory()->for($user)->create();
 
         $existingSkill = Skill::factory()->for($user)->create(['title' => 'Docker']);
@@ -106,7 +116,7 @@ class AiExtractJobTagsTest extends TestCase
 
     public function test_service_failure_returns_502(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $job = Job::factory()->for($user)->create();
 
         $this->fakeExtractor->shouldFail();
@@ -119,7 +129,7 @@ class AiExtractJobTagsTest extends TestCase
 
     public function test_empty_tags_returns_empty_skills(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $job = Job::factory()->for($user)->create();
 
         $this->fakeExtractor->withResponse([]);

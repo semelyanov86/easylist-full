@@ -34,9 +34,20 @@ class AiFormatTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_text_field_is_required(): void
+    public function test_non_premium_user_gets_403(): void
     {
         $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->postJson(route('ai.format-text'), [
+            'text' => 'Тестовый текст',
+        ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_text_field_is_required(): void
+    {
+        $user = User::factory()->premium()->create();
 
         $response = $this->actingAs($user)->postJson(route('ai.format-text'), []);
 
@@ -46,7 +57,7 @@ class AiFormatTest extends TestCase
 
     public function test_text_cannot_exceed_max_length(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
 
         $response = $this->actingAs($user)->postJson(route('ai.format-text'), [
             'text' => str_repeat('a', 10001),
@@ -58,7 +69,7 @@ class AiFormatTest extends TestCase
 
     public function test_successful_formatting_returns_json(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $this->fakeFormatter->withResponse('**Красиво отформатировано**');
 
         $response = $this->actingAs($user)->postJson(route('ai.format-text'), [
@@ -71,7 +82,7 @@ class AiFormatTest extends TestCase
 
     public function test_service_failure_returns_502(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->premium()->create();
         $this->fakeFormatter->shouldFail();
 
         $response = $this->actingAs($user)->postJson(route('ai.format-text'), [

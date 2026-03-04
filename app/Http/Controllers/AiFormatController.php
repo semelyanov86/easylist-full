@@ -16,6 +16,13 @@ final class AiFormatController extends Controller
      */
     public function __invoke(AiFormatRequest $request, FormatTextAction $action): JsonResponse
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (! $user->is_premium) {
+            abort(403, 'Данная функция доступна только для Premium аккаунтов');
+        }
+
         try {
             /** @var string $text */
             $text = $request->validated('text');
