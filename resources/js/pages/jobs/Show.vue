@@ -15,6 +15,7 @@ import { AppLayout } from '@widgets/app-shell';
 import {
     JobCommentsContent,
     JobCompanyContent,
+    JobContactsContent,
     JobDocumentsContent,
     JobOverviewContent,
     JobShowHeader,
@@ -41,7 +42,7 @@ const tabs: JobShowTab[] = [
     { id: 'comments', title: 'Комментарии', enabled: true },
     { id: 'documents', title: 'Документы', enabled: true },
     { id: 'company', title: 'Компания', enabled: true },
-    { id: 'contacts', title: 'Контакты', enabled: false },
+    { id: 'contacts', title: 'Контакты', enabled: true },
     { id: 'tasks', title: 'Задачи', enabled: false },
 ];
 
@@ -75,6 +76,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <JobCommentsContent v-if="activeTab === 'comments'" :job="job" />
             <JobDocumentsContent v-if="activeTab === 'documents'" :job="job" />
             <JobCompanyContent v-if="activeTab === 'company'" :job="job" />
+            <JobContactsContent v-if="activeTab === 'contacts'" :job="job" />
         </div>
 
         <EditJobDialog

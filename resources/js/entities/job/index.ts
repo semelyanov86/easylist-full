@@ -1,5 +1,6 @@
 import type { ActivityTimelineItem } from '@entities/activity';
 import type { CompanyInfo } from '@entities/company-info';
+import type { Contact } from '@entities/contact';
 import type { JobCategory } from '@entities/job-category';
 import type { JobComment } from '@entities/job-comment';
 import type { JobDocument } from '@entities/job-document';
@@ -73,6 +74,7 @@ export type JobDetail = Job & {
     comments: JobComment[];
     documents: JobDocument[];
     activities: ActivityTimelineItem[];
+    contacts: Contact[];
     company_info: CompanyInfo | null;
 };
 

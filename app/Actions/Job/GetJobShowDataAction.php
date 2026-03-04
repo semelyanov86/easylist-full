@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Job;
 
+use App\Actions\Contact\GetContactsAction;
 use App\Actions\JobComment\GetJobCommentsAction;
 use App\Actions\JobDocument\GetJobDocumentsAction;
 use App\Data\CompanyInfoData;
@@ -20,6 +21,7 @@ final readonly class GetJobShowDataAction
         private GetJobCommentsAction $getComments,
         private GetJobDocumentsAction $getDocuments,
         private GetJobActivityTimelineAction $getActivityTimeline,
+        private GetContactsAction $getContacts,
     ) {}
 
     /**
@@ -52,6 +54,7 @@ final readonly class GetJobShowDataAction
             comments: $this->getComments->execute($job),
             documents: $this->getDocuments->execute($job),
             activities: $this->getActivityTimeline->execute($job),
+            contacts: $this->getContacts->execute($job),
             company_info: $companyInfo ? CompanyInfoData::from($companyInfo) : null,
         );
     }

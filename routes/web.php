@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AiCompanyAnalyzerController;
 use App\Http\Controllers\AiExtractJobTagsController;
 use App\Http\Controllers\AiFormatController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
@@ -35,6 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('jobs/{job}/documents', [JobDocumentController::class, 'store'])->name('job-documents.store');
     Route::get('job-documents/{document}/download', [JobDocumentController::class, 'download'])->name('job-documents.download');
     Route::delete('job-documents/{document}', [JobDocumentController::class, 'destroy'])->name('job-documents.destroy');
+
+    Route::post('jobs/{job}/contacts', [ContactController::class, 'store'])->name('contacts.store');
+    Route::patch('contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+    Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
 
     Route::get('skills/search', [SkillController::class, 'search'])->name('skills.search');
     Route::post('skills', [SkillController::class, 'store'])->name('skills.store');
