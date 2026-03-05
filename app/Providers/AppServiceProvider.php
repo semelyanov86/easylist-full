@@ -32,9 +32,13 @@ class AppServiceProvider extends ServiceProvider
             /** @var string $token */
             $token = config('services.ai_formatter.token');
 
+            /** @var int $timeout */
+            $timeout = config('services.ai_formatter.timeout');
+
             return new AiClientService(
                 url: $url,
                 token: $token,
+                timeout: $timeout,
             );
         });
 

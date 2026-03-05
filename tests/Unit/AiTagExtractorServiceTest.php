@@ -39,6 +39,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 
@@ -58,6 +59,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 
@@ -78,6 +80,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 
@@ -97,6 +100,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 
@@ -116,6 +120,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 
@@ -135,6 +140,7 @@ class AiTagExtractorServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiTagExtractorService(client: $client);
 

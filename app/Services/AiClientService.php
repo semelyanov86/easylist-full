@@ -15,6 +15,7 @@ final readonly class AiClientService
     public function __construct(
         private string $url,
         private string $token,
+        private int $timeout,
     ) {}
 
     /**
@@ -26,7 +27,7 @@ final readonly class AiClientService
      */
     public function send(string $prompt): array
     {
-        $response = Http::timeout(120)
+        $response = Http::timeout($this->timeout)
             ->withToken($this->token)
             ->asMultipart()
             ->post($this->url, [

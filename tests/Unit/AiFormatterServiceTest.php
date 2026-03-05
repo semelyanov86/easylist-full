@@ -23,6 +23,7 @@ class AiFormatterServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiFormatterService(client: $client);
 
@@ -42,6 +43,7 @@ class AiFormatterServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiFormatterService(client: $client);
 
@@ -62,6 +64,7 @@ class AiFormatterServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiFormatterService(client: $client);
 
@@ -82,6 +85,7 @@ class AiFormatterServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiFormatterService(client: $client);
 
@@ -102,6 +106,7 @@ class AiFormatterServiceTest extends TestCase
         $client = new AiClientService(
             url: 'https://ask.sergeyem.ru/api/claude/json',
             token: 'test-token',
+            timeout: 300,
         );
         $service = new AiFormatterService(client: $client);
 
