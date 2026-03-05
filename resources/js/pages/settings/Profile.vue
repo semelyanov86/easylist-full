@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { DeleteUser, ProfileForm, SettingsLayout } from '@features/settings';
+import {
+    DeleteUser,
+    ProfileForm,
+    SettingsLayout,
+    TickTickForm,
+} from '@features/settings';
 import { Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@shared/types';
 import { AppLayout } from '@widgets/app-shell';
@@ -9,6 +14,8 @@ import { edit } from '@/routes/profile';
 type Props = {
     mustVerifyEmail: boolean;
     status?: string;
+    ticktickToken: string | null;
+    ticktickListId: string | null;
 };
 
 defineProps<Props>();
@@ -31,6 +38,11 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <ProfileForm
                 :must-verify-email="mustVerifyEmail"
                 :status="status"
+            />
+
+            <TickTickForm
+                :ticktick-token="ticktickToken"
+                :ticktick-list-id="ticktickListId"
             />
 
             <DeleteUser />

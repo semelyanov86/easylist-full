@@ -6,6 +6,7 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
@@ -97,5 +98,68 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_ticktick_fields_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'ticktick_token' => 'test-token-123',
+                'ticktick_list_id' => 'list-456',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertSame('test-token-123', $user->ticktick_token);
+        $this->assertSame('list-456', $user->ticktick_list_id);
+    }
+
+    public function test_ticktick_fields_are_nullable(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'ticktick_token' => null,
+                'ticktick_list_id' => null,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertNull($user->ticktick_token);
+        $this->assertNull($user->ticktick_list_id);
+    }
+
+    public function test_profile_page_contains_ticktick_fields(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('profile.edit'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('settings/Profile')
+                ->has('ticktickToken')
+                ->has('ticktickListId')
+        );
     }
 }

@@ -5,6 +5,8 @@ export type User = {
     is_premium: boolean;
     avatar?: string;
     email_verified_at: string | null;
+    ticktick_token: string | null;
+    ticktick_list_id: string | null;
     created_at: string;
     updated_at: string;
     [key: string]: unknown;

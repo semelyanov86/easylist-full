@@ -21,9 +21,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         return Inertia::render('settings/Profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
+            'ticktickToken' => $user->ticktick_token,
+            'ticktickListId' => $user->ticktick_list_id,
         ]);
     }
 

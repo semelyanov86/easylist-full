@@ -44,6 +44,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         'password',
         'is_premium',
         'jobs_view_mode',
+        'ticktick_token',
+        'ticktick_list_id',
     ];
 
     /**
@@ -56,6 +58,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
+        'ticktick_token',
     ];
 
     /**
