@@ -3,9 +3,17 @@ import type { Contact } from '@entities/contact';
 import type { JobDetail } from '@entities/job';
 import { AddContactDialog } from '@features/contact/add';
 import { EditContactDialog } from '@features/contact/edit';
-import { router } from '@inertiajs/vue3';
+import { useContactFinder } from '@features/contact/find';
+import { router, usePage } from '@inertiajs/vue3';
 import { Button } from '@shared/ui/button';
-import { Plus, Search, UserPlus, Users } from 'lucide-vue-next';
+import {
+    Loader2,
+    Plus,
+    Search,
+    Sparkles,
+    UserPlus,
+    Users,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
@@ -18,9 +26,14 @@ type Props = {
 
 const props = defineProps<Props>();
 
+const page = usePage();
+const isPremium = computed((): boolean => page.props.auth.user.is_premium);
+
 const showAddDialog = ref(false);
 const editingContact = ref<Contact | null>(null);
 const searchQuery = ref('');
+
+const { loading: findLoading, error: findError, find } = useContactFinder();
 
 const filteredContacts = computed(() => {
     if (!searchQuery.value.trim()) {
@@ -148,14 +161,32 @@ const deleteContact = (contact: Contact): void => {
                         руководителей, связанных с этой вакансией
                     </p>
                 </div>
-                <Button
-                    size="sm"
-                    variant="outline"
-                    @click="showAddDialog = true"
-                >
-                    <UserPlus class="size-3.5" />
-                    <span>Создать первый контакт</span>
-                </Button>
+                <div class="flex items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        @click="showAddDialog = true"
+                    >
+                        <UserPlus class="size-3.5" />
+                        <span>Создать контакт</span>
+                    </Button>
+                    <Button
+                        v-if="isPremium"
+                        size="sm"
+                        :disabled="findLoading"
+                        @click="find(job.id)"
+                    >
+                        <Loader2
+                            v-if="findLoading"
+                            class="size-3.5 animate-spin"
+                        />
+                        <Sparkles v-else class="size-3.5" />
+                        <span>Найти через ИИ</span>
+                    </Button>
+                </div>
+                <p v-if="findError" class="text-xs text-destructive">
+                    {{ findError }}
+                </p>
             </div>
         </div>
     </div>
