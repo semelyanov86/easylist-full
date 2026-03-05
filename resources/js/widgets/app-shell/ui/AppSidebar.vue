@@ -72,7 +72,7 @@ const isCurrentFavorites = computed<boolean>(() => {
 });
 
 const localCategories = ref<JobCategory[]>([]);
-const categoryListRef = ref<HTMLElement | null>(null);
+const categoryListRef = ref<InstanceType<typeof SidebarMenu> | null>(null);
 let sortableInstance: Sortable | null = null;
 
 const showCreateDialog = ref(false);
@@ -93,11 +93,12 @@ const initSortable = (): void => {
         sortableInstance = null;
     }
 
-    if (!categoryListRef.value) {
+    const el = categoryListRef.value?.$el as HTMLElement | undefined;
+    if (!el) {
         return;
     }
 
-    sortableInstance = Sortable.create(categoryListRef.value, {
+    sortableInstance = Sortable.create(el, {
         handle: '[data-category-handle]',
         animation: 150,
         onEnd: (event) => {
@@ -126,7 +127,7 @@ onMounted(() => {
 });
 
 watch(
-    () => categoryListRef.value,
+    () => categoryListRef.value?.$el,
     () => {
         nextTick(() => initSortable());
     },
