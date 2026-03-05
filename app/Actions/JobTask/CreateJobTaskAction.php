@@ -31,6 +31,10 @@ final readonly class CreateJobTaskAction
             ->event('task_added')
             ->log('Добавлена задача');
 
+        if ($user->ticktick_token !== null && $user->ticktick_list_id !== null) {
+            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskCreated($task->id));
+        }
+
         return $task;
     }
 }

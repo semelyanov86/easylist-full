@@ -72,6 +72,17 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the user has TickTick integration configured.
+     */
+    public function withTickTick(string $token = 'ticktick-test-token', string $listId = 'ticktick-list-1'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'ticktick_token' => $token,
+            'ticktick_list_id' => $listId,
+        ]);
+    }
+
+    /**
      * Indicate that the model has a WebAuthn credential registered.
      */
     public function withWebAuthn(string $alias = 'Test Key'): static

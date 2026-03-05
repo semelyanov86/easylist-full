@@ -13,8 +13,13 @@ final readonly class DeleteJobTaskAction
         $job = $task->job;
         $user = $task->user;
         $taskTitle = $task->title;
+        $externalId = $task->external_id;
 
         $task->delete();
+
+        if ($externalId !== null && $user !== null && $user->ticktick_token !== null && $user->ticktick_list_id !== null) {
+            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskDeleted($externalId, $user->ticktick_token, $user->ticktick_list_id));
+        }
 
         if ($job !== null && $user !== null) {
             activity('job')

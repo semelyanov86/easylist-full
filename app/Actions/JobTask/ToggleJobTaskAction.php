@@ -31,5 +31,9 @@ final readonly class ToggleJobTaskAction
                 ->event($event)
                 ->log($message);
         }
+
+        if ($task->external_id !== null && $user->ticktick_token !== null && $user->ticktick_list_id !== null) {
+            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskToggled($task->id));
+        }
     }
 }

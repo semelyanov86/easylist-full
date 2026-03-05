@@ -43,4 +43,9 @@ return [
         'timeout' => (int) env('AI_FORMATTER_TIMEOUT', 300),
     ],
 
+    'ticktick' => [
+        'base_url' => env('TICKTICK_BASE_URL', 'https://api.ticktick.com/open/v1'),
+        'timeout' => (int) env('TICKTICK_TIMEOUT', 30),
+    ],
+
 ];

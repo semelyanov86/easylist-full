@@ -13,6 +13,7 @@ use App\Services\AiCompanyAnalyzerService;
 use App\Services\AiContactFinderService;
 use App\Services\AiFormatterService;
 use App\Services\AiTagExtractorService;
+use App\Services\TickTickClientService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,19 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AiContactFinderContract::class, fn (): AiContactFinderContract => new AiContactFinderService(
             client: $this->app->make(AiClientService::class),
         ));
+
+        $this->app->singleton(function (): \App\Contracts\TickTickClientContract {
+            /** @var string $baseUrl */
+            $baseUrl = config('services.ticktick.base_url');
+
+            /** @var int $timeout */
+            $timeout = config('services.ticktick.timeout');
+
+            return new TickTickClientService(
+                baseUrl: $baseUrl,
+                timeout: $timeout,
+            );
+        });
     }
 
     /**
