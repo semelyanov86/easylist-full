@@ -18,6 +18,7 @@ final class JobShowData extends Data
      */
     public function __construct(
         public readonly int $id,
+        public readonly ?string $uuid,
         public readonly string $title,
         public readonly string $company_name,
         public readonly ?string $description,

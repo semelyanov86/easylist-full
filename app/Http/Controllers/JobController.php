@@ -7,12 +7,13 @@ namespace App\Http\Controllers;
 use App\Actions\Job\CreateJobAction;
 use App\Actions\Job\DeleteJobAction;
 use App\Actions\Job\GetJobShowDataAction;
-use App\Actions\Job\UpdateJobAction;
 use App\Actions\Job\GetJobStatusTabsAction;
 use App\Actions\Job\GetKanbanColumnsAction;
 use App\Actions\Job\GetUserJobsQuery;
 use App\Actions\Job\MoveJobToStatusAction;
+use App\Actions\Job\ShareJobAction;
 use App\Actions\Job\ToggleFavoriteAction;
+use App\Actions\Job\UpdateJobAction;
 use App\Actions\JobCategory\GetUserJobCategoriesAction;
 use App\Actions\Skill\SyncJobSkillsAction;
 use App\Data\JobIndexFiltersData;
@@ -21,6 +22,7 @@ use App\Http\Requests\MoveJobRequest;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
 use App\Models\Job;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -165,6 +167,21 @@ final class JobController extends Controller
         $action->execute($job);
 
         return back();
+    }
+
+    /**
+     * Сгенерировать публичную ссылку для вакансии.
+     */
+    public function share(Request $request, Job $job, ShareJobAction $action): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        abort_if($job->user_id !== $user->id, 403);
+
+        $uuid = $action->execute($job);
+
+        return response()->json(['uuid' => $uuid]);
     }
 
     /**

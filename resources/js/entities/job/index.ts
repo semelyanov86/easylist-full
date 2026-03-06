@@ -1,5 +1,5 @@
 import type { ActivityTimelineItem } from '@entities/activity';
-import type { CompanyInfo } from '@entities/company-info';
+import type { CompanyInfo, CompanyInfoDetails } from '@entities/company-info';
 import type { Contact } from '@entities/contact';
 import type { JobCategory } from '@entities/job-category';
 import type { JobComment } from '@entities/job-comment';
@@ -10,6 +10,7 @@ import type { Skill } from '@entities/skill';
 
 export type Job = {
     id: number;
+    uuid: string | null;
     title: string;
     company_name: string;
     description: string | null;
@@ -87,4 +88,28 @@ export type KanbanColumn = {
     title: string;
     color: string;
     jobs: Job[];
+};
+
+export type PublicContact = {
+    first_name: string;
+    last_name: string;
+    position: string | null;
+    city: string | null;
+    email: string | null;
+    phone: string | null;
+    linkedin_url: string | null;
+};
+
+export type JobPublicView = {
+    title: string;
+    company_name: string;
+    description: string | null;
+    job_url: string | null;
+    location_city: string | null;
+    salary: number | null;
+    currency_symbol: string | null;
+    created_at: string;
+    skills: Skill[];
+    contacts: PublicContact[];
+    company_info: CompanyInfoDetails | null;
 };

@@ -40,6 +40,7 @@ final readonly class GetJobShowDataAction
 
         return new JobShowData(
             id: $job->id,
+            uuid: $job->uuid,
             title: $job->title,
             company_name: $job->company_name,
             description: $job->description,

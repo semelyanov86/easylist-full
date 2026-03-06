@@ -45,4 +45,14 @@ class JobFactory extends Factory
             'is_favorite' => true,
         ]);
     }
+
+    /**
+     * Сделать вакансию публично доступной (с UUID).
+     */
+    public function shared(): static
+    {
+        return $this->state(fn (): array => [
+            'uuid' => fake()->uuid(),
+        ]);
+    }
 }

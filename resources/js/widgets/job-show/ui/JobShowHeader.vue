@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { JobDetail } from '@entities/job';
+import { ShareJobDialog } from '@features/job/share';
 import { router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
@@ -10,9 +11,13 @@ import {
     Heart,
     MapPin,
     Pencil,
+    Share2,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 import { toggleFavorite } from '@/routes/jobs';
+
+const showShareDialog = ref(false);
 
 type Props = {
     job: JobDetail;
@@ -150,6 +155,14 @@ const formatDate = (dateString: string): string => {
                         <ExternalLink class="size-3.5" />
                         <span>Открыть</span>
                     </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="showShareDialog = true"
+                    >
+                        <Share2 class="size-3.5" />
+                        <span>Поделиться</span>
+                    </Button>
                     <Button variant="outline" size="sm" @click="emit('edit')">
                         <Pencil class="size-3.5" />
                         <span>Редактировать</span>
@@ -157,5 +170,11 @@ const formatDate = (dateString: string): string => {
                 </div>
             </div>
         </div>
+
+        <ShareJobDialog
+            v-model:is-open="showShareDialog"
+            :job-id="job.id"
+            :uuid="job.uuid"
+        />
     </div>
 </template>

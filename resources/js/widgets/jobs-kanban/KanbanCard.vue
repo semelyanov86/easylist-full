@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Job } from '@entities/job';
+import { ShareJobDialog } from '@features/job/share';
 import { Link, router } from '@inertiajs/vue3';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
@@ -17,8 +18,11 @@ import {
     Share2,
     Trash2,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 import { show, toggleFavorite } from '@/routes/jobs';
+
+const showShareDialog = ref(false);
 
 type Props = {
     job: Job;
@@ -109,6 +113,7 @@ const formatDate = (dateString: string): string => {
                                 variant="ghost"
                                 size="icon-sm"
                                 class="size-6 text-muted-foreground hover:text-foreground"
+                                @click.stop="showShareDialog = true"
                             >
                                 <Share2 class="size-3.5" />
                             </Button>
@@ -195,5 +200,11 @@ const formatDate = (dateString: string): string => {
                 +{{ job.skills.length - 3 }}
             </span>
         </div>
+
+        <ShareJobDialog
+            v-model:is-open="showShareDialog"
+            :job-id="job.id"
+            :uuid="job.uuid"
+        />
     </div>
 </template>

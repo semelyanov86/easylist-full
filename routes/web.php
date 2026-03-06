@@ -11,6 +11,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
+use App\Http\Controllers\JobPublicViewController;
 use App\Http\Controllers\JobTaskController;
 use App\Http\Controllers\SkillController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,8 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 
 Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('job/view/{uuid}', JobPublicViewController::class)->name('jobs.public-view');
+
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
     Route::get('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
@@ -30,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::patch('jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::patch('jobs/{job}/move', [JobController::class, 'move'])->name('jobs.move');
     Route::patch('jobs/{job}/favorite', [JobController::class, 'toggleFavorite'])->name('jobs.toggle-favorite');
+    Route::post('jobs/{job}/share', [JobController::class, 'share'])->name('jobs.share');
     Route::delete('jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
 
     Route::post('jobs/{job}/comments', [JobCommentController::class, 'store'])->name('job-comments.store');
