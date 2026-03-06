@@ -33,7 +33,7 @@ final class AiCoverLetterController extends Controller
 
             return back();
         } catch (AiFormatterException $e) {
-            return back()->with('error', $e->getMessage());
+            return back()->withErrors(['cover_letter' => $e->getMessage()]);
         }
     }
 }

@@ -22,8 +22,9 @@ export function useCoverLetterGenerator() {
                 onFinish() {
                     loading.value = false;
                 },
-                onError() {
+                onError(errors: Record<string, string>) {
                     error.value =
+                        errors.cover_letter ??
                         'Не удалось сгенерировать сопроводительное письмо';
                 },
             },

@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Contracts\AiCoverLetterContract;
 use App\Exceptions\AiFormatterException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -27,12 +28,18 @@ final readonly class AiCoverLetterService implements AiCoverLetterContract
      */
     public function generate(string $prompt): string
     {
-        $response = Http::timeout($this->timeout)
-            ->withToken($this->token)
-            ->asMultipart()
-            ->post($this->url, [
-                ['name' => 'prompt', 'contents' => $prompt],
-            ]);
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withToken($this->token)
+                ->asMultipart()
+                ->post($this->url, [
+                    ['name' => 'prompt', 'contents' => $prompt],
+                ]);
+        } catch (ConnectionException $e) {
+            throw AiFormatterException::requestFailed(
+                "Таймаут соединения: {$e->getMessage()}"
+            );
+        }
 
         if ($response->failed()) {
             throw AiFormatterException::requestFailed(
@@ -41,7 +48,7 @@ final readonly class AiCoverLetterService implements AiCoverLetterContract
         }
 
         /** @var string|null $fileUrl */
-        $fileUrl = $response->json('url');
+        $fileUrl = $response->json('result.url');
 
         if ($fileUrl === null || $fileUrl === '') {
             throw AiFormatterException::requestFailed(
@@ -53,9 +60,15 @@ final readonly class AiCoverLetterService implements AiCoverLetterContract
             ? $fileUrl
             : $this->baseUrl . $fileUrl;
 
-        $fileResponse = Http::timeout($this->timeout)
-            ->withToken($this->token)
-            ->get($absoluteUrl);
+        try {
+            $fileResponse = Http::timeout($this->timeout)
+                ->withToken($this->token)
+                ->get($absoluteUrl);
+        } catch (ConnectionException $e) {
+            throw AiFormatterException::requestFailed(
+                "Таймаут скачивания файла: {$e->getMessage()}"
+            );
+        }
 
         if ($fileResponse->failed()) {
             throw AiFormatterException::requestFailed(

@@ -101,7 +101,7 @@ class GenerateCoverLetterTest extends TestCase
         $response = $this->actingAs($user)->post(route('ai.cover-letter', $job));
 
         $response->assertRedirect();
-        $response->assertSessionHas('error');
+        $response->assertSessionHasErrors('cover_letter');
     }
 
     public function test_cover_letter_includes_contacts_in_prompt(): void
