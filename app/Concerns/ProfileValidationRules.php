@@ -21,6 +21,7 @@ trait ProfileValidationRules
             'email' => $this->emailRules($userId),
             'ticktick_token' => $this->ticktickTokenRules(),
             'ticktick_list_id' => $this->ticktickListIdRules(),
+            'about_me' => $this->aboutMeRules(),
         ];
     }
 
@@ -74,5 +75,15 @@ trait ProfileValidationRules
     protected function ticktickListIdRules(): array
     {
         return ['nullable', 'string', 'max:255'];
+    }
+
+    /**
+     * Правила валидации для поля «О себе».
+     *
+     * @return array<int, string>
+     */
+    protected function aboutMeRules(): array
+    {
+        return ['nullable', 'string', 'max:5000'];
     }
 }

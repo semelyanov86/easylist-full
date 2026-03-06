@@ -29,6 +29,7 @@ class ProfileController extends Controller
             'status' => $request->session()->get('status'),
             'ticktickToken' => $user->ticktick_token,
             'ticktickListId' => $user->ticktick_list_id,
+            'aboutMe' => $user->about_me,
         ]);
     }
 

@@ -162,4 +162,71 @@ class ProfileUpdateTest extends TestCase
                 ->has('ticktickListId')
         );
     }
+
+    public function test_about_me_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'about_me' => 'PHP-разработчик с 5-летним опытом.',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertSame('PHP-разработчик с 5-летним опытом.', $user->about_me);
+    }
+
+    public function test_about_me_is_nullable(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'about_me' => null,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertNull($user->about_me);
+    }
+
+    public function test_about_me_cannot_exceed_max_length(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'about_me' => str_repeat('а', 5001),
+            ]);
+
+        $response->assertSessionHasErrors('about_me');
+    }
+
+    public function test_profile_page_contains_about_me_field(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('profile.edit'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('settings/Profile')
+                ->has('aboutMe')
+        );
+    }
 }

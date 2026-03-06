@@ -46,6 +46,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
         'jobs_view_mode',
         'ticktick_token',
         'ticktick_list_id',
+        'about_me',
     ];
 
     /**

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    AboutMeForm,
     DeleteUser,
     ProfileForm,
     SettingsLayout,
@@ -16,6 +17,7 @@ type Props = {
     status?: string;
     ticktickToken: string | null;
     ticktickListId: string | null;
+    aboutMe: string | null;
 };
 
 defineProps<Props>();
@@ -39,6 +41,8 @@ const breadcrumbItems: BreadcrumbItem[] = [
                 :must-verify-email="mustVerifyEmail"
                 :status="status"
             />
+
+            <AboutMeForm :about-me="aboutMe" />
 
             <TickTickForm
                 :ticktick-token="ticktickToken"
