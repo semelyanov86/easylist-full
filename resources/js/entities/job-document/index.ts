@@ -21,6 +21,7 @@ export const documentCategories: { value: string; label: string }[] = [
     { value: 'recommendation', label: 'Рекомендация' },
     { value: 'article', label: 'Статья' },
     { value: 'certificate', label: 'Сертификат' },
+    { value: 'cover_letter', label: 'Сопроводительное письмо' },
     { value: 'other', label: 'Прочее' },
 ];
 
@@ -55,6 +56,11 @@ const categoryStyles: Record<string, CategoryStyle> = {
         bg: 'bg-status-cyan/10 dark:bg-status-cyan/15',
         text: 'text-status-cyan',
         border: 'border-status-cyan/20',
+    },
+    cover_letter: {
+        bg: 'bg-status-green/10 dark:bg-status-green/15',
+        text: 'text-status-green',
+        border: 'border-status-green/20',
     },
     other: {
         bg: 'bg-muted',

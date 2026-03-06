@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import type { JobDetail } from '@entities/job';
 import type { JobDocument } from '@entities/job-document';
+import { useCoverLetterGenerator } from '@features/cover-letter/generate';
 import {
     AddDocumentDialog,
     LinkDocumentDialog,
 } from '@features/job-document/add';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { Button } from '@shared/ui/button';
-import { FileText, Globe, Link2, Upload } from 'lucide-vue-next';
+import {
+    FileText,
+    Globe,
+    Link2,
+    Loader2,
+    Mail,
+    Sparkles,
+    Upload,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import JobDocumentController from '@/actions/App/Http/Controllers/JobDocumentController';
@@ -21,11 +30,26 @@ type Props = {
 
 const props = defineProps<Props>();
 
+const page = usePage();
+const isPremium = computed((): boolean => page.props.auth.user.is_premium);
+
 const showAddDialog = ref(false);
 const showLinkDialog = ref(false);
 
+const {
+    loading: coverLetterLoading,
+    error: coverLetterError,
+    generate: generateCoverLetter,
+} = useCoverLetterGenerator();
+
+const coverLetterDocument = computed(
+    () =>
+        props.job.documents.find((d) => d.category === 'cover_letter') ?? null,
+);
 const fileDocuments = computed(() =>
-    props.job.documents.filter((d) => d.file_path !== null),
+    props.job.documents.filter(
+        (d) => d.file_path !== null && d.category !== 'cover_letter',
+    ),
 );
 const linkDocuments = computed(() =>
     props.job.documents.filter((d) => d.external_url !== null),
@@ -41,6 +65,63 @@ const deleteDocument = (document: JobDocument): void => {
 <template>
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
+            <!-- Сопроводительное письмо -->
+            <div
+                class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+            >
+                <div
+                    class="flex items-center justify-between border-b border-border px-5 py-3"
+                >
+                    <div class="flex items-center gap-2.5">
+                        <div
+                            class="flex size-7 items-center justify-center rounded-lg bg-status-green/10 dark:bg-status-green/15"
+                        >
+                            <Mail class="size-3.5 text-status-green" />
+                        </div>
+                        <h3 class="text-sm font-semibold text-foreground">
+                            Сопроводительное письмо
+                        </h3>
+                    </div>
+                </div>
+
+                <div v-if="coverLetterDocument" class="space-y-2 p-3">
+                    <DocumentFileCard
+                        :document="coverLetterDocument"
+                        @delete="deleteDocument"
+                    />
+                </div>
+
+                <div
+                    v-else
+                    class="flex flex-col items-center justify-center gap-3 px-5 py-12"
+                >
+                    <div
+                        class="flex size-10 items-center justify-center rounded-full bg-muted/80"
+                    >
+                        <Mail class="size-5 text-muted-foreground/40" />
+                    </div>
+                    <p class="text-sm text-muted-foreground/60">
+                        Cover Letter ещё не создан
+                    </p>
+                    <Button
+                        v-if="isPremium"
+                        size="sm"
+                        :disabled="coverLetterLoading"
+                        @click="generateCoverLetter(job.id)"
+                    >
+                        <Loader2
+                            v-if="coverLetterLoading"
+                            class="size-3.5 animate-spin"
+                        />
+                        <Sparkles v-else class="size-3.5" />
+                        <span>Сгенерировать CL</span>
+                    </Button>
+                    <p v-if="coverLetterError" class="text-xs text-destructive">
+                        {{ coverLetterError }}
+                    </p>
+                </div>
+            </div>
+
             <!-- Файлы -->
             <div
                 class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"

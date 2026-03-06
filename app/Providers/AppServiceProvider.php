@@ -11,6 +11,7 @@ use App\Contracts\AiTagExtractorContract;
 use App\Services\AiClientService;
 use App\Services\AiCompanyAnalyzerService;
 use App\Services\AiContactFinderService;
+use App\Services\AiCoverLetterService;
 use App\Services\AiFormatterService;
 use App\Services\AiTagExtractorService;
 use App\Services\TickTickClientService;
@@ -60,6 +61,24 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AiContactFinderContract::class, fn (): AiContactFinderContract => new AiContactFinderService(
             client: $this->app->make(AiClientService::class),
         ));
+
+        $this->app->singleton(function (): \App\Contracts\AiCoverLetterContract {
+            /** @var string $url */
+            $url = config('services.ai_formatter.url');
+
+            /** @var string $token */
+            $token = config('services.ai_formatter.token');
+
+            /** @var int $timeout */
+            $timeout = config('services.ai_formatter.timeout');
+
+            return new AiCoverLetterService(
+                url: $url,
+                token: $token,
+                timeout: $timeout,
+                baseUrl: 'https://ask.sergeyem.ru',
+            );
+        });
 
         $this->app->singleton(function (): \App\Contracts\TickTickClientContract {
             /** @var string $baseUrl */

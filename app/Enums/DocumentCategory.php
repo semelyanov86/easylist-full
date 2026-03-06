@@ -11,6 +11,7 @@ enum DocumentCategory: string
     case Recommendation = 'recommendation';
     case Article = 'article';
     case Certificate = 'certificate';
+    case CoverLetter = 'cover_letter';
     case Other = 'other';
 
     /**
@@ -34,6 +35,7 @@ enum DocumentCategory: string
             self::Recommendation => 'Рекомендация',
             self::Article => 'Статья',
             self::Certificate => 'Сертификат',
+            self::CoverLetter => 'Сопроводительное письмо',
             self::Other => 'Прочее',
         };
     }
