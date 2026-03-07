@@ -1,0 +1,1399 @@
+openapi: 3.1.0
+info:
+  title: EasyList API
+  description: |
+    JSON:API совместимый REST API для управления вакансиями, контактами, документами и комментариями.
+
+    Все ответы используют формат JSON:API (`application/vnd.api+json`).
+    Авторизация через Bearer-токен (Laravel Sanctum).
+  version: 1.0.0
+  contact:
+    name: EasyList Team
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: Auth
+    description: Авторизованный пользователь
+  - name: Jobs
+    description: CRUD вакансий, фильтрация, пагинация
+  - name: Job Categories
+    description: Списки (категории) вакансий
+  - name: Comments
+    description: Комментарии к вакансиям
+  - name: Documents
+    description: Документы вакансий
+  - name: Contacts
+    description: Контакты вакансий
+  - name: Tasks
+    description: Задачи пользователя
+  - name: AI
+    description: Фоновые ИИ-процессы (анализ компании, поиск контактов)
+  - name: Public
+    description: Публичные эндпоинты (без авторизации)
+
+security:
+  - bearerAuth: []
+
+paths:
+  /me:
+    get:
+      operationId: getMe
+      summary: Получить текущего пользователя
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /jobs:
+    get:
+      operationId: listJobs
+      summary: Список вакансий с фильтрацией и пагинацией
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - name: filter[search]
+          in: query
+          schema:
+            type: string
+          description: Поиск по title, company_name, location_city
+        - name: filter[status_id]
+          in: query
+          schema:
+            type: integer
+          description: Фильтр по статусу
+        - name: filter[job_category_id]
+          in: query
+          schema:
+            type: integer
+          description: Фильтр по категории
+        - name: filter[is_favorite]
+          in: query
+          schema:
+            type: boolean
+          description: Только избранные
+        - name: filter[date_from]
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Дата создания от
+        - name: filter[date_to]
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Дата создания до
+      responses:
+        '200':
+          description: Пагинированный список вакансий
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createJob
+      summary: Создать вакансию
+      tags: [Jobs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreJobRequest'
+      responses:
+        '201':
+          description: Вакансия создана
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{jobId}:
+    get:
+      operationId: showJob
+      summary: Детальный просмотр вакансии
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+        - $ref: '#/components/parameters/Include'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: updateJob
+      summary: Обновить вакансию
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: Вакансия обновлена
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      operationId: deleteJob
+      summary: Удалить вакансию (soft delete)
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '204':
+          description: Вакансия удалена
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{jobId}/status:
+    patch:
+      operationId: moveJobStatus
+      summary: Переместить вакансию в другой статус
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status_id]
+              properties:
+                status_id:
+                  type: integer
+                  description: ID нового статуса
+      responses:
+        '200':
+          description: Статус обновлён
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{jobId}/favorite:
+    patch:
+      operationId: toggleFavorite
+      summary: Переключить статус избранного
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Статус избранного переключён
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{jobId}/share:
+    post:
+      operationId: shareJob
+      summary: Сгенерировать публичную ссылку (назначить UUID)
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: UUID назначен
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: jobs
+                      id:
+                        type: string
+                        example: '42'
+                      attributes:
+                        type: object
+                        properties:
+                          uuid:
+                            type: string
+                            format: uuid
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{jobId}/comments:
+    get:
+      operationId: listJobComments
+      summary: Получить комментарии вакансии
+      tags: [Comments]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommentResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      operationId: createJobComment
+      summary: Добавить комментарий к вакансии
+      tags: [Comments]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Комментарий создан
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommentResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{jobId}/documents:
+    get:
+      operationId: listJobDocuments
+      summary: Получить документы вакансии
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Список документов
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DocumentResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      operationId: createJobDocument
+      summary: Прикрепить документ к вакансии
+      tags: [Documents]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StoreDocumentRequest'
+      responses:
+        '201':
+          description: Документ создан
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DocumentResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{jobId}/contacts:
+    get:
+      operationId: listJobContacts
+      summary: Получить контакты вакансии
+      tags: [Contacts]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Список контактов
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContactResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      operationId: createJobContact
+      summary: Добавить контакт к вакансии
+      tags: [Contacts]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreContactRequest'
+      responses:
+        '201':
+          description: Контакт создан
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{jobId}/contacts/{contactId}:
+    delete:
+      operationId: deleteJobContact
+      summary: Удалить контакт вакансии
+      tags: [Contacts]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Контакт удалён
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /tasks/pending:
+    get:
+      operationId: listPendingTasks
+      summary: Получить незавершённые задачи текущего пользователя
+      description: |
+        Возвращает все задачи пользователя с `completed_at = null`.
+        Каждая задача включает relationship на вакансию, а в `included`
+        содержатся краткие данные связанных вакансий (title, company_name).
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Список незавершённых задач
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/TaskResource'
+                        - type: object
+                          properties:
+                            relationships:
+                              type: object
+                              properties:
+                                job:
+                                  $ref: '#/components/schemas/RelationshipLinkage'
+                  included:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: jobs
+                        id:
+                          type: string
+                        attributes:
+                          type: object
+                          properties:
+                            title:
+                              type: string
+                            company_name:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /job-categories:
+    get:
+      operationId: listJobCategories
+      summary: Получить все списки (категории) пользователя
+      tags: [Job Categories]
+      responses:
+        '200':
+          description: Список категорий
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobCategoryResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /job-categories/{jobCategoryId}:
+    get:
+      operationId: showJobCategory
+      summary: Получить категорию по ID
+      tags: [Job Categories]
+      parameters:
+        - name: jobCategoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/JobCategoryResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /job-categories/{jobCategoryId}/jobs:
+    get:
+      operationId: listCategoryJobs
+      summary: Получить вакансии из категории
+      tags: [Job Categories]
+      parameters:
+        - name: jobCategoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - name: filter[search]
+          in: query
+          schema:
+            type: string
+        - name: filter[status_id]
+          in: query
+          schema:
+            type: integer
+        - name: filter[is_favorite]
+          in: query
+          schema:
+            type: boolean
+        - name: filter[date_from]
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: filter[date_to]
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Пагинированный список вакансий категории
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{jobId}/analyze-company:
+    post:
+      operationId: analyzeCompany
+      summary: Запустить ИИ-анализ компании (фоновый процесс)
+      description: Требует Premium-подписку. Ставит задачу в очередь и возвращает 204.
+      tags: [AI]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '204':
+          description: Задача поставлена в очередь
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Нет доступа или нет Premium-подписки
+
+  /jobs/{jobId}/find-contacts:
+    post:
+      operationId: findContacts
+      summary: Запустить ИИ-поиск контактов (фоновый процесс)
+      description: Требует Premium-подписку. Ставит задачу в очередь и возвращает 204.
+      tags: [AI]
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '204':
+          description: Задача поставлена в очередь
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Нет доступа или нет Premium-подписки
+
+  /public/jobs/{uuid}:
+    get:
+      operationId: showPublicJob
+      summary: Публичный просмотр вакансии по UUID
+      description: Не требует авторизации. Возвращает ограниченный набор данных.
+      tags: [Public]
+      security: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/JobPublicResource'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Laravel Sanctum Bearer Token
+
+  parameters:
+    JobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    Include:
+      name: include
+      in: query
+      schema:
+        type: string
+      description: |
+        Связи для включения через запятую.
+        Допустимые значения: contacts, comments, documents, tasks, company-info
+
+    PageNumber:
+      name: page[number]
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PageSize:
+      name: page[size]
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 15
+
+  responses:
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthenticated.
+
+    Forbidden:
+      description: Доступ запрещён
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+    ValidationError:
+      description: Ошибка валидации (JSON:API формат)
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: '422'
+                    title:
+                      type: string
+                      example: Validation Error
+                    detail:
+                      type: string
+                      example: The title field is required.
+                    source:
+                      type: object
+                      properties:
+                        pointer:
+                          type: string
+                          example: /data/attributes/title
+
+  schemas:
+    # --- Resource Objects ---
+
+    UserResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: users
+        id:
+          type: string
+          example: '1'
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+            is_premium:
+              type: boolean
+            about_me:
+              type: string
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+
+    JobResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: jobs
+        id:
+          type: string
+          example: '42'
+        attributes:
+          type: object
+          properties:
+            uuid:
+              type: string
+              format: uuid
+              nullable: true
+            title:
+              type: string
+            company_name:
+              type: string
+            description:
+              type: string
+              nullable: true
+            job_url:
+              type: string
+              format: uri
+              nullable: true
+            location_city:
+              type: string
+              nullable: true
+            salary:
+              type: integer
+              nullable: true
+            is_favorite:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/RelationshipLinkage'
+            category:
+              $ref: '#/components/schemas/RelationshipLinkage'
+            skills:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+            contacts:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+            comments:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+            documents:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+            tasks:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+
+    JobStatusResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: job-statuses
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+              nullable: true
+            color:
+              type: string
+              description: Цвет статуса (enum)
+            order_column:
+              type: integer
+
+    JobCategoryResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: job-categories
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+              nullable: true
+            currency:
+              type: string
+              description: Код валюты (enum)
+            currency_symbol:
+              type: string
+            order_column:
+              type: integer
+
+    CommentResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: comments
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            body:
+              type: string
+            author_name:
+              type: string
+            user_id:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+
+    DocumentResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: documents
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+              nullable: true
+            category:
+              type: string
+              description: Категория документа (resume, cover_letter, portfolio, etc.)
+            category_label:
+              type: string
+            file_path:
+              type: string
+              nullable: true
+            original_filename:
+              type: string
+              nullable: true
+            mime_type:
+              type: string
+              nullable: true
+            file_size:
+              type: integer
+              nullable: true
+            external_url:
+              type: string
+              format: uri
+              nullable: true
+            author_name:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+
+    ContactResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: contacts
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            position:
+              type: string
+              nullable: true
+            city:
+              type: string
+              nullable: true
+            email:
+              type: string
+              format: email
+              nullable: true
+            phone:
+              type: string
+              nullable: true
+            description:
+              type: string
+              nullable: true
+            linkedin_url:
+              type: string
+              format: uri
+              nullable: true
+            facebook_url:
+              type: string
+              format: uri
+              nullable: true
+            whatsapp_url:
+              type: string
+              format: uri
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+
+    TaskResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: tasks
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+            user_id:
+              type: integer
+            external_id:
+              type: string
+              nullable: true
+            deadline:
+              type: string
+              format: date-time
+              nullable: true
+            completed_at:
+              type: string
+              format: date-time
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+
+    CompanyInfoResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: company-info
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            city:
+              type: string
+              nullable: true
+            info:
+              type: object
+              nullable: true
+              description: Детальная информация о компании от ИИ
+
+    SkillResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: skills
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+
+    JobPublicResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: jobs
+        id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+            company_name:
+              type: string
+            description:
+              type: string
+              nullable: true
+            location_city:
+              type: string
+              nullable: true
+            salary:
+              type: integer
+              nullable: true
+            job_url:
+              type: string
+              format: uri
+              nullable: true
+            currency_symbol:
+              type: string
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+            skills:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+            contacts:
+              type: array
+              items:
+                type: object
+                properties:
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  position:
+                    type: string
+                    nullable: true
+            company_info:
+              type: object
+              nullable: true
+
+    # --- Relationship Helpers ---
+
+    ResourceIdentifier:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+
+    RelationshipLinkage:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResourceIdentifier'
+
+    # --- Pagination ---
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        from:
+          type: integer
+          nullable: true
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        to:
+          type: integer
+          nullable: true
+        total:
+          type: integer
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+          format: uri
+        last:
+          type: string
+          format: uri
+        prev:
+          type: string
+          format: uri
+          nullable: true
+        next:
+          type: string
+          format: uri
+          nullable: true
+
+    PaginatedJobsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobResource'
+        included:
+          type: array
+          description: Включённые связанные ресурсы (при использовании ?include=)
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/JobStatusResource'
+              - $ref: '#/components/schemas/JobCategoryResource'
+              - $ref: '#/components/schemas/SkillResource'
+              - $ref: '#/components/schemas/ContactResource'
+              - $ref: '#/components/schemas/CommentResource'
+              - $ref: '#/components/schemas/DocumentResource'
+              - $ref: '#/components/schemas/TaskResource'
+              - $ref: '#/components/schemas/CompanyInfoResource'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+
+    SingleJobResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JobResource'
+        included:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/JobStatusResource'
+              - $ref: '#/components/schemas/JobCategoryResource'
+              - $ref: '#/components/schemas/SkillResource'
+              - $ref: '#/components/schemas/ContactResource'
+              - $ref: '#/components/schemas/CommentResource'
+              - $ref: '#/components/schemas/DocumentResource'
+              - $ref: '#/components/schemas/TaskResource'
+              - $ref: '#/components/schemas/CompanyInfoResource'
+
+    # --- Request Bodies ---
+
+    StoreJobRequest:
+      type: object
+      required: [title, company_name, job_status_id, job_category_id]
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        company_name:
+          type: string
+          maxLength: 255
+        job_status_id:
+          type: integer
+        job_category_id:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        job_url:
+          type: string
+          format: uri
+          maxLength: 255
+          nullable: true
+        salary:
+          type: integer
+          minimum: 0
+          nullable: true
+        location_city:
+          type: string
+          maxLength: 255
+          nullable: true
+        skill_ids:
+          type: array
+          items:
+            type: integer
+          nullable: true
+
+    UpdateJobRequest:
+      type: object
+      required: [title, company_name, job_status_id, job_category_id]
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        company_name:
+          type: string
+          maxLength: 255
+        job_status_id:
+          type: integer
+        job_category_id:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        job_url:
+          type: string
+          format: uri
+          maxLength: 255
+          nullable: true
+        salary:
+          type: integer
+          minimum: 0
+          nullable: true
+        location_city:
+          type: string
+          maxLength: 255
+          nullable: true
+        skill_ids:
+          type: array
+          items:
+            type: integer
+          nullable: true
+
+    StoreContactRequest:
+      type: object
+      required: [first_name, last_name]
+      properties:
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        position:
+          type: string
+          maxLength: 255
+          nullable: true
+        city:
+          type: string
+          maxLength: 255
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          nullable: true
+        phone:
+          type: string
+          maxLength: 255
+          nullable: true
+        description:
+          type: string
+          maxLength: 5000
+          nullable: true
+        linkedin_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+        facebook_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+        whatsapp_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+
+    StoreDocumentRequest:
+      type: object
+      required: [title, category]
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+        category:
+          type: string
+          description: Категория документа (resume, cover_letter, portfolio, etc.)
+        file:
+          type: string
+          format: binary
+          description: Файл (макс. 10 МБ, форматы jpg, jpeg, png, gif, pdf, doc, docx)
+        external_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+          description: Внешняя ссылка (обязателен file или external_url)

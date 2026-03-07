@@ -6,7 +6,9 @@ namespace App\Actions\Job;
 
 use App\Data\JobIndexFiltersData;
 use App\Data\JobListItemData;
+use App\Models\Job;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class GetUserJobsQuery
@@ -14,7 +16,40 @@ final readonly class GetUserJobsQuery
     /**
      * @return LengthAwarePaginator<int, JobListItemData>
      */
-    public function execute(User $user, JobIndexFiltersData $filters): LengthAwarePaginator
+    public function execute(User $user, JobIndexFiltersData $filters, int $perPage = 15): LengthAwarePaginator
+    {
+        /** @var LengthAwarePaginator<int, JobListItemData> */
+        return JobListItemData::collect(
+            $this->buildQuery($user, $filters)->paginate($perPage)->withQueryString(),
+        );
+    }
+
+    /**
+     * Пагинированные модели с дополнительным eager loading (для API с include).
+     *
+     * @param  list<string>  $with
+     * @return LengthAwarePaginator<int, Job>
+     */
+    public function executeWithModels(
+        User $user,
+        JobIndexFiltersData $filters,
+        array $with = [],
+        int $perPage = 15,
+    ): LengthAwarePaginator {
+        $query = $this->buildQuery($user, $filters);
+
+        if ($with !== []) {
+            $query->with($with);
+        }
+
+        /** @var LengthAwarePaginator<int, Job> */
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * @return HasMany<Job, User>
+     */
+    private function buildQuery(User $user, JobIndexFiltersData $filters): HasMany
     {
         $query = $user->jobs()
             ->with(['status', 'category', 'skills'])->latest('updated_at');
@@ -48,9 +83,6 @@ final readonly class GetUserJobsQuery
             $query->whereDate('created_at', '<=', $filters->date_to);
         }
 
-        /** @var LengthAwarePaginator<int, JobListItemData> */
-        return JobListItemData::collect(
-            $query->paginate(15)->withQueryString(),
-        );
+        return $query;
     }
 }

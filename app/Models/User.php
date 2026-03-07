@@ -95,6 +95,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
     }
 
     /**
+     * @return HasMany<JobTask, $this>
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(JobTask::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

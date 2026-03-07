@@ -36,12 +36,8 @@ const companyDetails = computed(() => {
     <div
         class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >
-        <div
-            class="flex items-center gap-2 border-b border-border px-6 py-3"
-        >
-            <h2 class="text-sm font-semibold text-foreground">
-                О компании
-            </h2>
+        <div class="flex items-center gap-2 border-b border-border px-6 py-3">
+            <h2 class="text-sm font-semibold text-foreground">О компании</h2>
         </div>
 
         <div class="p-6">
@@ -66,24 +62,17 @@ const companyDetails = computed(() => {
                         class="mt-0.5 size-4 shrink-0 text-muted-foreground"
                     />
                     <div>
-                        <p
-                            class="text-xs font-medium text-muted-foreground"
-                        >
+                        <p class="text-xs font-medium text-muted-foreground">
                             {{ detail.label }}
                         </p>
-                        <p
-                            class="mt-0.5 text-sm font-medium text-foreground"
-                        >
+                        <p class="mt-0.5 text-sm font-medium text-foreground">
                             {{ detail.value }}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div
-                v-if="companyInfo.links"
-                class="mt-6 flex flex-wrap gap-3"
-            >
+            <div v-if="companyInfo.links" class="mt-6 flex flex-wrap gap-3">
                 <a
                     v-if="companyInfo.links.website"
                     :href="companyInfo.links.website"

@@ -21,9 +21,7 @@ const descriptionHtml = computed((): string => {
     <div
         class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >
-        <div
-            class="flex items-center gap-2 border-b border-border px-6 py-3"
-        >
+        <div class="flex items-center gap-2 border-b border-border px-6 py-3">
             <h2 class="text-sm font-semibold text-foreground">
                 Описание вакансии
             </h2>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { JobPublicView } from '@entities/job';
+import { Head, Link } from '@inertiajs/vue3';
 import {
     PublicJobCompanyInfo,
     PublicJobContacts,
     PublicJobDescription,
     PublicJobHero,
 } from '@widgets/job-public-view';
-import { Head, Link } from '@inertiajs/vue3';
 
 import { home } from '@/routes';
 

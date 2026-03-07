@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import type { JobPublicView } from '@entities/job';
 import { Badge } from '@shared/ui/badge';
-import {
-    Building2,
-    Calendar,
-    ExternalLink,
-    MapPin,
-} from 'lucide-vue-next';
+import { Building2, Calendar, ExternalLink, MapPin } from 'lucide-vue-next';
 
 type Props = {
     job: JobPublicView;
 };
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const formatSalary = (salary: number, currencySymbol: string): string => {
     return new Intl.NumberFormat('ru-RU').format(salary) + ' ' + currencySymbol;
@@ -65,12 +60,7 @@ const formatDate = (dateString: string): string => {
                     v-if="job.salary"
                     class="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-lg font-bold text-primary-foreground"
                 >
-                    {{
-                        formatSalary(
-                            job.salary,
-                            job.currency_symbol ?? '₽',
-                        )
-                    }}
+                    {{ formatSalary(job.salary, job.currency_symbol ?? '₽') }}
                 </div>
 
                 <a

@@ -13,9 +13,7 @@ defineProps<Props>();
     <div
         class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >
-        <div
-            class="flex items-center gap-2 border-b border-border px-6 py-3"
-        >
+        <div class="flex items-center gap-2 border-b border-border px-6 py-3">
             <h2 class="text-sm font-semibold text-foreground">
                 Контактные лица
             </h2>
@@ -49,9 +47,7 @@ defineProps<Props>();
                     </div>
                 </div>
 
-                <div
-                    class="flex flex-wrap items-center gap-3 text-sm"
-                >
+                <div class="flex flex-wrap items-center gap-3 text-sm">
                     <a
                         v-if="contact.email"
                         :href="'mailto:' + contact.email"
