@@ -11,11 +11,11 @@ use Illuminate\Support\Str;
 final readonly class UpdateShoppingListAction
 {
     /**
-     * @param  array{name?: string, icon?: string|null, folder_id?: int, is_public?: bool, order_column?: int}  $data
+     * @param  array{name?: string, icon?: string|null, folder_id?: int|null, is_public?: bool, order_column?: int}  $data
      */
     public function execute(User $user, ShoppingList $shoppingList, array $data): void
     {
-        if (isset($data['folder_id'])) {
+        if (! empty($data['folder_id'])) {
             $folderBelongsToUser = $user->folders()
                 ->where('id', $data['folder_id'])
                 ->exists();

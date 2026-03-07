@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Data\FolderData;
 use App\Data\JobCategoryData;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -53,6 +54,9 @@ class HandleInertiaRequests extends Middleware
             'favoritesCount' => fn () => $request->user()
                 ? $request->user()->jobs()->where('is_favorite', true)->count()
                 : 0,
+            'shoppingFolders' => fn () => $request->user()
+                ? FolderData::collect($request->user()->folders()->ordered()->get())
+                : [],
         ];
     }
 }

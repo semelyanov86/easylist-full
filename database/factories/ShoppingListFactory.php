@@ -29,6 +29,13 @@ class ShoppingListFactory extends Factory
         ];
     }
 
+    public function withoutFolder(): static
+    {
+        return $this->state(fn (): array => [
+            'folder_id' => null,
+        ]);
+    }
+
     public function shared(): static
     {
         return $this->state(fn (): array => [

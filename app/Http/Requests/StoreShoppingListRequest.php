@@ -19,7 +19,7 @@ class StoreShoppingListRequest extends FormRequest
     {
         return [
             'data.type' => ['required', 'string', 'in:lists'],
-            'data.attributes.folder_id' => ['required', 'integer', 'exists:folders,id'],
+            'data.attributes.folder_id' => ['nullable', 'integer', 'exists:folders,id'],
             'data.attributes.name' => ['required', 'string', 'max:255'],
             'data.attributes.icon' => ['nullable', 'string', 'max:255'],
             'data.attributes.is_public' => ['nullable', 'boolean'],

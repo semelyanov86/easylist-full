@@ -225,19 +225,22 @@ class FolderApiTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_destroy_cascades_to_lists_and_items(): void
+    public function test_destroy_nullifies_lists_folder_id(): void
     {
         Sanctum::actingAs($this->user);
 
         $list = ShoppingList::factory()->for($this->user)->for($this->folder)->create();
-        ShoppingItem::factory()->for($this->user)->for($list)->create();
+        $item = ShoppingItem::factory()->for($this->user)->for($list)->create();
 
         $response = $this->deleteJson("/api/v1/folders/{$this->folder->id}");
 
         $response->assertNoContent();
         $this->assertDatabaseMissing('folders', ['id' => $this->folder->id]);
-        $this->assertDatabaseMissing('shopping_lists', ['id' => $list->id]);
-        $this->assertDatabaseCount('shopping_items', 0);
+        $this->assertDatabaseHas('shopping_lists', [
+            'id' => $list->id,
+            'folder_id' => null,
+        ]);
+        $this->assertDatabaseHas('shopping_items', ['id' => $item->id]);
     }
 
     public function test_folders_are_ordered_by_order_column(): void

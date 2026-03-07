@@ -10,15 +10,17 @@ use App\Models\User;
 final readonly class CreateShoppingListAction
 {
     /**
-     * @param  array{folder_id: int, name: string, icon?: string|null, is_public?: bool}  $data
+     * @param  array{folder_id?: int|null, name: string, icon?: string|null, is_public?: bool}  $data
      */
     public function execute(User $user, array $data): ShoppingList
     {
-        $folderBelongsToUser = $user->folders()
-            ->where('id', $data['folder_id'])
-            ->exists();
+        if (! empty($data['folder_id'])) {
+            $folderBelongsToUser = $user->folders()
+                ->where('id', $data['folder_id'])
+                ->exists();
 
-        abort_if(! $folderBelongsToUser, 403);
+            abort_if(! $folderBelongsToUser, 403);
+        }
 
         /** @var ShoppingList */
         return $user->shoppingLists()->create($data);

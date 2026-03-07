@@ -22,7 +22,7 @@ class UpdateShoppingListRequest extends FormRequest
             'data.type' => ['required', 'string', 'in:lists'],
             'data.attributes.name' => ['sometimes', 'string', 'max:255'],
             'data.attributes.icon' => ['nullable', 'string', 'max:255'],
-            'data.attributes.folder_id' => ['sometimes', 'integer', 'exists:folders,id'],
+            'data.attributes.folder_id' => ['sometimes', 'nullable', 'integer', 'exists:folders,id'],
             'data.attributes.is_public' => ['sometimes', 'boolean'],
             'data.attributes.order_column' => ['sometimes', 'integer', 'min:0'],
         ];

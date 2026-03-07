@@ -13,6 +13,10 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
 use App\Http\Controllers\JobPublicViewController;
 use App\Http\Controllers\JobTaskController;
+use App\Http\Controllers\Shopping\FolderController;
+use App\Http\Controllers\Shopping\ShoppingController;
+use App\Http\Controllers\Shopping\ShoppingItemController;
+use App\Http\Controllers\Shopping\ShoppingListController;
 use App\Http\Controllers\SkillController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -61,6 +65,27 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('ai/company-analysis/{job}', AiCompanyAnalyzerController::class)->name('ai.company-analysis');
     Route::post('ai/find-contacts/{job}', AiContactFinderController::class)->name('ai.find-contacts');
     Route::post('ai/cover-letter/{job}', AiCoverLetterController::class)->name('ai.cover-letter');
+
+    // Списки покупок
+    Route::get('shopping', [ShoppingController::class, 'index'])->name('shopping.index');
+
+    Route::post('shopping/lists', [ShoppingListController::class, 'store'])->name('shopping.lists.store');
+    Route::patch('shopping/lists/{shoppingList}', [ShoppingListController::class, 'update'])->name('shopping.lists.update');
+    Route::delete('shopping/lists/{shoppingList}', [ShoppingListController::class, 'destroy'])->name('shopping.lists.destroy');
+    Route::post('shopping/lists/reorder', [ShoppingListController::class, 'reorder'])->name('shopping.lists.reorder');
+
+    Route::post('shopping/items', [ShoppingItemController::class, 'store'])->name('shopping.items.store');
+    Route::patch('shopping/items/{shoppingItem}', [ShoppingItemController::class, 'update'])->name('shopping.items.update');
+    Route::patch('shopping/items/{shoppingItem}/toggle', [ShoppingItemController::class, 'toggleDone'])->name('shopping.items.toggle');
+    Route::delete('shopping/items/{shoppingItem}', [ShoppingItemController::class, 'destroy'])->name('shopping.items.destroy');
+    Route::post('shopping/items/reorder', [ShoppingItemController::class, 'reorder'])->name('shopping.items.reorder');
+    Route::patch('shopping/lists/{shoppingList}/uncross', [ShoppingItemController::class, 'uncrossAll'])->name('shopping.items.uncross-all');
+    Route::delete('shopping/lists/{shoppingList}/items', [ShoppingItemController::class, 'destroyAll'])->name('shopping.items.destroy-all');
+
+    Route::post('shopping/folders', [FolderController::class, 'store'])->name('shopping.folders.store');
+    Route::patch('shopping/folders/{folder}', [FolderController::class, 'update'])->name('shopping.folders.update');
+    Route::delete('shopping/folders/{folder}', [FolderController::class, 'destroy'])->name('shopping.folders.destroy');
+    Route::post('shopping/folders/reorder', [FolderController::class, 'reorder'])->name('shopping.folders.reorder');
 });
 
 require __DIR__ . '/settings.php';

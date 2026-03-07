@@ -10,12 +10,14 @@ type Props = {
     breadcrumbs?: BreadcrumbItem[];
     auxiliaryNavItems?: NavItem[];
     showJobCategories?: boolean;
+    showShoppingFolders?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
     auxiliaryNavItems: () => [],
     showJobCategories: false,
+    showShoppingFolders: false,
 });
 </script>
 
@@ -24,6 +26,7 @@ withDefaults(defineProps<Props>(), {
         <AppSidebar
             :auxiliary-nav-items="auxiliaryNavItems"
             :show-job-categories="showJobCategories"
+            :show-shopping-folders="showShoppingFolders"
         />
         <AppContent variant="sidebar" class="overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs">
