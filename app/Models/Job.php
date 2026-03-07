@@ -112,6 +112,7 @@ class Job extends Model
                 'location_city',
                 'salary',
                 'job_url',
+                'resume_version_url',
                 'job_status_id',
                 'job_category_id',
             ])

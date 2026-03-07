@@ -18,6 +18,7 @@ final class JobListItemData extends Data
         public readonly string $company_name,
         public readonly ?string $description,
         public readonly ?string $job_url,
+        public readonly ?string $resume_version_url,
         public readonly ?string $location_city,
         public readonly ?int $salary,
         public readonly bool $is_favorite,

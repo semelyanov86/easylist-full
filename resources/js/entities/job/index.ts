@@ -15,6 +15,7 @@ export type Job = {
     company_name: string;
     description: string | null;
     job_url: string | null;
+    resume_version_url: string | null;
     location_city: string | null;
     salary: number | null;
     is_favorite: boolean;
@@ -105,6 +106,7 @@ export type JobPublicView = {
     company_name: string;
     description: string | null;
     job_url: string | null;
+    resume_version_url: string | null;
     location_city: string | null;
     salary: number | null;
     currency_symbol: string | null;

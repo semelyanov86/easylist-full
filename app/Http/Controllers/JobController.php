@@ -98,7 +98,7 @@ final class JobController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, resume_version_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
         $data = $request->validated();
 
         /** @var list<int> $skillIds */
@@ -122,7 +122,7 @@ final class JobController extends Controller
 
         abort_if($job->user_id !== $user->id, 403);
 
-        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
+        /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, resume_version_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
         $data = $request->validated();
 
         /** @var list<int> $skillIds */

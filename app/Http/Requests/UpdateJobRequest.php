@@ -21,6 +21,7 @@ class UpdateJobRequest extends FormRequest
             'job_category_id' => ['required', 'integer', 'exists:job_categories,id'],
             'description' => ['nullable', 'string'],
             'job_url' => ['nullable', 'string', 'url', 'max:255'],
+            'resume_version_url' => ['nullable', 'string', 'max:255'],
             'salary' => ['nullable', 'integer', 'min:0'],
             'location_city' => ['nullable', 'string', 'max:255'],
             'skill_ids' => ['nullable', 'array'],

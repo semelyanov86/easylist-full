@@ -149,6 +149,7 @@ const fieldLabels: Record<string, string> = {
     location_city: 'Город',
     salary: 'Зарплата',
     job_url: 'Ссылка',
+    resume_version_url: 'Версия резюме',
     job_status_id: 'Статус',
     job_category_id: 'Категория',
 };

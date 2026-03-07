@@ -250,6 +250,28 @@ class JobUpdateTest extends TestCase
         $this->assertFalse($job->skills->contains($otherSkill));
     }
 
+    public function test_resume_version_url_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+        $job = Job::factory()->for($user)->for($status, 'status')->for($category, 'category')->create();
+
+        $response = $this->actingAs($user)->patch(route('jobs.update', $job), [
+            'title' => $job->title,
+            'company_name' => $job->company_name,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'resume_version_url' => 'https://example.com/resume/v2',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('job_listings', [
+            'id' => $job->id,
+            'resume_version_url' => 'https://example.com/resume/v2',
+        ]);
+    }
+
     public function test_optional_fields_can_be_cleared(): void
     {
         $user = User::factory()->create();

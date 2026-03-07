@@ -222,6 +222,28 @@ class JobStoreTest extends TestCase
         $this->assertFalse($job->skills->contains($otherSkill));
     }
 
+    public function test_resume_version_url_is_stored(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->for($user)->create();
+        $category = JobCategory::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->post(route('jobs.store'), [
+            'title' => 'Developer',
+            'company_name' => 'Test',
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'resume_version_url' => 'https://example.com/resume/v1',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('job_listings', [
+            'user_id' => $user->id,
+            'title' => 'Developer',
+            'resume_version_url' => 'https://example.com/resume/v1',
+        ]);
+    }
+
     public function test_uuid_is_generated_automatically(): void
     {
         $user = User::factory()->create();

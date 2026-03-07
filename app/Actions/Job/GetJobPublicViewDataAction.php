@@ -30,6 +30,7 @@ final readonly class GetJobPublicViewDataAction
             company_name: $job->company_name,
             description: $job->description,
             job_url: $job->job_url,
+            resume_version_url: $job->resume_version_url,
             location_city: $job->location_city,
             salary: $job->salary,
             currency_symbol: $job->category?->currency_symbol,

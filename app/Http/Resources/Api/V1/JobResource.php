@@ -96,6 +96,7 @@ final class JobResource extends BaseJsonApiResource
             'company_name' => $this->resource->company_name,
             'description' => $this->resource->description,
             'job_url' => $this->resource->job_url,
+            'resume_version_url' => $this->resource->resume_version_url,
             'location_city' => $this->resource->location_city,
             'salary' => $this->resource->salary,
             'is_favorite' => $this->resource->is_favorite,

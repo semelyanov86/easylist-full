@@ -174,6 +174,17 @@ async function handleAiFormat(): Promise<void> {
                         <InputError :message="errors.job_url" />
                     </div>
 
+                    <!-- Версия резюме -->
+                    <div class="grid gap-2">
+                        <Label for="edit-job-resume-url"> Версия резюме </Label>
+                        <Input
+                            id="edit-job-resume-url"
+                            name="resume_version_url"
+                            :default-value="job.resume_version_url ?? ''"
+                        />
+                        <InputError :message="errors.resume_version_url" />
+                    </div>
+
                     <!-- Зарплата и Город -->
                     <div class="grid grid-cols-2 gap-4">
                         <div class="grid gap-2">

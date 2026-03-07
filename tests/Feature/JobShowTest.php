@@ -154,6 +154,23 @@ class JobShowTest extends TestCase
         );
     }
 
+    public function test_resume_version_url_included_in_response(): void
+    {
+        $user = User::factory()->create();
+        $job = $this->createJobForUser($user, [
+            'resume_version_url' => 'https://example.com/resume/v1',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('jobs.show', $job));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('jobs/Show')
+                ->where('job.resume_version_url', 'https://example.com/resume/v1')
+        );
+    }
+
     public function test_company_info_included_when_matching_name_and_city(): void
     {
         $user = User::factory()->create();

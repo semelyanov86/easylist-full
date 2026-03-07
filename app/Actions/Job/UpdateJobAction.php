@@ -17,6 +17,7 @@ final readonly class UpdateJobAction
      *     job_category_id: int,
      *     description?: string|null,
      *     job_url?: string|null,
+     *     resume_version_url?: string|null,
      *     salary?: int|null,
      *     location_city?: string|null,
      * }  $data

@@ -22,6 +22,7 @@ final class JobPublicViewData extends Data
         public readonly ?string $location_city,
         public readonly ?int $salary,
         public readonly ?string $job_url,
+        public readonly ?string $resume_version_url,
         public readonly ?string $currency_symbol,
         public readonly string $created_at,
         public readonly array $skills = [],

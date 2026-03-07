@@ -3,7 +3,14 @@ import type { JobDetail } from '@entities/job';
 import { useAiTagExtractor } from '@features/job/model/useAiTagExtractor';
 import { Badge } from '@shared/ui/badge';
 import DOMPurify from 'dompurify';
-import { FileText, Loader2, Sparkles, Tag } from 'lucide-vue-next';
+import {
+    ExternalLink,
+    FileText,
+    Loader2,
+    ScrollText,
+    Sparkles,
+    Tag,
+} from 'lucide-vue-next';
 import { marked } from 'marked';
 import { computed } from 'vue';
 
@@ -108,6 +115,35 @@ function handleExtractTags(): void {
                             {{ error }}
                         </p>
                     </div>
+                </div>
+            </div>
+
+            <div
+                v-if="job.resume_version_url"
+                class="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+            >
+                <div
+                    class="flex items-center gap-2 border-b border-border px-5 py-3"
+                >
+                    <ScrollText class="size-4 text-muted-foreground" />
+                    <h3 class="text-sm font-semibold text-foreground">
+                        Версия резюме
+                    </h3>
+                </div>
+                <div class="p-5">
+                    <a
+                        v-if="job.resume_version_url.startsWith('http')"
+                        :href="job.resume_version_url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm text-primary underline underline-offset-2 hover:opacity-80"
+                    >
+                        <ExternalLink class="size-3.5 shrink-0" />
+                        {{ job.resume_version_url }}
+                    </a>
+                    <span v-else class="text-sm text-muted-foreground">
+                        {{ job.resume_version_url }}
+                    </span>
                 </div>
             </div>
         </div>
