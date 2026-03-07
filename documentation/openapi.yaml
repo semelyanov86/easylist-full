@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: EasyList API
   description: |
-    JSON:API совместимый REST API для управления вакансиями, контактами, документами и комментариями.
+    JSON:API совместимый REST API для управления вакансиями, контактами, документами, комментариями и списками покупок.
 
     Все ответы используют формат JSON:API (`application/vnd.api+json`).
     Авторизация через Bearer-токен (Laravel Sanctum).
@@ -31,6 +31,12 @@ tags:
     description: Задачи пользователя
   - name: AI
     description: Фоновые ИИ-процессы (анализ компании, поиск контактов)
+  - name: Folders
+    description: Папки для группировки списков покупок
+  - name: Shopping Lists
+    description: Списки покупок
+  - name: Shopping Items
+    description: Позиции списка покупок
   - name: Public
     description: Публичные эндпоинты (без авторизации)
 
@@ -636,6 +642,514 @@ paths:
         '403':
           description: Нет доступа или нет Premium-подписки
 
+  # --- Folders ---
+
+  /folders:
+    get:
+      operationId: listFolders
+      summary: Получить все папки пользователя
+      tags: [Folders]
+      parameters:
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: 'Допустимые значения: lists'
+      responses:
+        '200':
+          description: Список папок
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FolderResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingListResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createFolder
+      summary: Создать папку
+      tags: [Folders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreFolderRequest'
+      responses:
+        '201':
+          description: Папка создана
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleFolderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /folders/{folderId}:
+    get:
+      operationId: showFolder
+      summary: Показать папку
+      tags: [Folders]
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: 'Допустимые значения: lists'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FolderResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingListResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      operationId: updateFolder
+      summary: Обновить папку
+      tags: [Folders]
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFolderRequest'
+      responses:
+        '200':
+          description: Папка обновлена
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleFolderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      operationId: deleteFolder
+      summary: Удалить папку (каскадно удаляет списки и позиции)
+      tags: [Folders]
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      responses:
+        '204':
+          description: Папка удалена
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /folders/{folderId}/lists:
+    get:
+      operationId: listFolderShoppingLists
+      summary: Получить списки из папки
+      tags: [Shopping Lists]
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      responses:
+        '200':
+          description: Списки покупок из папки
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingListResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # --- Shopping Lists ---
+
+  /lists:
+    get:
+      operationId: listShoppingLists
+      summary: Получить все списки пользователя
+      tags: [Shopping Lists]
+      parameters:
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: 'Допустимые значения: folder, items'
+      responses:
+        '200':
+          description: Список покупок
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingListResource'
+                  included:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/FolderResource'
+                        - $ref: '#/components/schemas/ShoppingItemResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createShoppingList
+      summary: Создать список покупок
+      tags: [Shopping Lists]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreShoppingListRequest'
+      responses:
+        '201':
+          description: Список создан
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleShoppingListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /lists/{listId}:
+    get:
+      operationId: showShoppingList
+      summary: Показать список покупок
+      tags: [Shopping Lists]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: 'Допустимые значения: folder, items'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ShoppingListResource'
+                  included:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/FolderResource'
+                        - $ref: '#/components/schemas/ShoppingItemResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      operationId: updateShoppingList
+      summary: Обновить список покупок
+      tags: [Shopping Lists]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShoppingListRequest'
+      responses:
+        '200':
+          description: Список обновлён
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleShoppingListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      operationId: deleteShoppingList
+      summary: Удалить список покупок (каскадно удаляет позиции)
+      tags: [Shopping Lists]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      responses:
+        '204':
+          description: Список удалён
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /lists/{listId}/email:
+    post:
+      operationId: sendShoppingListEmail
+      summary: Отправить список покупок по email
+      tags: [Shopping Lists]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendListEmailRequest'
+      responses:
+        '204':
+          description: Email отправлен
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  # --- Shopping Items ---
+
+  /items:
+    get:
+      operationId: listShoppingItems
+      summary: Получить все позиции пользователя
+      tags: [Shopping Items]
+      responses:
+        '200':
+          description: Список позиций
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingItemResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createShoppingItem
+      summary: Создать позицию в списке покупок
+      tags: [Shopping Items]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreShoppingItemRequest'
+      responses:
+        '201':
+          description: Позиция создана
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleShoppingItemResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /items/{itemId}:
+    get:
+      operationId: showShoppingItem
+      summary: Показать позицию
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+        - name: include
+          in: query
+          schema:
+            type: string
+          description: 'Допустимые значения: list'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ShoppingItemResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingListResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      operationId: updateShoppingItem
+      summary: Обновить позицию
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShoppingItemRequest'
+      responses:
+        '200':
+          description: Позиция обновлена
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SingleShoppingItemResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      operationId: deleteShoppingItem
+      summary: Удалить позицию
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '204':
+          description: Позиция удалена
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /lists/{listId}/items:
+    get:
+      operationId: listShoppingListItems
+      summary: Получить позиции из списка
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      responses:
+        '200':
+          description: Позиции списка
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingItemResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      operationId: deleteAllItems
+      summary: Удалить все позиции из списка
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      responses:
+        '204':
+          description: Все позиции удалены
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /lists/{listId}/items/undone:
+    patch:
+      operationId: uncrossAllItems
+      summary: Снять все отметки (uncross) позиций в списке
+      tags: [Shopping Items]
+      parameters:
+        - $ref: '#/components/parameters/ListId'
+      responses:
+        '204':
+          description: Все отметки сняты
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # --- Public ---
+
+  /links/{uuid}:
+    get:
+      operationId: showPublicShoppingList
+      summary: Публичный просмотр списка покупок по UUID
+      description: Не требует авторизации. Возвращает список с позициями.
+      tags: [Public]
+      security: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ShoppingListResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingItemResource'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /public/jobs/{uuid}:
     get:
       operationId: showPublicJob
@@ -673,6 +1187,27 @@ components:
   parameters:
     JobId:
       name: jobId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    FolderId:
+      name: folderId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    ListId:
+      name: listId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    ItemId:
+      name: itemId
       in: path
       required: true
       schema:
@@ -1155,6 +1690,164 @@ components:
               type: object
               nullable: true
 
+    # --- Shopping Resources ---
+
+    FolderResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: folders
+        id:
+          type: string
+          example: '1'
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            icon:
+              type: string
+              nullable: true
+            order_column:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            lists:
+              type: object
+              description: Присутствует при ?include=lists
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+
+    ShoppingListResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: lists
+        id:
+          type: string
+          example: '1'
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            icon:
+              type: string
+              nullable: true
+            folder_id:
+              type: integer
+              nullable: true
+            link:
+              type: string
+              format: uuid
+              nullable: true
+              description: UUID для публичного доступа
+            is_public:
+              type: boolean
+            order_column:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            folder:
+              description: Присутствует при ?include=folder
+              $ref: '#/components/schemas/RelationshipLinkage'
+            items:
+              type: object
+              description: Присутствует при ?include=items
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ResourceIdentifier'
+
+    ShoppingItemResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: items
+        id:
+          type: string
+          example: '1'
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+              nullable: true
+            quantity:
+              type: integer
+            quantity_type:
+              type: string
+              nullable: true
+            price:
+              type: integer
+              nullable: true
+            is_starred:
+              type: boolean
+            is_done:
+              type: boolean
+            file:
+              type: string
+              nullable: true
+            shopping_list_id:
+              type: integer
+            order_column:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            list:
+              description: Присутствует при ?include=list
+              $ref: '#/components/schemas/RelationshipLinkage'
+
+    # --- Shopping Response Wrappers ---
+
+    SingleFolderResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FolderResource'
+
+    SingleShoppingListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ShoppingListResource'
+
+    SingleShoppingItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ShoppingItemResource'
+
     # --- Relationship Helpers ---
 
     ResourceIdentifier:
@@ -1397,3 +2090,235 @@ components:
           maxLength: 500
           nullable: true
           description: Внешняя ссылка (обязателен file или external_url)
+
+    # --- Shopping Request Bodies ---
+
+    StoreFolderRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [type, attributes]
+          properties:
+            type:
+              type: string
+              enum: [folders]
+            attributes:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                icon:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+
+    UpdateFolderRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [id, type]
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+              enum: [folders]
+            attributes:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                icon:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                order_column:
+                  type: integer
+                  minimum: 0
+
+    StoreShoppingListRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [type, attributes]
+          properties:
+            type:
+              type: string
+              enum: [lists]
+            attributes:
+              type: object
+              required: [folder_id, name]
+              properties:
+                folder_id:
+                  type: integer
+                  description: ID папки (должна принадлежать пользователю)
+                name:
+                  type: string
+                  maxLength: 255
+                icon:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                is_public:
+                  type: boolean
+                  nullable: true
+
+    UpdateShoppingListRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [id, type]
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+              enum: [lists]
+            attributes:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                icon:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                folder_id:
+                  type: integer
+                  description: ID папки (должна принадлежать пользователю)
+                is_public:
+                  type: boolean
+                order_column:
+                  type: integer
+                  minimum: 0
+
+    StoreShoppingItemRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [type, attributes]
+          properties:
+            type:
+              type: string
+              enum: [items]
+            attributes:
+              type: object
+              required: [shopping_list_id, name]
+              properties:
+                shopping_list_id:
+                  type: integer
+                  description: ID списка покупок (должен принадлежать пользователю)
+                name:
+                  type: string
+                  maxLength: 255
+                description:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+                quantity_type:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                price:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_starred:
+                  type: boolean
+                  nullable: true
+                is_done:
+                  type: boolean
+                  nullable: true
+                file:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+
+    UpdateShoppingItemRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [id, type]
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+              enum: [items]
+            attributes:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                description:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                  minimum: 1
+                quantity_type:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                price:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_starred:
+                  type: boolean
+                is_done:
+                  type: boolean
+                file:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                order_column:
+                  type: integer
+                  minimum: 0
+
+    SendListEmailRequest:
+      type: object
+      required: [data]
+      description: JSON:API формат
+      properties:
+        data:
+          type: object
+          required: [type, attributes]
+          properties:
+            type:
+              type: string
+              enum: [emails]
+            attributes:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
