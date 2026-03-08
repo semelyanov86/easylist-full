@@ -82,6 +82,15 @@ export type JobDetail = Job & {
     company_info: CompanyInfo | null;
 };
 
+export type DashboardJobItem = {
+    id: number;
+    title: string;
+    company_name: string;
+    status_title: string;
+    status_color: string;
+    created_at: string;
+};
+
 export type JobsViewMode = 'table' | 'kanban';
 
 export type KanbanColumn = {

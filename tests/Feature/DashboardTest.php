@@ -67,6 +67,42 @@ class DashboardTest extends TestCase
         );
     }
 
+    public function test_dashboard_has_deferred_favorite_jobs(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('favoriteJobs')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('favoriteJobs')
+                )
+        );
+    }
+
+    public function test_dashboard_has_deferred_recent_jobs(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('recentJobs')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('recentJobs')
+                )
+        );
+    }
+
     public function test_dashboard_has_job_funnel_data(): void
     {
         $user = User::factory()->create();

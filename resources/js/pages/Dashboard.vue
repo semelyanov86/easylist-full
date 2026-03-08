@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DashboardActivityItem } from '@entities/activity';
-import type { StatusTab } from '@entities/job';
+import type { DashboardJobItem, StatusTab } from '@entities/job';
 import type { DashboardPendingTask } from '@entities/job-task';
 import { CreateListDialog } from '@features/shopping-list/create';
 import { Deferred, Head } from '@inertiajs/vue3';
@@ -11,7 +11,15 @@ import {
     DashboardActivitySkeleton,
     DashboardActivityWidget,
 } from '@widgets/dashboard-activity';
+import {
+    DashboardFavoritesSkeleton,
+    DashboardFavoritesWidget,
+} from '@widgets/dashboard-favorites';
 import { DashboardFunnelWidget } from '@widgets/dashboard-funnel';
+import {
+    DashboardRecentJobsSkeleton,
+    DashboardRecentJobsWidget,
+} from '@widgets/dashboard-recent-jobs';
 import {
     DashboardTasksSkeleton,
     DashboardTasksWidget,
@@ -24,6 +32,8 @@ import { dashboard } from '@/routes';
 defineProps<{
     recentActivities: DashboardActivityItem[];
     pendingTasks: DashboardPendingTask[];
+    favoriteJobs: DashboardJobItem[];
+    recentJobs: DashboardJobItem[];
     jobFunnel: StatusTab[];
     funnelCategoryId: number | null;
 }>();
@@ -57,29 +67,53 @@ const showCreateListDialog = ref(false);
             </Button>
         </template>
 
-        <div class="flex max-w-3xl flex-col gap-4 p-4">
-            <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
-                <Deferred data="recentActivities">
-                    <template #fallback>
-                        <DashboardActivitySkeleton />
-                    </template>
+        <div class="flex flex-col gap-4 p-4 lg:flex-row lg:items-start">
+            <div class="flex max-w-3xl min-w-0 flex-1 flex-col gap-4">
+                <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Deferred data="recentActivities">
+                        <template #fallback>
+                            <DashboardActivitySkeleton />
+                        </template>
 
-                    <DashboardActivityWidget :activities="recentActivities" />
-                </Deferred>
+                        <DashboardActivityWidget
+                            :activities="recentActivities"
+                        />
+                    </Deferred>
 
-                <Deferred data="pendingTasks">
-                    <template #fallback>
-                        <DashboardTasksSkeleton />
-                    </template>
+                    <Deferred data="pendingTasks">
+                        <template #fallback>
+                            <DashboardTasksSkeleton />
+                        </template>
 
-                    <DashboardTasksWidget :tasks="pendingTasks" />
-                </Deferred>
+                        <DashboardTasksWidget :tasks="pendingTasks" />
+                    </Deferred>
+                </div>
+
+                <DashboardFunnelWidget
+                    :statuses="jobFunnel"
+                    :active-category-id="funnelCategoryId"
+                />
             </div>
 
-            <DashboardFunnelWidget
-                :statuses="jobFunnel"
-                :active-category-id="funnelCategoryId"
-            />
+            <div
+                class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-80 lg:shrink-0 lg:grid-cols-1"
+            >
+                <Deferred data="favoriteJobs">
+                    <template #fallback>
+                        <DashboardFavoritesSkeleton />
+                    </template>
+
+                    <DashboardFavoritesWidget :jobs="favoriteJobs" />
+                </Deferred>
+
+                <Deferred data="recentJobs">
+                    <template #fallback>
+                        <DashboardRecentJobsSkeleton />
+                    </template>
+
+                    <DashboardRecentJobsWidget :jobs="recentJobs" />
+                </Deferred>
+            </div>
         </div>
     </AppLayout>
 
