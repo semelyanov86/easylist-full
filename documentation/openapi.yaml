@@ -29,6 +29,8 @@ tags:
     description: Контакты вакансий
   - name: Tasks
     description: Задачи пользователя
+  - name: Statistics
+    description: Агрегированная статистика дашборда
   - name: AI
     description: Фоновые ИИ-процессы (анализ компании, поиск контактов)
   - name: Folders
@@ -466,6 +468,34 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+
+  /statistics:
+    get:
+      operationId: getStatistics
+      summary: Получить агрегированную статистику дашборда
+      description: |
+        Возвращает все данные дашборда в формате JSON:API — единый эндпоинт
+        для API-клиентов (мобильные приложения, сторонние интеграции).
+
+        Секции: recent_activities, pending_tasks, favorite_jobs, recent_jobs,
+        skills_demand, response_dynamics, job_funnel.
+      tags: [Statistics]
+      parameters:
+        - name: funnel_category_id
+          in: query
+          required: false
+          description: Фильтр воронки по категории вакансий
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Статистика дашборда
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/StatisticsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /tasks/pending:
     get:
@@ -1177,6 +1207,28 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /up:
+    servers:
+      - url: /
+        description: Корень приложения
+    get:
+      operationId: healthCheck
+      summary: Проверка работоспособности приложения
+      description: |
+        Стандартный Laravel health-check эндпоинт.
+        Возвращает 200, если приложение работает.
+      tags: [Public]
+      security: []
+      responses:
+        '200':
+          description: Приложение работает
+          content:
+            text/html:
+              schema:
+                type: string
+        '503':
+          description: Приложение недоступно
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1847,6 +1899,145 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ShoppingItemResource'
+
+    # --- Statistics ---
+
+    StatisticsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: statistics
+            id:
+              type: string
+              description: ID пользователя
+            attributes:
+              type: object
+              properties:
+                recent_activities:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardActivityItem'
+                pending_tasks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardPendingTask'
+                favorite_jobs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardJobItem'
+                recent_jobs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardJobItem'
+                skills_demand:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardSkillDemand'
+                response_dynamics:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardResponsePoint'
+                job_funnel:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DashboardFunnelStatus'
+
+    DashboardActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        event:
+          type: string
+          nullable: true
+        causer_name:
+          type: string
+          nullable: true
+        properties:
+          type: object
+        changes:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        job_id:
+          type: integer
+        job_title:
+          type: string
+        job_company_name:
+          type: string
+
+    DashboardPendingTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        job_id:
+          type: integer
+        job_title:
+          type: string
+        job_company_name:
+          type: string
+
+    DashboardJobItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        company_name:
+          type: string
+        status_title:
+          type: string
+        status_color:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    DashboardSkillDemand:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        jobs_count:
+          type: integer
+
+    DashboardResponsePoint:
+      type: object
+      properties:
+        label:
+          type: string
+          description: "Дата начала недели (дд.мм)"
+        count:
+          type: integer
+
+    DashboardFunnelStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        color:
+          type: string
+        count:
+          type: integer
 
     # --- Relationship Helpers ---
 

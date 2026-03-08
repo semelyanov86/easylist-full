@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\JobDocumentController;
 use App\Http\Controllers\Api\V1\JobPublicController;
 use App\Http\Controllers\Api\V1\ShoppingItemController;
 use App\Http\Controllers\Api\V1\ShoppingListController;
+use App\Http\Controllers\Api\V1\StatisticsController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +61,10 @@ Route::prefix('v1')->group(function (): void {
             ->name('api.v1.jobs.contacts.store');
         Route::delete('jobs/{job}/contacts/{contact}', [ContactController::class, 'destroy'])
             ->name('api.v1.jobs.contacts.destroy');
+
+        // Статистика дашборда
+        Route::get('statistics', StatisticsController::class)
+            ->name('api.v1.statistics');
 
         // Незавершённые задачи
         Route::get('tasks/pending', [TaskController::class, 'index'])
