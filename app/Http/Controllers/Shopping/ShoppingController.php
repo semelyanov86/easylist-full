@@ -35,6 +35,8 @@ final class ShoppingController extends Controller
 
         if ($selectedFolderId !== null) {
             $listsQuery->where('folder_id', $selectedFolderId);
+        } else {
+            $listsQuery->whereNull('folder_id');
         }
 
         $lists = $listsQuery->get()->map(

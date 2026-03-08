@@ -37,8 +37,8 @@ class ShoppingPageTest extends TestCase
 
     public function test_page_renders_with_folders_and_lists(): void
     {
-        $list = ShoppingList::factory()->for($this->user)->create([
-            'folder_id' => $this->folder->id,
+        ShoppingList::factory()->for($this->user)->create([
+            'folder_id' => null,
             'name' => 'Еженедельный',
         ]);
 
@@ -113,18 +113,40 @@ class ShoppingPageTest extends TestCase
         );
     }
 
+    public function test_without_folder_shows_only_unfoldered_lists(): void
+    {
+        ShoppingList::factory()->for($this->user)->create([
+            'folder_id' => $this->folder->id,
+            'name' => 'В папке',
+        ]);
+
+        ShoppingList::factory()->for($this->user)->create([
+            'folder_id' => null,
+            'name' => 'Без папки',
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('shopping.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('shopping/Index')
+                ->has('lists', 1)
+                ->where('lists.0.name', 'Без папки')
+        );
+    }
+
     public function test_other_users_lists_not_visible(): void
     {
         $otherUser = User::factory()->create();
-        $otherFolder = Folder::factory()->for($otherUser)->create();
 
         ShoppingList::factory()->for($otherUser)->create([
-            'folder_id' => $otherFolder->id,
+            'folder_id' => null,
             'name' => 'Чужой список',
         ]);
 
         ShoppingList::factory()->for($this->user)->create([
-            'folder_id' => $this->folder->id,
+            'folder_id' => null,
             'name' => 'Мой список',
         ]);
 
