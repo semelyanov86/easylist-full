@@ -7,3 +7,9 @@ export type ActivityTimelineItem = {
     changes: Record<string, unknown>;
     created_at: string;
 };
+
+export type DashboardActivityItem = ActivityTimelineItem & {
+    job_id: number;
+    job_title: string;
+    job_company_name: string;
+};

@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -25,5 +26,23 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('dashboard'));
         $response->assertOk();
+    }
+
+    public function test_dashboard_has_deferred_recent_activities(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('recentActivities')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('recentActivities')
+                )
+        );
     }
 }

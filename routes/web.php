@@ -8,6 +8,7 @@ use App\Http\Controllers\AiCoverLetterController;
 use App\Http\Controllers\AiExtractJobTagsController;
 use App\Http\Controllers\AiFormatController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\JobDocumentController;
@@ -26,7 +27,7 @@ Route::get('/', fn () => Inertia::render('Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
 ]))->name('home');
 
-Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('job/view/{uuid}', JobPublicViewController::class)->name('jobs.public-view');
 
