@@ -7,7 +7,9 @@ namespace Tests\Feature;
 use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\JobStatus;
+use App\Models\Skill;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -131,6 +133,198 @@ class DashboardTest extends TestCase
                         ->etc()
                 )
                 ->where('funnelCategoryId', null)
+        );
+    }
+
+    public function test_dashboard_has_deferred_skills_demand(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('skillsDemand')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('skillsDemand')
+                )
+        );
+    }
+
+    public function test_dashboard_has_deferred_response_dynamics(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('responseDynamics')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('responseDynamics')
+                )
+        );
+    }
+
+    public function test_dashboard_skills_demand_returns_top_skills(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->create(['user_id' => $user->id]);
+        $category = JobCategory::factory()->create(['user_id' => $user->id]);
+
+        $skillA = Skill::factory()->create(['user_id' => $user->id, 'title' => 'PHP']);
+        $skillB = Skill::factory()->create(['user_id' => $user->id, 'title' => 'Vue']);
+        $skillC = Skill::factory()->create(['user_id' => $user->id, 'title' => 'Laravel']);
+
+        // PHP — 3 вакансии, Vue — 1, Laravel — 2
+        $jobsA = Job::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+        $jobsA->each(fn (Job $job) => $job->skills()->attach($skillA));
+
+        $jobB = Job::factory()->create([
+            'user_id' => $user->id,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+        $jobB->skills()->attach($skillB);
+
+        $jobsC = Job::factory()->count(2)->create([
+            'user_id' => $user->id,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+        ]);
+        $jobsC->each(fn (Job $job) => $job->skills()->attach($skillC));
+
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('skillsDemand', 3)
+                        ->where('skillsDemand.0.title', 'PHP')
+                        ->where('skillsDemand.0.jobs_count', 3)
+                        ->where('skillsDemand.1.title', 'Laravel')
+                        ->where('skillsDemand.1.jobs_count', 2)
+                        ->where('skillsDemand.2.title', 'Vue')
+                        ->where('skillsDemand.2.jobs_count', 1)
+                )
+        );
+    }
+
+    public function test_dashboard_skills_demand_scoped_to_user(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+
+        $status = JobStatus::factory()->create(['user_id' => $user->id]);
+        $category = JobCategory::factory()->create(['user_id' => $user->id]);
+        $otherStatus = JobStatus::factory()->create(['user_id' => $other->id]);
+        $otherCategory = JobCategory::factory()->create(['user_id' => $other->id]);
+
+        // Скилл другого пользователя с вакансиями
+        $otherSkill = Skill::factory()->create(['user_id' => $other->id, 'title' => 'Go']);
+        $otherJob = Job::factory()->create([
+            'user_id' => $other->id,
+            'job_status_id' => $otherStatus->id,
+            'job_category_id' => $otherCategory->id,
+        ]);
+        $otherJob->skills()->attach($otherSkill);
+
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('skillsDemand', 0)
+                )
+        );
+    }
+
+    public function test_dashboard_response_dynamics_returns_weekly_points(): void
+    {
+        $user = User::factory()->create();
+        $status = JobStatus::factory()->create(['user_id' => $user->id]);
+        $category = JobCategory::factory()->create(['user_id' => $user->id]);
+
+        // Вакансия на текущей неделе
+        Job::factory()->create([
+            'user_id' => $user->id,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'created_at' => CarbonImmutable::now(),
+        ]);
+
+        // Вакансия 2 недели назад
+        Job::factory()->create([
+            'user_id' => $user->id,
+            'job_status_id' => $status->id,
+            'job_category_id' => $category->id,
+            'created_at' => CarbonImmutable::now()->subWeeks(2),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('responseDynamics', 12)
+                        ->where('responseDynamics.11.count', 1)
+                        ->where('responseDynamics.9.count', 1)
+                )
+        );
+    }
+
+    public function test_dashboard_response_dynamics_scoped_to_user(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+
+        $otherStatus = JobStatus::factory()->create(['user_id' => $other->id]);
+        $otherCategory = JobCategory::factory()->create(['user_id' => $other->id]);
+
+        // Вакансия другого пользователя
+        Job::factory()->create([
+            'user_id' => $other->id,
+            'job_status_id' => $otherStatus->id,
+            'job_category_id' => $otherCategory->id,
+            'created_at' => CarbonImmutable::now(),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('responseDynamics', 12)
+                        // Все точки должны быть нулевыми
+                        ->where('responseDynamics.0.count', 0)
+                        ->where('responseDynamics.11.count', 0)
+                )
         );
     }
 

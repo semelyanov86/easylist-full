@@ -9,6 +9,8 @@ use App\Actions\Dashboard\GetDashboardFavoriteJobsAction;
 use App\Actions\Dashboard\GetDashboardJobFunnelAction;
 use App\Actions\Dashboard\GetDashboardPendingTasksAction;
 use App\Actions\Dashboard\GetDashboardRecentJobsAction;
+use App\Actions\Dashboard\GetDashboardResponseDynamicsAction;
+use App\Actions\Dashboard\GetDashboardSkillsDemandAction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,6 +25,8 @@ final class DashboardController extends Controller
         GetDashboardJobFunnelAction $getJobFunnel,
         GetDashboardFavoriteJobsAction $getFavoriteJobs,
         GetDashboardRecentJobsAction $getRecentJobs,
+        GetDashboardSkillsDemandAction $getSkillsDemand,
+        GetDashboardResponseDynamicsAction $getResponseDynamics,
     ): Response {
         /** @var User $user */
         $user = $request->user();
@@ -41,6 +45,12 @@ final class DashboardController extends Controller
             ),
             'recentJobs' => Inertia::defer(
                 fn () => $getRecentJobs->execute($user),
+            ),
+            'skillsDemand' => Inertia::defer(
+                fn () => $getSkillsDemand->execute($user),
+            ),
+            'responseDynamics' => Inertia::defer(
+                fn () => $getResponseDynamics->execute($user),
             ),
             'jobFunnel' => $getJobFunnel->execute($user, $funnelCategoryId),
             'funnelCategoryId' => $funnelCategoryId,

@@ -82,6 +82,11 @@ export type JobDetail = Job & {
     company_info: CompanyInfo | null;
 };
 
+export type DashboardResponsePoint = {
+    label: string;
+    count: number;
+};
+
 export type DashboardJobItem = {
     id: number;
     title: string;

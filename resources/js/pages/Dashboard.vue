@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { DashboardActivityItem } from '@entities/activity';
-import type { DashboardJobItem, StatusTab } from '@entities/job';
+import type {
+    DashboardJobItem,
+    DashboardResponsePoint,
+    StatusTab,
+} from '@entities/job';
 import type { DashboardPendingTask } from '@entities/job-task';
+import type { DashboardSkillDemand } from '@entities/skill';
 import { CreateListDialog } from '@features/shopping-list/create';
 import { Deferred, Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@shared/types';
@@ -21,6 +26,14 @@ import {
     DashboardRecentJobsWidget,
 } from '@widgets/dashboard-recent-jobs';
 import {
+    DashboardResponseDynamicsSkeleton,
+    DashboardResponseDynamicsWidget,
+} from '@widgets/dashboard-response-dynamics';
+import {
+    DashboardSkillsDemandSkeleton,
+    DashboardSkillsDemandWidget,
+} from '@widgets/dashboard-skills-demand';
+import {
     DashboardTasksSkeleton,
     DashboardTasksWidget,
 } from '@widgets/dashboard-tasks';
@@ -34,6 +47,8 @@ defineProps<{
     pendingTasks: DashboardPendingTask[];
     favoriteJobs: DashboardJobItem[];
     recentJobs: DashboardJobItem[];
+    skillsDemand: DashboardSkillDemand[];
+    responseDynamics: DashboardResponsePoint[];
     jobFunnel: StatusTab[];
     funnelCategoryId: number | null;
 }>();
@@ -93,6 +108,16 @@ const showCreateListDialog = ref(false);
                     :statuses="jobFunnel"
                     :active-category-id="funnelCategoryId"
                 />
+
+                <Deferred data="responseDynamics">
+                    <template #fallback>
+                        <DashboardResponseDynamicsSkeleton />
+                    </template>
+
+                    <DashboardResponseDynamicsWidget
+                        :points="responseDynamics"
+                    />
+                </Deferred>
             </div>
 
             <div
@@ -112,6 +137,14 @@ const showCreateListDialog = ref(false);
                     </template>
 
                     <DashboardRecentJobsWidget :jobs="recentJobs" />
+                </Deferred>
+
+                <Deferred data="skillsDemand">
+                    <template #fallback>
+                        <DashboardSkillsDemandSkeleton />
+                    </template>
+
+                    <DashboardSkillsDemandWidget :skills="skillsDemand" />
                 </Deferred>
             </div>
         </div>
