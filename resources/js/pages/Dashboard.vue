@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DashboardActivityItem } from '@entities/activity';
+import type { StatusTab } from '@entities/job';
 import type { DashboardPendingTask } from '@entities/job-task';
 import { CreateListDialog } from '@features/shopping-list/create';
 import { Deferred, Head } from '@inertiajs/vue3';
@@ -10,6 +11,7 @@ import {
     DashboardActivitySkeleton,
     DashboardActivityWidget,
 } from '@widgets/dashboard-activity';
+import { DashboardFunnelWidget } from '@widgets/dashboard-funnel';
 import {
     DashboardTasksSkeleton,
     DashboardTasksWidget,
@@ -22,6 +24,8 @@ import { dashboard } from '@/routes';
 defineProps<{
     recentActivities: DashboardActivityItem[];
     pendingTasks: DashboardPendingTask[];
+    jobFunnel: StatusTab[];
+    funnelCategoryId: number | null;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -53,8 +57,8 @@ const showCreateListDialog = ref(false);
             </Button>
         </template>
 
-        <div class="p-4">
-            <div class="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex max-w-3xl flex-col gap-4 p-4">
+            <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
                 <Deferred data="recentActivities">
                     <template #fallback>
                         <DashboardActivitySkeleton />
@@ -71,6 +75,11 @@ const showCreateListDialog = ref(false);
                     <DashboardTasksWidget :tasks="pendingTasks" />
                 </Deferred>
             </div>
+
+            <DashboardFunnelWidget
+                :statuses="jobFunnel"
+                :active-category-id="funnelCategoryId"
+            />
         </div>
     </AppLayout>
 

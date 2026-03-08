@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Dashboard\GetDashboardActivityAction;
+use App\Actions\Dashboard\GetDashboardJobFunnelAction;
 use App\Actions\Dashboard\GetDashboardPendingTasksAction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,9 +18,12 @@ final class DashboardController extends Controller
         Request $request,
         GetDashboardActivityAction $getActivity,
         GetDashboardPendingTasksAction $getPendingTasks,
+        GetDashboardJobFunnelAction $getJobFunnel,
     ): Response {
         /** @var User $user */
         $user = $request->user();
+
+        $funnelCategoryId = $request->integer('funnel_category_id') ?: null;
 
         return Inertia::render('Dashboard', [
             'recentActivities' => Inertia::defer(
@@ -28,6 +32,8 @@ final class DashboardController extends Controller
             'pendingTasks' => Inertia::defer(
                 fn () => $getPendingTasks->execute($user),
             ),
+            'jobFunnel' => $getJobFunnel->execute($user, $funnelCategoryId),
+            'funnelCategoryId' => $funnelCategoryId,
         ]);
     }
 }
