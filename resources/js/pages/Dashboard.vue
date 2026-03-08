@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DashboardActivityItem } from '@entities/activity';
+import type { DashboardPendingTask } from '@entities/job-task';
 import { CreateListDialog } from '@features/shopping-list/create';
 import { Deferred, Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@shared/types';
@@ -9,6 +10,10 @@ import {
     DashboardActivitySkeleton,
     DashboardActivityWidget,
 } from '@widgets/dashboard-activity';
+import {
+    DashboardTasksSkeleton,
+    DashboardTasksWidget,
+} from '@widgets/dashboard-tasks';
 import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -16,6 +21,7 @@ import { dashboard } from '@/routes';
 
 defineProps<{
     recentActivities: DashboardActivityItem[];
+    pendingTasks: DashboardPendingTask[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -48,13 +54,21 @@ const showCreateListDialog = ref(false);
         </template>
 
         <div class="p-4">
-            <div class="w-full max-w-sm">
+            <div class="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
                 <Deferred data="recentActivities">
                     <template #fallback>
                         <DashboardActivitySkeleton />
                     </template>
 
                     <DashboardActivityWidget :activities="recentActivities" />
+                </Deferred>
+
+                <Deferred data="pendingTasks">
+                    <template #fallback>
+                        <DashboardTasksSkeleton />
+                    </template>
+
+                    <DashboardTasksWidget :tasks="pendingTasks" />
                 </Deferred>
             </div>
         </div>

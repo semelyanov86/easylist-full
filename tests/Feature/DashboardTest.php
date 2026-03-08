@@ -45,4 +45,22 @@ class DashboardTest extends TestCase
                 )
         );
     }
+
+    public function test_dashboard_has_deferred_pending_tasks(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Dashboard')
+                ->missing('pendingTasks')
+                ->loadDeferredProps(
+                    fn (Assert $reload) => $reload
+                        ->has('pendingTasks')
+                )
+        );
+    }
 }
