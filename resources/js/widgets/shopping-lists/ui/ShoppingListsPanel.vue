@@ -175,7 +175,9 @@ const buildListHref = (listId: number): string => {
                     >
                         <List class="size-3.5 text-muted-foreground" />
                     </div>
-                    <span class="min-w-0 flex-1 truncate">{{ list.name }}</span>
+                    <span class="min-w-0 flex-1 truncate" :title="list.name">{{
+                        list.name
+                    }}</span>
                     <div
                         class="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover/list:opacity-100"
                     >
