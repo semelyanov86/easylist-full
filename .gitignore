@@ -33,3 +33,9 @@ yarn-error.log
 **/caddy
 frankenphp
 frankenphp-worker.php
+
+# Docker runtime data
+/.mysql-db
+/.redis
+/.storage
+.env.staging

@@ -1,0 +1,219 @@
+# Docker Compose для easylist (FrankenPHP + Nginx + MySQL + Redis)
+# Использование:
+#   APP_ENV=production docker compose up -d
+#
+# Требуется файл .env.${APP_ENV} рядом с этим файлом (например .env.production)
+
+x-env: &default-env
+    env_file:
+        - .env.${APP_ENV:-production}
+
+x-volumes: &laravel-volumes
+    volumes:
+        - ./.storage/logs:/app/storage/logs
+        - ./.storage/app:/app/storage/app
+        - ./.storage/framework:/app/storage/framework
+
+x-common: &common
+    <<: [*default-env, *laravel-volumes]
+
+name: easylist_${APP_ENV:-production}
+
+services:
+    # ------------------------------------------------------------------
+    # Веб-приложение: FrankenPHP + Laravel Octane
+    # ------------------------------------------------------------------
+    app:
+        container_name: easylist_app_${APP_ENV:-production}
+        image: easylist:frankenphp
+        pull_policy: never
+        build:
+            context: ${CONTEXT_LOCATION:-.}
+            dockerfile: docker/Dockerfile
+            target: frankenphp
+            args:
+                APP_ENV: ${APP_ENV:-production}
+        <<: *laravel-volumes
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test:
+                - CMD-SHELL
+                - >
+                    curl -fsS http://127.0.0.1:9000/up
+                    || { rc=$?; echo "[healthcheck] GET /up failed with code $rc" >&2; exit 1; }
+            interval: 15s
+            timeout: 5s
+            retries: 20
+            start_period: 10s
+
+    # ------------------------------------------------------------------
+    # Nginx: обратный прокси перед FrankenPHP
+    # ------------------------------------------------------------------
+    nginx:
+        image: nginx:alpine
+        container_name: easylist_nginx_${APP_ENV:-production}
+        ports:
+            - "${NGINX_HTTP_PORT:-80}:80"
+            - "${NGINX_HTTPS_PORT:-443}:443"
+        volumes:
+            - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+            # SSL-сертификаты (раскомментировать при наличии)
+            # - ./ssl:/etc/nginx/ssl:ro
+        depends_on:
+            app:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+
+    # ------------------------------------------------------------------
+    # Воркер очередей
+    # ------------------------------------------------------------------
+    worker:
+        container_name: easylist_worker_${APP_ENV:-production}
+        image: easylist:worker
+        pull_policy: never
+        build:
+            context: ${CONTEXT_LOCATION:-.}
+            dockerfile: docker/Dockerfile
+            target: worker
+            args:
+                APP_ENV: ${APP_ENV:-production}
+        <<: *common
+        command: ["php", "artisan", "queue:work", "--tries=3", "--sleep=1", "--max-time=3600"]
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "php artisan inspire >/dev/null 2>&1 || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    # ------------------------------------------------------------------
+    # Планировщик задач
+    # ------------------------------------------------------------------
+    scheduler:
+        container_name: easylist_scheduler_${APP_ENV:-production}
+        image: easylist:worker
+        pull_policy: never
+        <<: *laravel-volumes
+        command: ["php", "artisan", "schedule:work"]
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "php artisan inspire >/dev/null 2>&1 || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    # ------------------------------------------------------------------
+    # Laravel Pulse: сбор метрик
+    # ------------------------------------------------------------------
+    pulse_check:
+        container_name: easylist_pulse_check_${APP_ENV:-production}
+        image: easylist:worker
+        pull_policy: never
+        <<: *laravel-volumes
+        command: ["php", "artisan", "pulse:check"]
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "php artisan inspire >/dev/null 2>&1 || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    # ------------------------------------------------------------------
+    # Laravel Pulse: обработка данных
+    # ------------------------------------------------------------------
+    pulse_work:
+        container_name: easylist_pulse_work_${APP_ENV:-production}
+        image: easylist:worker
+        pull_policy: never
+        <<: *laravel-volumes
+        command: ["php", "artisan", "pulse:work"]
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "php artisan inspire >/dev/null 2>&1 || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    # ------------------------------------------------------------------
+    # MySQL
+    # ------------------------------------------------------------------
+    db:
+        image: mysql:8.4
+        container_name: easylist_db_${APP_ENV:-production}
+        <<: *default-env
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE:-easylist}
+            MYSQL_USER: ${DB_USERNAME:-easylist}
+            MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
+        ports:
+            - "${DB_EXPOSE_PORT:-13306}:3306"
+        volumes:
+            - ./.mysql-db:/var/lib/mysql
+        networks:
+            - internal
+        restart: always
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 30s
+
+    # ------------------------------------------------------------------
+    # Redis
+    # ------------------------------------------------------------------
+    redis:
+        image: redis:7-alpine
+        container_name: easylist_redis_${APP_ENV:-production}
+        volumes:
+            - ./.redis:/data
+        networks:
+            - internal
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 3s
+            retries: 5
+
+networks:
+    internal:
+        driver: bridge
