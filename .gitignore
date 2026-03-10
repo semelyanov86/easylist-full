@@ -29,3 +29,7 @@ yarn-error.log
 /.zed
 /.idea
 /.task
+
+**/caddy
+frankenphp
+frankenphp-worker.php
