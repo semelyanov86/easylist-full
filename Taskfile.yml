@@ -196,12 +196,29 @@ tasks:
       - "npm run build"
 
   dev:
-    desc: "Запустить всё для локальной разработки (octane + queue + pail + vite)"
-    cmd: "composer run dev"
+    desc: "Dev режим: Docker (APP_ENV=local, 8080/8443) + dev-deps + Vite HMR + авто-reload Octane"
+    cmds:
+      - >-
+        APP_ENV=local NGINX_HTTP_PORT=8080 NGINX_HTTPS_PORT=8443 FRANKENPHP_TARGET=frankenphp-dev
+        docker compose --env-file .env.local -f compose.yml up --build --detach --remove-orphans
+      - >-
+        npx concurrently --kill-others-on-fail
+        --names "vite,octane-watch"
+        --prefix-colors "#93c5fd,#fb7185"
+        "npm run dev"
+        "npx --yes chokidar-cli 'app/**/*.php' 'routes/**/*.php' 'config/**/*.php' 'resources/views/**/*.php'
+        --command 'docker exec easylist_app_local php artisan octane:reload'"
 
   dev:vite:
     desc: "Запустить только Vite (frontend hot reload)"
     cmd: "npm run dev"
+
+  dev:watch:
+    desc: "Только watcher: перезагружать Octane при изменении PHP-файлов"
+    cmd: >-
+      npx --yes chokidar-cli
+      'app/**/*.php' 'routes/**/*.php' 'config/**/*.php' 'resources/views/**/*.php'
+      --command 'docker exec easylist_app_local php artisan octane:reload'
 
   build:
     desc: "Run in production mode"

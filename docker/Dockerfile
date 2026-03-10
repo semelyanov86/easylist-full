@@ -119,3 +119,12 @@ RUN mkdir -p storage/framework/views \
     && chmod -R 775 storage bootstrap/cache
 
 CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=9000", "--workers=8", "--log-level=info"]
+
+# =============================================================================
+# Этап 6: FrankenPHP-dev — с dev-зависимостями (для локальной разработки)
+# =============================================================================
+FROM frankenphp AS frankenphp-dev
+
+# Заменяем vendor на полный (с dev-зависимостями) из codegen-этапа
+COPY --from=codegen /app/vendor /app/vendor
+RUN php artisan package:discover --ansi

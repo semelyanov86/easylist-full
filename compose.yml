@@ -30,7 +30,7 @@ services:
         build:
             context: ${CONTEXT_LOCATION:-.}
             dockerfile: docker/Dockerfile
-            target: frankenphp
+            target: ${FRANKENPHP_TARGET:-frankenphp}
             args:
                 APP_ENV: ${APP_ENV:-production}
         <<: *laravel-volumes
