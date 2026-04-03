@@ -11,8 +11,6 @@ await build({
   minify: true,
 });
 
-// Prepend shebang on first line
 const content = readFileSync("bundle/easylist-mcp.cjs", "utf-8");
 writeFileSync("bundle/easylist-mcp.cjs", `#!/usr/bin/env node\n${content}`);
-
 console.log("Bundled → bundle/easylist-mcp.cjs");
