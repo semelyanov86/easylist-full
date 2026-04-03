@@ -11,6 +11,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
+use App\Models\User;
 
 class TwoFactorAuthenticationController extends Controller implements HasMiddleware
 {
@@ -31,7 +32,7 @@ class TwoFactorAuthenticationController extends Controller implements HasMiddlew
     {
         $request->ensureStateIsValid();
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return Inertia::render('settings/TwoFactor', [

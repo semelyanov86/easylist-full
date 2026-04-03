@@ -8,6 +8,7 @@ use App\Actions\Ai\FormatTextAction;
 use App\Exceptions\AiFormatterException;
 use App\Http\Requests\AiFormatRequest;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
 
 final class AiFormatController extends Controller
 {
@@ -16,7 +17,7 @@ final class AiFormatController extends Controller
      */
     public function __invoke(AiFormatRequest $request, FormatTextAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if (! $user->is_premium) {

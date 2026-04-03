@@ -24,6 +24,7 @@ use Laravel\Octane\Listeners\FlushUploadedFiles;
 use Laravel\Octane\Listeners\ReportException;
 use Laravel\Octane\Listeners\StopWorkerIfNecessary;
 use Laravel\Octane\Octane;
+use Laravel\Pulse\Pulse;
 
 return [
 
@@ -137,7 +138,7 @@ return [
     ],
 
     'flush' => [
-        \Laravel\Pulse\Pulse::class,
+        Pulse::class,
     ],
 
     /*

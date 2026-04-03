@@ -15,6 +15,7 @@ use App\Http\Requests\Shopping\UpdateShoppingListRequest;
 use App\Models\ShoppingList;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class ShoppingListController extends Controller
 {
@@ -23,7 +24,7 @@ final class ShoppingListController extends Controller
      */
     public function store(StoreShoppingListRequest $request, CreateShoppingListAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{name: string, folder_id: int, icon?: string|null, is_public?: bool} $data */
@@ -39,7 +40,7 @@ final class ShoppingListController extends Controller
      */
     public function update(UpdateShoppingListRequest $request, ShoppingList $shoppingList, UpdateShoppingListAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -57,7 +58,7 @@ final class ShoppingListController extends Controller
      */
     public function destroy(Request $request, ShoppingList $shoppingList, DeleteShoppingListAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -72,7 +73,7 @@ final class ShoppingListController extends Controller
      */
     public function reorder(ReorderRequest $request, ReorderShoppingListsAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array<int, int> $ids */

@@ -7,6 +7,7 @@ namespace App\Actions\JobTask;
 use App\Models\Job;
 use App\Models\JobTask;
 use App\Models\User;
+use App\Jobs\TickTick\SyncTickTickTaskCreated;
 
 final readonly class CreateJobTaskAction
 {
@@ -32,7 +33,7 @@ final readonly class CreateJobTaskAction
             ->log('Добавлена задача');
 
         if ($user->ticktick_token !== null && $user->ticktick_list_id !== null) {
-            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskCreated($task->id));
+            dispatch(new SyncTickTickTaskCreated($task->id));
         }
 
         return $task;

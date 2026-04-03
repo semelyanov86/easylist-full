@@ -39,7 +39,7 @@ class EmailVerificationTest extends TestCase
         $response = $this->actingAs($user)->get($verificationUrl);
 
         Event::assertDispatched(Verified::class);
-        /** @var \App\Models\User $freshUser */
+        /** @var User $freshUser */
         $freshUser = $user->fresh();
         $this->assertTrue($freshUser->hasVerifiedEmail());
         $response->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
@@ -60,7 +60,7 @@ class EmailVerificationTest extends TestCase
         $this->actingAs($user)->get($verificationUrl);
 
         Event::assertNotDispatched(Verified::class);
-        /** @var \App\Models\User $freshUser */
+        /** @var User $freshUser */
         $freshUser = $user->fresh();
         $this->assertFalse($freshUser->hasVerifiedEmail());
     }
@@ -80,7 +80,7 @@ class EmailVerificationTest extends TestCase
         $this->actingAs($user)->get($verificationUrl);
 
         Event::assertNotDispatched(Verified::class);
-        /** @var \App\Models\User $freshUser */
+        /** @var User $freshUser */
         $freshUser = $user->fresh();
         $this->assertFalse($freshUser->hasVerifiedEmail());
     }
@@ -113,7 +113,7 @@ class EmailVerificationTest extends TestCase
             ->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
 
         Event::assertNotDispatched(Verified::class);
-        /** @var \App\Models\User $freshUser */
+        /** @var User $freshUser */
         $freshUser = $user->fresh();
         $this->assertTrue($freshUser->hasVerifiedEmail());
     }

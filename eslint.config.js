@@ -19,6 +19,7 @@ export default defineConfigWithVueTs(
             'public/**',
             'storage/**',
             'bootstrap/ssr/**',
+            'mcp-server/**',
             'tailwind.config.js',
             'vite.config.ts',
             'resources/js/shared/ui/*',

@@ -11,6 +11,7 @@ use App\Models\ShoppingList;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 final class ShoppingController extends Controller
 {
@@ -22,7 +23,7 @@ final class ShoppingController extends Controller
         GetUserFoldersAction $getUserFolders,
         GetShoppingListDataAction $getShoppingListData,
     ): Response {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $selectedFolderId = $request->query('folder_id')

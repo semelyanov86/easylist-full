@@ -18,6 +18,7 @@ use App\Http\Traits\JsonApiResponses;
 use App\Models\Folder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class FolderController extends Controller
 {
@@ -30,7 +31,7 @@ final class FolderController extends Controller
      */
     public function index(Request $request, GetUserFoldersAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $includes = $this->parseIncludes($request);
@@ -66,7 +67,7 @@ final class FolderController extends Controller
         CreateFolderAction $action,
         GetFolderDataAction $getFolderData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{name: string, icon?: string|null} $attributes */
@@ -84,7 +85,7 @@ final class FolderController extends Controller
      */
     public function show(Request $request, Folder $folder, GetFolderDataAction $getFolderData): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);
@@ -120,7 +121,7 @@ final class FolderController extends Controller
         UpdateFolderAction $action,
         GetFolderDataAction $getFolderData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);
@@ -142,7 +143,7 @@ final class FolderController extends Controller
      */
     public function destroy(Request $request, Folder $folder, DeleteFolderAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);

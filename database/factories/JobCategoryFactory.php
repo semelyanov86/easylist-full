@@ -7,9 +7,10 @@ namespace Database\Factories;
 use App\Enums\Currency;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\JobCategory;
 
 /**
- * @extends Factory<\App\Models\JobCategory>
+ * @extends Factory<JobCategory>
  */
 class JobCategoryFactory extends Factory
 {

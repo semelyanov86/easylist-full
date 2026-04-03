@@ -15,6 +15,7 @@ use App\Http\Requests\Settings\UpdateJobCategoryRequest;
 use App\Models\JobCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class JobCategoryController extends Controller
 {
@@ -23,7 +24,7 @@ final class JobCategoryController extends Controller
      */
     public function store(StoreJobCategoryRequest $request, CreateJobCategoryAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{title: string, description?: string|null, currency: string} $data */
@@ -39,7 +40,7 @@ final class JobCategoryController extends Controller
      */
     public function update(UpdateJobCategoryRequest $request, JobCategory $jobCategory, UpdateJobCategoryAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobCategory->user_id !== $user->id, 403);
@@ -57,7 +58,7 @@ final class JobCategoryController extends Controller
      */
     public function destroy(Request $request, JobCategory $jobCategory, DeleteJobCategoryAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobCategory->user_id !== $user->id, 403);
@@ -72,7 +73,7 @@ final class JobCategoryController extends Controller
      */
     public function reorder(ReorderJobCategoriesRequest $request, ReorderJobCategoriesAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array<int, int> $ids */

@@ -9,6 +9,7 @@ use App\Enums\JobsViewMode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\UpdateJobsViewModeRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Models\User;
 
 final class JobsPreferenceController extends Controller
 {
@@ -17,7 +18,7 @@ final class JobsPreferenceController extends Controller
      */
     public function update(UpdateJobsViewModeRequest $request, UpdateJobsViewModeAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var string $viewMode */

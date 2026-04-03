@@ -9,6 +9,7 @@ use App\Models\Job;
 use App\Models\JobStatus;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use App\Enums\StatusColor;
 
 final readonly class GetJobStatusTabsAction
 {
@@ -27,7 +28,7 @@ final readonly class GetJobStatusTabsAction
         /** @var Collection<int, StatusTabData> */
         return $user->jobStatuses()->ordered()->get()->map(
             function (JobStatus $status) use ($counts): StatusTabData {
-                /** @var \App\Enums\StatusColor $color */
+                /** @var StatusColor $color */
                 $color = $status->color;
 
                 return new StatusTabData(

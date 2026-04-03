@@ -23,6 +23,7 @@ use App\Models\ShoppingItem;
 use App\Models\ShoppingList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class ShoppingItemController extends Controller
 {
@@ -35,7 +36,7 @@ final class ShoppingItemController extends Controller
      */
     public function index(Request $request, GetUserItemsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $items = $action->execute($user);
@@ -56,7 +57,7 @@ final class ShoppingItemController extends Controller
         CreateShoppingItemAction $action,
         GetShoppingItemDataAction $getShoppingItemData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{shopping_list_id: int, name: string, description?: string|null, quantity?: int, quantity_type?: string|null, price?: int|null, is_starred?: bool, is_done?: bool, file?: string|null} $attributes */
@@ -78,7 +79,7 @@ final class ShoppingItemController extends Controller
         GetShoppingItemDataAction $getShoppingItemData,
         GetShoppingListDataAction $getShoppingListData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -114,7 +115,7 @@ final class ShoppingItemController extends Controller
         UpdateShoppingItemAction $action,
         GetShoppingItemDataAction $getShoppingItemData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -136,7 +137,7 @@ final class ShoppingItemController extends Controller
      */
     public function destroy(Request $request, ShoppingItem $shoppingItem, DeleteShoppingItemAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -151,7 +152,7 @@ final class ShoppingItemController extends Controller
      */
     public function fromList(Request $request, ShoppingList $shoppingList, GetListItemsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -171,7 +172,7 @@ final class ShoppingItemController extends Controller
      */
     public function uncrossAll(Request $request, ShoppingList $shoppingList, UncrossAllItemsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -186,7 +187,7 @@ final class ShoppingItemController extends Controller
      */
     public function destroyAll(Request $request, ShoppingList $shoppingList, DeleteAllItemsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);

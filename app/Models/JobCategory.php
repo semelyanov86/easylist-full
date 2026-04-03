@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Database\Factories\JobCategoryFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class JobCategory extends Model implements Sortable
 {
-    /** @use HasFactory<\Database\Factories\JobCategoryFactory> */
+    /** @use HasFactory<JobCategoryFactory> */
     use HasFactory;
 
     use SortableTrait;
@@ -63,11 +65,11 @@ class JobCategory extends Model implements Sortable
     /**
      * Символ валюты для передачи на фронтенд.
      *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, never>
+     * @return Attribute<string, never>
      */
-    protected function currencySymbol(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function currencySymbol(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function (): string {
+        return Attribute::make(get: function (): string {
             /** @var Currency $currency */
             $currency = $this->currency ?? Currency::Rub;
 

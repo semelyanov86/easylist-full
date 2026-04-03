@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
+use Inertia\Testing\AssertableInertia;
 
 class CustomRedirectIfTwoFactorTest extends TestCase
 {
@@ -97,7 +98,7 @@ class CustomRedirectIfTwoFactorTest extends TestCase
 
         $response->assertOk()
             ->assertInertia(
-                fn (\Inertia\Testing\AssertableInertia $page) => $page
+                fn (AssertableInertia $page) => $page
                     ->component('auth/TwoFactorChallenge')
                     ->has('availableMethods')
                     ->where('availableMethods', ['totp', 'webauthn'])

@@ -6,12 +6,13 @@ namespace App\Actions\JobDocument;
 
 use App\Models\JobDocument;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Job;
 
 final readonly class DeleteJobDocumentAction
 {
     public function execute(JobDocument $document): void
     {
-        /** @var \App\Models\Job $job */
+        /** @var Job $job */
         $job = $document->job;
         $title = $document->title;
         $userId = $document->user_id;

@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 final class ApiTokenController extends Controller
 {
@@ -18,7 +19,7 @@ final class ApiTokenController extends Controller
      */
     public function index(Request $request): Response
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return Inertia::render('settings/ApiTokens', [
@@ -40,7 +41,7 @@ final class ApiTokenController extends Controller
      */
     public function store(StoreApiTokenRequest $request): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var string $name */
@@ -56,7 +57,7 @@ final class ApiTokenController extends Controller
      */
     public function destroy(Request $request, int $tokenId): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $user->tokens()->where('id', $tokenId)->delete();

@@ -9,6 +9,7 @@ use App\Exceptions\AiFormatterException;
 use App\Models\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class AiExtractJobTagsController extends Controller
 {
@@ -17,7 +18,7 @@ final class AiExtractJobTagsController extends Controller
      */
     public function __invoke(Request $request, Job $job, ExtractJobTagsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if ($job->user_id !== $user->id) {

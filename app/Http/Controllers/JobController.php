@@ -27,6 +27,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Enums\JobsViewMode;
+use App\Models\User;
 
 final class JobController extends Controller
 {
@@ -40,7 +42,7 @@ final class JobController extends Controller
         GetUserJobCategoriesAction $getCategories,
         GetKanbanColumnsAction $getKanbanColumns,
     ): Response {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $filters = JobIndexFiltersData::from([
@@ -53,7 +55,7 @@ final class JobController extends Controller
             'sort' => $request->query('sort'),
         ]);
 
-        /** @var \App\Enums\JobsViewMode $viewMode */
+        /** @var JobsViewMode $viewMode */
         $viewMode = $user->jobs_view_mode;
 
         return Inertia::render('jobs/Index', [
@@ -77,7 +79,7 @@ final class JobController extends Controller
         GetJobStatusTabsAction $getStatusTabs,
         GetUserJobCategoriesAction $getCategories,
     ): Response {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -95,7 +97,7 @@ final class JobController extends Controller
      */
     public function store(StoreJobRequest $request, CreateJobAction $action, SyncJobSkillsAction $syncSkills): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, resume_version_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
@@ -117,7 +119,7 @@ final class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job, UpdateJobAction $action, SyncJobSkillsAction $syncSkills): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -141,7 +143,7 @@ final class JobController extends Controller
      */
     public function move(MoveJobRequest $request, Job $job, MoveJobToStatusAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -159,7 +161,7 @@ final class JobController extends Controller
      */
     public function toggleFavorite(Request $request, Job $job, ToggleFavoriteAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -174,7 +176,7 @@ final class JobController extends Controller
      */
     public function share(Request $request, Job $job, ShareJobAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -189,7 +191,7 @@ final class JobController extends Controller
      */
     public function destroy(Request $request, Job $job, DeleteJobAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);

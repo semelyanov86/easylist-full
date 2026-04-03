@@ -7,10 +7,11 @@ namespace App\Models;
 use App\Data\CompanyInfoDetailsData;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\CompanyInfoFactory;
 
 class CompanyInfo extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompanyInfoFactory> */
+    /** @use HasFactory<CompanyInfoFactory> */
     use HasFactory;
 
     /** @var list<string> */

@@ -7,6 +7,7 @@ namespace App\Actions\Ai;
 use App\Contracts\AiContactFinderContract;
 use App\Models\Job;
 use App\Models\User;
+use App\Models\Contact;
 
 final readonly class FindContactsAction
 {
@@ -26,7 +27,7 @@ final readonly class FindContactsAction
 
         /** @var array<string, mixed> $contactData */
         foreach ($contacts as $contactData) {
-            /** @var \App\Models\Contact $contact */
+            /** @var Contact $contact */
             $contact = $job->contacts()->create([
                 'user_id' => $user->id,
                 'first_name' => $contactData['first_name'] ?? '',

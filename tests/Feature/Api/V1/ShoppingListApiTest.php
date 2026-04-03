@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Illuminate\Mail\Message;
+use Symfony\Component\Mime\Email;
 
 class ShoppingListApiTest extends TestCase
 {
@@ -328,7 +330,7 @@ class ShoppingListApiTest extends TestCase
         Mail::shouldReceive('raw')
             ->once()
             ->andReturnUsing(function (string $text, callable $callback) use (&$sentEmails): void {
-                $message = new \Illuminate\Mail\Message(new \Symfony\Component\Mime\Email());
+                $message = new Message(new Email());
                 $callback($message);
                 $sentEmails[] = ['text' => $text];
             });

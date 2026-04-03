@@ -24,6 +24,9 @@ use App\Models\Folder;
 use App\Models\ShoppingList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Data\ShoppingListData;
+use App\Models\User;
+use Illuminate\Support\Collection;
 
 final class ShoppingListController extends Controller
 {
@@ -36,7 +39,7 @@ final class ShoppingListController extends Controller
      */
     public function index(Request $request, GetUserShoppingListsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $includes = $this->parseIncludes($request);
@@ -65,7 +68,7 @@ final class ShoppingListController extends Controller
         CreateShoppingListAction $action,
         GetShoppingListDataAction $getShoppingListData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{folder_id: int, name: string, icon?: string|null, is_public?: bool} $attributes */
@@ -86,7 +89,7 @@ final class ShoppingListController extends Controller
         ShoppingList $shoppingList,
         GetShoppingListDataAction $getShoppingListData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -131,7 +134,7 @@ final class ShoppingListController extends Controller
         UpdateShoppingListAction $action,
         GetShoppingListDataAction $getShoppingListData,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -153,7 +156,7 @@ final class ShoppingListController extends Controller
      */
     public function destroy(Request $request, ShoppingList $shoppingList, DeleteShoppingListAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -168,7 +171,7 @@ final class ShoppingListController extends Controller
      */
     public function fromFolder(Request $request, Folder $folder, GetFolderShoppingListsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);
@@ -209,7 +212,7 @@ final class ShoppingListController extends Controller
         ShoppingList $shoppingList,
         SendShoppingListEmailAction $action,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -225,11 +228,11 @@ final class ShoppingListController extends Controller
     /**
      * Собрать included из DTO-коллекции.
      *
-     * @param  \Illuminate\Support\Collection<int, \App\Data\ShoppingListData>  $lists
+     * @param  Collection<int, ShoppingListData>  $lists
      * @return list<array<string, mixed>>
      */
     private function buildIncluded(
-        \Illuminate\Support\Collection $lists,
+        Collection $lists,
         bool $withFolder,
         bool $withItems,
         Request $request,

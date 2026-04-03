@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\JobTask;
 
 use App\Models\JobTask;
+use App\Jobs\TickTick\SyncTickTickTaskUpdated;
 
 final readonly class UpdateJobTaskAction
 {
@@ -18,7 +19,7 @@ final readonly class UpdateJobTaskAction
         $user = $task->user;
 
         if ($task->external_id !== null && $user !== null && $user->ticktick_token !== null && $user->ticktick_list_id !== null) {
-            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskUpdated($task->id));
+            dispatch(new SyncTickTickTaskUpdated($task->id));
         }
     }
 }

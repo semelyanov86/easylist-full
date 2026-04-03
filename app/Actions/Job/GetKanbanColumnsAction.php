@@ -10,6 +10,7 @@ use App\Data\KanbanColumnData;
 use App\Models\JobStatus;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use App\Enums\StatusColor;
 
 final readonly class GetKanbanColumnsAction
 {
@@ -58,7 +59,7 @@ final readonly class GetKanbanColumnsAction
 
         /** @var Collection<int, KanbanColumnData> */
         return $statuses->map(function (JobStatus $status) use ($grouped): KanbanColumnData {
-            /** @var \App\Enums\StatusColor $color */
+            /** @var StatusColor $color */
             $color = $status->color;
 
             $jobs = $grouped->get($status->id, collect());

@@ -25,6 +25,7 @@ use App\Models\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use App\Models\User;
 
 final class JobController extends Controller
 {
@@ -38,7 +39,7 @@ final class JobController extends Controller
      */
     public function index(Request $request, GetUserJobsQuery $query): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $filters = $this->buildFilters($request);
@@ -80,7 +81,7 @@ final class JobController extends Controller
      */
     public function show(Request $request, Job $job, GetJobShowDataAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -106,7 +107,7 @@ final class JobController extends Controller
         SyncJobSkillsAction $syncSkills,
         GetJobShowDataAction $showAction,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{title: string, company_name: string, job_status_id: int, job_category_id: int, description?: string|null, job_url?: string|null, salary?: int|null, location_city?: string|null, skill_ids?: list<int>|null} $data */
@@ -138,7 +139,7 @@ final class JobController extends Controller
         SyncJobSkillsAction $syncSkills,
         GetJobShowDataAction $showAction,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -167,7 +168,7 @@ final class JobController extends Controller
      */
     public function destroy(Request $request, Job $job, DeleteJobAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -186,7 +187,7 @@ final class JobController extends Controller
         MoveJobToStatusAction $action,
         GetJobShowDataAction $showAction,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -214,7 +215,7 @@ final class JobController extends Controller
         ToggleFavoriteAction $action,
         GetJobShowDataAction $showAction,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -235,7 +236,7 @@ final class JobController extends Controller
      */
     public function share(Request $request, Job $job, ShareJobAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);

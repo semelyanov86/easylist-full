@@ -15,6 +15,7 @@ use App\Http\Requests\Shopping\UpdateFolderRequest;
 use App\Models\Folder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class FolderController extends Controller
 {
@@ -23,7 +24,7 @@ final class FolderController extends Controller
      */
     public function store(StoreFolderRequest $request, CreateFolderAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{name: string, icon?: string|null} $data */
@@ -39,7 +40,7 @@ final class FolderController extends Controller
      */
     public function update(UpdateFolderRequest $request, Folder $folder, UpdateFolderAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);
@@ -57,7 +58,7 @@ final class FolderController extends Controller
      */
     public function destroy(Request $request, Folder $folder, DeleteFolderAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($folder->user_id !== $user->id, 403);
@@ -72,7 +73,7 @@ final class FolderController extends Controller
      */
     public function reorder(ReorderRequest $request, ReorderFoldersAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array<int, int> $ids */

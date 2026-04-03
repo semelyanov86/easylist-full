@@ -6,6 +6,7 @@ namespace App\Actions\JobTask;
 
 use App\Models\JobTask;
 use App\Models\User;
+use App\Jobs\TickTick\SyncTickTickTaskToggled;
 
 final readonly class ToggleJobTaskAction
 {
@@ -33,7 +34,7 @@ final readonly class ToggleJobTaskAction
         }
 
         if ($task->external_id !== null && $user->ticktick_token !== null && $user->ticktick_list_id !== null) {
-            dispatch(new \App\Jobs\TickTick\SyncTickTickTaskToggled($task->id));
+            dispatch(new SyncTickTickTaskToggled($task->id));
         }
     }
 }

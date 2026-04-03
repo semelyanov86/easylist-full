@@ -14,6 +14,7 @@ use App\Http\Traits\JsonApiResponses;
 use App\Models\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class JobCommentController extends Controller
 {
@@ -24,7 +25,7 @@ final class JobCommentController extends Controller
      */
     public function index(Request $request, Job $job, GetJobCommentsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -47,7 +48,7 @@ final class JobCommentController extends Controller
         Job $job,
         CreateJobCommentAction $action,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);

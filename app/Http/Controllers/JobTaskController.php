@@ -14,6 +14,7 @@ use App\Models\Job;
 use App\Models\JobTask;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class JobTaskController extends Controller
 {
@@ -22,7 +23,7 @@ final class JobTaskController extends Controller
      */
     public function store(StoreJobTaskRequest $request, Job $job, CreateJobTaskAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -40,7 +41,7 @@ final class JobTaskController extends Controller
      */
     public function update(UpdateJobTaskRequest $request, JobTask $jobTask, UpdateJobTaskAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobTask->user_id !== $user->id, 403);
@@ -58,7 +59,7 @@ final class JobTaskController extends Controller
      */
     public function toggle(Request $request, JobTask $jobTask, ToggleJobTaskAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobTask->user_id !== $user->id, 403);
@@ -73,7 +74,7 @@ final class JobTaskController extends Controller
      */
     public function destroy(Request $request, JobTask $jobTask, DeleteJobTaskAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobTask->user_id !== $user->id, 403);

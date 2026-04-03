@@ -11,10 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Database\Factories\ShoppingListFactory;
 
 class ShoppingList extends Model implements Sortable
 {
-    /** @use HasFactory<\Database\Factories\ShoppingListFactory> */
+    /** @use HasFactory<ShoppingListFactory> */
     use HasFactory;
 
     use SortableTrait;

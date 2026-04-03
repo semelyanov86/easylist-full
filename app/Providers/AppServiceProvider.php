@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Pulse\Facades\Pulse;
+use App\Contracts\AiCoverLetterContract;
+use App\Contracts\TickTickClientContract;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        $this->app->singleton(function (): \App\Services\AiClientService {
+        $this->app->singleton(function (): AiClientService {
             /** @var string $url */
             $url = config('services.ai_formatter.url');
 
@@ -65,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
             client: $this->app->make(AiClientService::class),
         ));
 
-        $this->app->singleton(function (): \App\Contracts\AiCoverLetterContract {
+        $this->app->singleton(function (): AiCoverLetterContract {
             /** @var string $url */
             $url = config('services.ai_formatter.url');
 
@@ -83,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton(function (): \App\Contracts\TickTickClientContract {
+        $this->app->singleton(function (): TickTickClientContract {
             /** @var string $baseUrl */
             $baseUrl = config('services.ticktick.base_url');
 

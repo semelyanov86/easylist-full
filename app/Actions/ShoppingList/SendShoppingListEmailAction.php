@@ -6,6 +6,7 @@ namespace App\Actions\ShoppingList;
 
 use App\Models\ShoppingList;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Message;
 
 final readonly class SendShoppingListEmailAction
 {
@@ -22,7 +23,7 @@ final readonly class SendShoppingListEmailAction
 
         Mail::raw(
             "Список покупок: {$shoppingList->name}\n\n{$items}",
-            function (\Illuminate\Mail\Message $message) use ($email, $shoppingList): void {
+            function (Message $message) use ($email, $shoppingList): void {
                 $message->to($email)
                     ->subject("Список покупок: {$shoppingList->name}");
             },

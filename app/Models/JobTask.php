@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Database\Factories\JobTaskFactory;
 
 /**
  * @property int $id
@@ -22,7 +23,7 @@ use Illuminate\Support\Carbon;
  */
 class JobTask extends Model
 {
-    /** @use HasFactory<\Database\Factories\JobTaskFactory> */
+    /** @use HasFactory<JobTaskFactory> */
     use HasFactory;
 
     /**

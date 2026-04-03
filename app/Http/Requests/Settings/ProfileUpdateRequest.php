@@ -7,6 +7,7 @@ namespace App\Http\Requests\Settings;
 use App\Concerns\ProfileValidationRules;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\User;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -19,7 +20,7 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->user();
 
         return $this->profileRules($user->id);

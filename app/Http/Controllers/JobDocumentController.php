@@ -12,6 +12,8 @@ use App\Models\JobDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 final class JobDocumentController extends Controller
 {
@@ -20,7 +22,7 @@ final class JobDocumentController extends Controller
      */
     public function store(StoreJobDocumentRequest $request, Job $job, CreateJobDocumentAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -38,16 +40,16 @@ final class JobDocumentController extends Controller
      */
     public function download(Request $request, JobDocument $document): StreamedResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
-        /** @var \App\Models\Job $job */
+        /** @var Job $job */
         $job = $document->job;
 
         abort_if($job->user_id !== $user->id, 403);
         abort_if($document->file_path === null, 404);
 
-        return \Illuminate\Support\Facades\Storage::disk('local')->download(
+        return Storage::disk('local')->download(
             $document->file_path,
             $document->original_filename,
         );
@@ -58,10 +60,10 @@ final class JobDocumentController extends Controller
      */
     public function destroy(Request $request, JobDocument $document, DeleteJobDocumentAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
-        /** @var \App\Models\Job $job */
+        /** @var Job $job */
         $job = $document->job;
 
         abort_if($job->user_id !== $user->id, 403);

@@ -1,0 +1,35 @@
+{
+  "name": "@easylist/mcp",
+  "version": "1.0.0",
+  "description": "MCP server for EasyList API — manage jobs, shopping lists, contacts, and more through Claude",
+  "type": "module",
+  "bin": {
+    "easylist-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "bundle": "node esbuild.config.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "easylist",
+    "claude",
+    "ai"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -9,6 +9,7 @@ use App\Services\AiClientService;
 use App\Services\AiTagExtractorService;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use Illuminate\Http\Client\Request;
 
 class AiTagExtractorServiceTest extends TestCase
 {
@@ -146,7 +147,7 @@ class AiTagExtractorServiceTest extends TestCase
 
         $service->extract($this->context);
 
-        Http::assertSent(function (\Illuminate\Http\Client\Request $request): bool {
+        Http::assertSent(function (Request $request): bool {
             $body = $request->body();
 
             return str_contains($body, 'Senior PHP Developer')

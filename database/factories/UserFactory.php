@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
+use App\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -87,7 +88,7 @@ class UserFactory extends Factory
      */
     public function withWebAuthn(string $alias = 'Test Key'): static
     {
-        return $this->afterCreating(function (\App\Models\User $user) use ($alias): void {
+        return $this->afterCreating(function (User $user) use ($alias): void {
             WebAuthnCredential::forceCreate([
                 'id' => Str::random(64),
                 'authenticatable_type' => $user->getMorphClass(),

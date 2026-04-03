@@ -18,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 final class JobStatusController extends Controller
 {
@@ -26,7 +27,7 @@ final class JobStatusController extends Controller
      */
     public function index(Request $request, GetUserJobStatusesAction $action): Response
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return Inertia::render('settings/JobStatuses', [
@@ -39,7 +40,7 @@ final class JobStatusController extends Controller
      */
     public function store(StoreJobStatusRequest $request, CreateJobStatusAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{title: string, description?: string|null, color: string} $data */
@@ -55,7 +56,7 @@ final class JobStatusController extends Controller
      */
     public function update(UpdateJobStatusRequest $request, JobStatus $jobStatus, UpdateJobStatusAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobStatus->user_id !== $user->id, 403);
@@ -73,7 +74,7 @@ final class JobStatusController extends Controller
      */
     public function destroy(Request $request, JobStatus $jobStatus, DeleteJobStatusAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobStatus->user_id !== $user->id, 403);
@@ -88,7 +89,7 @@ final class JobStatusController extends Controller
      */
     public function reorder(ReorderJobStatusesRequest $request, ReorderJobStatusesAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array<int, int> $ids */

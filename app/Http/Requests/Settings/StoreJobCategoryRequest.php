@@ -8,6 +8,7 @@ use App\Enums\Currency;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 final class StoreJobCategoryRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ final class StoreJobCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->user();
 
         return [

@@ -16,6 +16,7 @@ use App\Models\Contact;
 use App\Models\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class ContactController extends Controller
 {
@@ -26,7 +27,7 @@ final class ContactController extends Controller
      */
     public function index(Request $request, Job $job, GetContactsAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -49,7 +50,7 @@ final class ContactController extends Controller
         Job $job,
         CreateContactAction $action,
     ): JsonResponse {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -70,7 +71,7 @@ final class ContactController extends Controller
      */
     public function destroy(Request $request, Job $job, Contact $contact, DeleteContactAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Data\SkillData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class SkillController extends Controller
 {
@@ -15,7 +16,7 @@ final class SkillController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $query = $request->query('q', '');
@@ -34,7 +35,7 @@ final class SkillController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{title: string} $data */

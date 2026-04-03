@@ -18,6 +18,7 @@ use App\Models\ShoppingItem;
 use App\Models\ShoppingList;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class ShoppingItemController extends Controller
 {
@@ -26,7 +27,7 @@ final class ShoppingItemController extends Controller
      */
     public function store(StoreShoppingItemRequest $request, CreateShoppingItemAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{shopping_list_id: int, name: string, description?: string|null, quantity?: int, quantity_type?: string|null, price?: int|null, is_starred?: bool, is_done?: bool} $data */
@@ -47,7 +48,7 @@ final class ShoppingItemController extends Controller
      */
     public function update(UpdateShoppingItemRequest $request, ShoppingItem $shoppingItem, UpdateShoppingItemAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -70,7 +71,7 @@ final class ShoppingItemController extends Controller
      */
     public function toggleDone(Request $request, ShoppingItem $shoppingItem, UpdateShoppingItemAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -85,7 +86,7 @@ final class ShoppingItemController extends Controller
      */
     public function destroy(Request $request, ShoppingItem $shoppingItem, DeleteShoppingItemAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingItem->user_id !== $user->id, 403);
@@ -100,7 +101,7 @@ final class ShoppingItemController extends Controller
      */
     public function reorder(ReorderRequest $request, ReorderShoppingItemsAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array<int, int> $ids */
@@ -116,7 +117,7 @@ final class ShoppingItemController extends Controller
      */
     public function uncrossAll(Request $request, ShoppingList $shoppingList, UncrossAllItemsAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);
@@ -131,7 +132,7 @@ final class ShoppingItemController extends Controller
      */
     public function destroyAll(Request $request, ShoppingList $shoppingList, DeleteAllItemsAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($shoppingList->user_id !== $user->id, 403);

@@ -13,6 +13,7 @@ use App\Models\Job;
 use App\Models\JobComment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class JobCommentController extends Controller
 {
@@ -21,7 +22,7 @@ final class JobCommentController extends Controller
      */
     public function store(StoreJobCommentRequest $request, Job $job, CreateJobCommentAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -39,7 +40,7 @@ final class JobCommentController extends Controller
      */
     public function update(UpdateJobCommentRequest $request, JobComment $comment, UpdateJobCommentAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($comment->user_id !== $user->id, 403);
@@ -57,7 +58,7 @@ final class JobCommentController extends Controller
      */
     public function destroy(Request $request, JobComment $comment, DeleteJobCommentAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($comment->user_id !== $user->id, 403);

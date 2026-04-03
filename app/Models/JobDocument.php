@@ -8,6 +8,7 @@ use App\Enums\DocumentCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Database\Factories\JobDocumentFactory;
 
 /**
  * @property DocumentCategory $category
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class JobDocument extends Model
 {
-    /** @use HasFactory<\Database\Factories\JobDocumentFactory> */
+    /** @use HasFactory<JobDocumentFactory> */
     use HasFactory;
 
     /**

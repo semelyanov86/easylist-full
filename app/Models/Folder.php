@@ -11,10 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Database\Factories\FolderFactory;
 
 class Folder extends Model implements Sortable
 {
-    /** @use HasFactory<\Database\Factories\FolderFactory> */
+    /** @use HasFactory<FolderFactory> */
     use HasFactory;
 
     use SortableTrait;

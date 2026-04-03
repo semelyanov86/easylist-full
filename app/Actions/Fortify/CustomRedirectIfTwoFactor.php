@@ -9,6 +9,8 @@ use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 /**
  * Расширение стандартного Fortify pipeline: учитывает и TOTP, и WebAuthn credentials.
@@ -16,7 +18,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class CustomRedirectIfTwoFactor extends RedirectIfTwoFactorAuthenticatable
 {
     /**
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  callable  $next
      */
     #[\Override]
@@ -86,7 +88,7 @@ class CustomRedirectIfTwoFactor extends RedirectIfTwoFactorAuthenticatable
             return false;
         }
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $hasSecret = ! empty($user->two_factor_secret);
         $isConfirmed = Fortify::confirmsTwoFactorAuthentication()
             ? $user->two_factor_confirmed_at !== null

@@ -28,7 +28,7 @@ final readonly class GetDashboardResponseDynamicsAction
             ->pluck('created_at');
 
         // Группируем по ISO-неделям в PHP (совместимо с SQLite и MySQL)
-        /** @var \Illuminate\Support\Collection<string, int> $grouped */
+        /** @var Collection<string, int> $grouped */
         $grouped = $dates->countBy(
             fn (CarbonInterface $date): string => $date->format('o-W')
         );

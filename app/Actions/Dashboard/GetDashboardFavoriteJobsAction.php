@@ -8,6 +8,7 @@ use App\Data\DashboardJobItemData;
 use App\Models\Job;
 use App\Models\JobStatus;
 use App\Models\User;
+use App\Enums\StatusColor;
 
 final readonly class GetDashboardFavoriteJobsAction
 {
@@ -29,7 +30,7 @@ final readonly class GetDashboardFavoriteJobsAction
                 /** @var JobStatus $status */
                 $status = $job->status;
 
-                /** @var \App\Enums\StatusColor $color */
+                /** @var StatusColor $color */
                 $color = $status->color;
 
                 return new DashboardJobItemData(

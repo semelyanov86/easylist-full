@@ -17,6 +17,7 @@ use App\Models\JobCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use App\Models\User;
 
 final class JobCategoryController extends Controller
 {
@@ -28,7 +29,7 @@ final class JobCategoryController extends Controller
      */
     public function index(Request $request, GetUserJobCategoriesAction $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $categories = $action->execute($user);
@@ -46,7 +47,7 @@ final class JobCategoryController extends Controller
      */
     public function show(Request $request, JobCategory $jobCategory): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobCategory->user_id !== $user->id, 403);
@@ -62,7 +63,7 @@ final class JobCategoryController extends Controller
      */
     public function jobs(Request $request, JobCategory $jobCategory, GetUserJobsQuery $query): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($jobCategory->user_id !== $user->id, 403);

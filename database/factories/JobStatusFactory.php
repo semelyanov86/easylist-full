@@ -7,9 +7,10 @@ namespace Database\Factories;
 use App\Enums\StatusColor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\JobStatus;
 
 /**
- * @extends Factory<\App\Models\JobStatus>
+ * @extends Factory<JobStatus>
  */
 class JobStatusFactory extends Factory
 {

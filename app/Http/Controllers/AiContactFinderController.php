@@ -9,6 +9,7 @@ use App\Exceptions\AiFormatterException;
 use App\Models\Job;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class AiContactFinderController extends Controller
 {
@@ -17,7 +18,7 @@ final class AiContactFinderController extends Controller
      */
     public function __invoke(Request $request, Job $job, FindContactsAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if ($job->user_id !== $user->id) {

@@ -13,11 +13,12 @@
     ],
     "sail": false,
     "skills": [
+        "laravel-best-practices",
         "pulse-development",
         "wayfinder-development",
         "inertia-vue-development",
         "tailwindcss-development",
-        "developing-with-fortify",
+        "fortify-development",
         "debugging-output-and-previewing-html-using-ray"
     ]
 }

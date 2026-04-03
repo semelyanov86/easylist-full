@@ -8,6 +8,7 @@ use App\Enums\DocumentCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 
 class StoreJobDocumentRequest extends FormRequest
 {
@@ -37,9 +38,9 @@ class StoreJobDocumentRequest extends FormRequest
         ];
     }
 
-    public function withValidator(\Illuminate\Contracts\Validation\Validator $validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function (\Illuminate\Contracts\Validation\Validator $validator): void {
+        $validator->after(function (Validator $validator): void {
             $hasFile = $this->hasFile('file');
             $hasUrl = $this->filled('external_url');
 

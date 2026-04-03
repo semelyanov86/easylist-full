@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Database\Factories\JobStatusFactory;
 
 class JobStatus extends Model implements Sortable
 {
-    /** @use HasFactory<\Database\Factories\JobStatusFactory> */
+    /** @use HasFactory<JobStatusFactory> */
     use HasFactory;
 
     use SortableTrait;

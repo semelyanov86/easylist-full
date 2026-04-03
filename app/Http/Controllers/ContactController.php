@@ -13,6 +13,7 @@ use App\Models\Contact;
 use App\Models\Job;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 final class ContactController extends Controller
 {
@@ -21,7 +22,7 @@ final class ContactController extends Controller
      */
     public function store(StoreContactRequest $request, Job $job, CreateContactAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($job->user_id !== $user->id, 403);
@@ -39,7 +40,7 @@ final class ContactController extends Controller
      */
     public function update(UpdateContactRequest $request, Contact $contact, UpdateContactAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($contact->user_id !== $user->id, 403);
@@ -57,7 +58,7 @@ final class ContactController extends Controller
      */
     public function destroy(Request $request, Contact $contact, DeleteContactAction $action): RedirectResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         abort_if($contact->user_id !== $user->id, 403);
