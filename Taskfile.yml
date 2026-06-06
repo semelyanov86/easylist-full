@@ -229,34 +229,18 @@ tasks:
     cmd: "npm run build"
 
   deploy:
-    desc: "Run deployment process"
-    cmds:
-      - "php artisan down --retry=60 --secret=deployment-secret"
-      - "sudo chown -R sergey:sergey /var/www/praxis-app"
-      - "git fetch --all --prune"
-      - "git reset --hard origin/main"
-      - "composer install --optimize-autoloader --no-interaction"
-      - "npm install"
-      - "php artisan migrate --force"
-      - "npm run build"
-      - "php artisan config:clear"
-      - "php artisan cache:clear"
-      - "php artisan route:clear"
-      - "php artisan view:clear"
-      - "php artisan config:cache"
-      - "php artisan route:cache"
-      - "php artisan view:cache"
-      - "php artisan event:cache"
-      - "php artisan queue:restart"
-      - "sudo supervisorctl restart all"
-      - "sudo chown -R sergey:www-data /var/www/praxis-app"
-      - "sudo chmod -R 755 /var/www/praxis-app"
-      - "sudo chmod -R 775 /var/www/praxis-app/storage"
-      - "sudo chmod -R 775 /var/www/praxis-app/bootstrap/cache"
-      - "php artisan up"
-
-    env:
-      GIT_SSH_COMMAND: 'ssh -i /home/sergey/.ssh/id_ed25519_github -o IdentitiesOnly=yes'
+    desc: "Ручной деплой на прод (штатно деплоит GitHub Actions при push в main). Сборка на сервере, Octane — systemd octane-easylist (RoadRunner)."
+    cmd: >-
+      ssh sergey@sergeyem.ru 'set -eu;
+      APP=/var/www/easylist/current; SHARED=/var/www/easylist/shared;
+      run() { sudo -u site_easylist env HOME="$SHARED" "$@"; };
+      run git -C "$APP" fetch --prune origin;
+      run git -C "$APP" reset --hard origin/main;
+      run composer install --working-dir="$APP" --no-dev --prefer-dist --optimize-autoloader --no-interaction;
+      run sh -c "cd $APP && npm ci && npm run build";
+      run php "$APP/artisan" migrate --force;
+      run php "$APP/artisan" optimize:clear;
+      sudo systemctl reload octane-easylist.service'
   work:
     desc: "Run queue jobs"
     cmd: "php artisan queue:work"
@@ -340,7 +324,7 @@ tasks:
 
   ssh:
     desc: "Connect to server via ssh"
-    cmd: "ssh -t sergey@46.225.99.118 'cd /var/www/praxis-app && exec $SHELL -l'"
+    cmd: "ssh -t sergey@sergeyem.ru 'cd /var/www/easylist/current && exec $SHELL -l'"
 
   context:
     desc: "Generate context files for LLM"

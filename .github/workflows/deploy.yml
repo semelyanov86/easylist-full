@@ -15,39 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.5'
-          tools: composer:v2
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader --no-scripts
-
-      - name: Prepare .env for artisan
-        run: |
-          cp .env.example .env
-          php artisan key:generate --ansi
-
-      - name: Generate Wayfinder types
-        run: php artisan wayfinder:generate --with-form
-
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Build assets
-        run: npm run build
-
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -61,33 +28,32 @@ jobs:
           if [ -z "$PORT" ]; then PORT=22; fi
           ssh-keyscan -p "$PORT" -H "${{ secrets.DEPLOY_SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Pull code on server
+      - name: Deploy on server
         run: |
           set -e
           PORT="${{ secrets.DEPLOY_SSH_PORT }}"
           if [ -z "$PORT" ]; then PORT=22; fi
-          ssh -p "$PORT" "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}" << 'EOF'
-            set -e
-            cd ~/easylist
-            git pull
-          EOF
+          ssh -p "$PORT" "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}" 'bash -seu' << 'EOF'
+          APP=/var/www/easylist/current
+          SHARED=/var/www/easylist/shared
+          as_site() { sudo -u site_easylist env HOME="$SHARED" "$@"; }
 
-      - name: Upload built assets (public/build)
-        run: |
-          set -e
-          PORT="${{ secrets.DEPLOY_SSH_PORT }}"
-          if [ -z "$PORT" ]; then PORT=22; fi
-          rsync -az --delete -e "ssh -p $PORT" public/build/ "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}:~/easylist/public/build/"
+          # 1. Обновить код
+          as_site git -C "$APP" fetch --prune origin
+          as_site git -C "$APP" reset --hard origin/main
 
-      - name: Run artisan commands
-        run: |
-          set -e
-          PORT="${{ secrets.DEPLOY_SSH_PORT }}"
-          if [ -z "$PORT" ]; then PORT=22; fi
-          ssh -p "$PORT" "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}" << 'EOF'
-            set -e
-            cd ~/easylist
-            /opt/php85/bin/php artisan migrate --force
-            /opt/php85/bin/php artisan cache:clear
-            /opt/php85/bin/php artisan config:clear
+          # 2. Backend-зависимости
+          as_site composer install --working-dir="$APP" --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+          # 3. Frontend: сборка прямо на сервере (Wayfinder-типы генерит vite-плагин).
+          #    Octane держит старый код в памяти до reload, поэтому падение сборки
+          #    прервёт деплой ДО reload и живой сайт не пострадает.
+          as_site sh -c "cd $APP && npm ci && npm run build"
+
+          # 4. Миграции и сброс кэшей
+          as_site php "$APP/artisan" migrate --force
+          as_site php "$APP/artisan" optimize:clear
+
+          # 5. Graceful-reload Octane (RoadRunner) через systemd
+          sudo systemctl reload octane-easylist.service
           EOF
