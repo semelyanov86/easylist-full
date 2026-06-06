@@ -39,3 +39,5 @@ frankenphp-worker.php
 /.redis
 /.storage
 .env.staging
+rr
+.rr.yaml
