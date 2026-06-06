@@ -145,6 +145,10 @@ tasks:
     cmds:
       - "{{.EXEC_PHP}} composer test"
 
+  test:e2e:
+    desc: "Реальные e2e-тесты polza.ai (платные запросы, нужен POLZA_API_KEY в .env)"
+    cmd: "POLZA_E2E_LIVE=1 php artisan test --group=e2e-polza"
+
   test-stop:
     desc: "Run phpunit tests"
     cmds:

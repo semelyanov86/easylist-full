@@ -1,0 +1,80 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0pt]{geometry}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{tabularx}
+
+\definecolor{accentblue}{RGB}{0, 102, 204}
+
+\hypersetup{
+	colorlinks=true,
+	urlcolor=accentblue,
+	linkcolor=accentblue
+}
+
+\pagestyle{empty}
+
+\begin{document}
+	
+	% ===================== HEADER =====================
+	\noindent
+	\begin{minipage}{\textwidth}
+		\centering
+		\vspace{1.2cm}
+		{\fontsize{26}{30}\selectfont\bfseries Sergei Emelianov}\\[4pt]
+		{\large\color{accentblue}Software Developer}
+		\vspace{1.0cm}
+	\end{minipage}
+	
+	\noindent\rule{\textwidth}{1.5pt}
+	
+	\vspace{0.6cm}
+	
+	% ===================== BODY =====================
+	\noindent
+	\begin{tabularx}{\textwidth}{@{\hspace{2cm}} p{4.5cm} @{\hspace{0.5cm}} X @{\hspace{2cm}}}
+		
+		% ---- LEFT COLUMN ----
+		\raggedright
+		{\bfseries Sergei Emelianov}\\[2pt]
+		22177, Hamburg\\[2pt]
+		{\color{accentblue}+4915211100235}\\[2pt]
+		{\color{accentblue}\href{mailto:me@sergeyem.eu}{me@sergeyem.eu}}
+		
+		&
+		
+		% ---- RIGHT COLUMN ----
+		\raggedright
+		1 JUNE 2025\\[10pt]
+		{\bfseries Ms. Laura Kim}\\[1pt]
+		Apple Inc.\\[1pt]
+		One Apple Park Way\\[1pt]
+		Cupertino, CA 95014\\[18pt]
+		
+		Dear Ms.\ Kim,\\[10pt]
+		
+		Apple ships ideas that change how people live. I build teams that turn fragile concepts into rock-solid code. Your iOS Systems group is tackling the next generation of on-device intelligence, and that intersection of craft and impact is exactly where I work best.\\[10pt]
+		
+		Over the past four years at Atlassian, I scaled a nine-engineer feature squad into a 28-person platform team that now supports 200 million monthly active users. We reduced build times by 35\% by introducing a Bazel-based pipeline and achieved a 42\% drop in crash rates across our mobile suite. Those wins shipped to customers in a single release cycle.\\[10pt]
+		
+		Just as important, team retention averaged 96\% over four years because I insist on a clear vision, ruthless prioritization, and relentless feedback loops.\\[10pt]
+		
+		Those fundamentals map directly to Apple's bar for pixel-perfect UX and uncompromising privacy. Whether coordinating with design to shave a frame off a scrolling animation or partnering with hardware teams to optimize battery budgets on A-series silicon, I keep engineers focused on ``it just works'' outcomes.\\[10pt]
+		
+		Thank you for your time and consideration. I would welcome the chance to walk you through how this approach can accelerate iOS Systems. I'm free any day after 9~a.m.\ at +4915211100235 or via email at \href{mailto:me@sergeyem.eu}{me@sergeyem.eu}.\\[14pt]
+		
+		Sincerely,\\[6pt]
+		{\bfseries\color{accentblue}Sergei Emelianov}
+		
+	\end{tabularx}
+	
+	\vspace{0.6cm}
+	
+\end{document}

@@ -15,6 +15,13 @@ use App\Services\AiContactFinderService;
 use App\Services\AiCoverLetterService;
 use App\Services\AiFormatterService;
 use App\Services\AiTagExtractorService;
+use App\Services\Polza\PolzaChatClient;
+use App\Services\Polza\PolzaCompanyAnalyzerService;
+use App\Services\Polza\PolzaContactFinderService;
+use App\Services\Polza\PolzaCoverLetterService;
+use App\Services\Polza\PolzaFormatterService;
+use App\Services\Polza\PolzaTagExtractorService;
+use App\Services\Polza\PromptRepository;
 use App\Services\TickTickClientService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -34,69 +41,9 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        $this->app->singleton(function (): AiClientService {
-            /** @var string $url */
-            $url = config('services.ai_formatter.url');
-
-            /** @var string $token */
-            $token = config('services.ai_formatter.token');
-
-            /** @var int $timeout */
-            $timeout = config('services.ai_formatter.timeout');
-
-            return new AiClientService(
-                url: $url,
-                token: $token,
-                timeout: $timeout,
-            );
-        });
-
-        $this->app->singleton(AiFormatterContract::class, fn (): AiFormatterContract => new AiFormatterService(
-            client: $this->app->make(AiClientService::class),
-        ));
-
-        $this->app->singleton(AiTagExtractorContract::class, fn (): AiTagExtractorContract => new AiTagExtractorService(
-            client: $this->app->make(AiClientService::class),
-        ));
-
-        $this->app->singleton(AiCompanyAnalyzerContract::class, fn (): AiCompanyAnalyzerContract => new AiCompanyAnalyzerService(
-            client: $this->app->make(AiClientService::class),
-        ));
-
-        $this->app->singleton(AiContactFinderContract::class, fn (): AiContactFinderContract => new AiContactFinderService(
-            client: $this->app->make(AiClientService::class),
-        ));
-
-        $this->app->singleton(function (): AiCoverLetterContract {
-            /** @var string $url */
-            $url = config('services.ai_formatter.url');
-
-            /** @var string $token */
-            $token = config('services.ai_formatter.token');
-
-            /** @var int $timeout */
-            $timeout = config('services.ai_formatter.timeout');
-
-            return new AiCoverLetterService(
-                url: $url,
-                token: $token,
-                timeout: $timeout,
-                baseUrl: 'https://ask.sergeyem.ru',
-            );
-        });
-
-        $this->app->singleton(function (): TickTickClientContract {
-            /** @var string $baseUrl */
-            $baseUrl = config('services.ticktick.base_url');
-
-            /** @var int $timeout */
-            $timeout = config('services.ticktick.timeout');
-
-            return new TickTickClientService(
-                baseUrl: $baseUrl,
-                timeout: $timeout,
-            );
-        });
+        $this->registerAiTransports();
+        $this->registerAiProvider();
+        $this->registerTickTick();
     }
 
     /**
@@ -133,5 +80,144 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null
         );
+    }
+
+    /**
+     * Зарегистрировать общие транспорты ИИ-провайдеров.
+     */
+    private function registerAiTransports(): void
+    {
+        $this->app->singleton(function (): AiClientService {
+            /** @var string $url */
+            $url = config('ai.claude.url');
+
+            /** @var string $token */
+            $token = config('ai.claude.token');
+
+            /** @var int $timeout */
+            $timeout = config('ai.claude.timeout');
+
+            return new AiClientService(url: $url, token: $token, timeout: $timeout);
+        });
+
+        $this->app->singleton(function (): PolzaChatClient {
+            /** @var string $apiKey */
+            $apiKey = config('ai.polza.api_key');
+
+            /** @var string $baseUrl */
+            $baseUrl = config('ai.polza.base_url');
+
+            /** @var int $timeout */
+            $timeout = config('ai.polza.timeout');
+
+            return new PolzaChatClient(apiKey: $apiKey, baseUrl: $baseUrl, timeout: $timeout);
+        });
+
+        $this->app->singleton(PromptRepository::class, fn (): PromptRepository => new PromptRepository());
+    }
+
+    /**
+     * Привязать реализации ИИ-контрактов к выбранному провайдеру.
+     */
+    private function registerAiProvider(): void
+    {
+        /** @var string $provider */
+        $provider = config('ai.provider', 'polza');
+
+        if ($provider === 'polza') {
+            $this->bindPolzaProvider();
+
+            return;
+        }
+
+        $this->bindClaudeProvider();
+    }
+
+    /**
+     * Привязки провайдера polza.ai (промпты формируются в приложении).
+     */
+    private function bindPolzaProvider(): void
+    {
+        $this->app->singleton(AiFormatterContract::class, fn (): AiFormatterContract => new PolzaFormatterService(
+            $this->app->make(PolzaChatClient::class),
+            $this->app->make(PromptRepository::class),
+        ));
+
+        $this->app->singleton(AiTagExtractorContract::class, fn (): AiTagExtractorContract => new PolzaTagExtractorService(
+            $this->app->make(PolzaChatClient::class),
+            $this->app->make(PromptRepository::class),
+        ));
+
+        $this->app->singleton(AiCompanyAnalyzerContract::class, fn (): AiCompanyAnalyzerContract => new PolzaCompanyAnalyzerService(
+            $this->app->make(PolzaChatClient::class),
+            $this->app->make(PromptRepository::class),
+        ));
+
+        $this->app->singleton(AiContactFinderContract::class, fn (): AiContactFinderContract => new PolzaContactFinderService(
+            $this->app->make(PolzaChatClient::class),
+            $this->app->make(PromptRepository::class),
+        ));
+
+        $this->app->singleton(AiCoverLetterContract::class, fn (): AiCoverLetterContract => new PolzaCoverLetterService(
+            $this->app->make(PolzaChatClient::class),
+            $this->app->make(PromptRepository::class),
+        ));
+    }
+
+    /**
+     * Привязки прежнего провайдера (skill-сервер ask.sergeyem.ru).
+     */
+    private function bindClaudeProvider(): void
+    {
+        $this->app->singleton(AiFormatterContract::class, fn (): AiFormatterContract => new AiFormatterService(
+            client: $this->app->make(AiClientService::class),
+        ));
+
+        $this->app->singleton(AiTagExtractorContract::class, fn (): AiTagExtractorContract => new AiTagExtractorService(
+            client: $this->app->make(AiClientService::class),
+        ));
+
+        $this->app->singleton(AiCompanyAnalyzerContract::class, fn (): AiCompanyAnalyzerContract => new AiCompanyAnalyzerService(
+            client: $this->app->make(AiClientService::class),
+        ));
+
+        $this->app->singleton(AiContactFinderContract::class, fn (): AiContactFinderContract => new AiContactFinderService(
+            client: $this->app->make(AiClientService::class),
+        ));
+
+        $this->app->singleton(function (): AiCoverLetterContract {
+            /** @var string $url */
+            $url = config('ai.claude.url');
+
+            /** @var string $token */
+            $token = config('ai.claude.token');
+
+            /** @var int $timeout */
+            $timeout = config('ai.claude.timeout');
+
+            /** @var string $baseUrl */
+            $baseUrl = config('ai.claude.base_url');
+
+            return new AiCoverLetterService(url: $url, token: $token, timeout: $timeout, baseUrl: $baseUrl);
+        });
+    }
+
+    /**
+     * Регистрация клиента TickTick.
+     */
+    private function registerTickTick(): void
+    {
+        $this->app->singleton(function (): TickTickClientContract {
+            /** @var string $baseUrl */
+            $baseUrl = config('services.ticktick.base_url');
+
+            /** @var int $timeout */
+            $timeout = config('services.ticktick.timeout');
+
+            return new TickTickClientService(
+                baseUrl: $baseUrl,
+                timeout: $timeout,
+            );
+        });
     }
 }
